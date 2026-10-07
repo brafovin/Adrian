@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JWG Shop – Hoodie der Goethe Schule</title>
+<meta name="description" content="Der offizielle JWG Hoodie der Johann Wolfgang von Goethe Schule – schwarz, oversized, mit Brust- und Rückenprint.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./" aria-label="JWG Shop – Startseite"><span class="brand-mark">JWG</span><span class="brand-name">Shop</span></a>
+  <button class="cart-btn" id="open-cart" type="button" aria-label="Warenkorb öffnen">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 7h12l1.2 13H4.8L6 7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="cart-count" id="cart-count" hidden>0</span>
+  </button>
+</header>
+
+<div class="banner" id="banner" role="status" hidden></div>
+
+<main>
+  <section class="hero">
+    <p class="eyebrow">Johann Wolfgang von Goethe Schule</p>
+    <h1>Der JWG&nbsp;Hoodie</h1>
+    <p class="lead">Schwarz. Oversized. Mit Goethe auf dem Rücken.</p>
+    <a class="btn btn-primary" href="#produkt">Jetzt bestellen</a>
+  </section>
+
+  <section class="product" id="produkt">
+    <div class="gallery">
+      <div class="gallery-main"><img id="main-img" src="img/front.jpg" alt="JWG Hoodie, Vorderseite mit kleinem JWG-Logo" width="615" height="715"></div>
+      <div class="thumbs" id="thumbs" role="tablist" aria-label="Produktbilder"></div>
+    </div>
+
+    <div class="buy">
+      <h2 id="p-name">JWG Hoodie</h2>
+      <p class="price"><span id="p-price"></span> <small>inkl. MwSt., zzgl. <a href="#versand">Versand</a></small></p>
+      <p class="color">Farbe: <strong id="p-color">Schwarz</strong></p>
+
+      <fieldset class="sizes">
+        <legend>Größe</legend>
+        <div id="size-list" class="size-list"></div>
+        <p class="hint" id="size-hint" hidden>Bitte wähle eine Größe.</p>
+      </fieldset>
+
+      <div class="qty-row">
+        <div class="qty" aria-label="Menge">
+          <button type="button" id="qty-minus" aria-label="Weniger">−</button>
+          <output id="qty-val">1</output>
+          <button type="button" id="qty-plus" aria-label="Mehr">+</button>
+        </div>
+        <button type="button" class="btn btn-primary btn-grow" id="add-btn">In den Warenkorb</button>
+      </div>
+
+      <ul class="facts">
+        <li>Kleines Brust-Logo „JWG“ mit Goethe-Porträt in Weiß</li>
+        <li>Großer Rückenprint „Johann Wolfgang von Goethe Schule“</li>
+        <li>Lockerer Oversized-Schnitt, Kapuze mit Kordel, Kängurutasche</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="info" id="versand">
+    <div>
+      <h3>Versand &amp; Abholung</h3>
+      <p id="info-shipping"></p>
+    </div>
+    <div>
+      <h3>Bezahlen</h3>
+      <p>Sicher über unseren Zahlungsanbieter Stripe – je nach Einrichtung mit Karte, PayPal, Klarna, SEPA-Lastschrift u. a.</p>
+    </div>
+    <div>
+      <h3>Fragen?</h3>
+      <p>Schreib uns über die Angaben im <a href="recht.html#impressum">Impressum</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <a href="recht.html#impressum">Impressum</a>
+  <a href="recht.html#datenschutz">Datenschutz</a>
+  <a href="recht.html#agb">AGB</a>
+  <a href="recht.html#widerruf">Widerruf</a>
+</footer>
+
+<!-- Warenkorb -->
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Warenkorb" aria-hidden="true">
+  <div class="drawer-head"><h2>Warenkorb</h2><button type="button" class="icon-btn" id="close-cart" aria-label="Schließen">×</button></div>
+  <div class="drawer-body" id="cart-items"></div>
+  <div class="drawer-foot" id="cart-foot" hidden>
+    <div class="row"><span>Zwischensumme</span><strong id="cart-subtotal"></strong></div>
+    <p class="hint">Versandkosten und Gesamtsumme siehst du an der Kasse.</p>
+    <button type="button" class="btn btn-primary btn-block" id="to-checkout">Zur Kasse</button>
+  </div>
+</aside>
+
+<!-- Kasse -->
+<div class="modal" id="checkout" role="dialog" aria-modal="true" aria-labelledby="co-title" aria-hidden="true">
+  <div class="modal-box">
+    <div class="drawer-head"><h2 id="co-title">Kasse</h2><button type="button" class="icon-btn" id="close-checkout" aria-label="Schließen">×</button></div>
+    <form id="co-form" novalidate>
+      <div class="co-grid">
+        <div class="co-fields">
+          <label>Name<input name="name" autocomplete="name" required maxlength="100"></label>
+          <label>E-Mail<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+
+          <fieldset class="delivery">
+            <legend>Lieferart</legend>
+            <label class="radio"><input type="radio" name="delivery" value="shipping" checked><span id="lbl-shipping"></span></label>
+            <label class="radio" id="pickup-wrap"><input type="radio" name="delivery" value="pickup"><span id="lbl-pickup"></span></label>
+            <p class="hint">Die Lieferadresse gibst du im nächsten Schritt beim Zahlungsanbieter ein.</p>
+          </fieldset>
+
+          <label class="check"><input type="checkbox" name="agree" required>
+            <span>Ich habe die <a href="recht.html#agb" target="_blank" rel="noopener">AGB</a>, die <a href="recht.html#widerruf" target="_blank" rel="noopener">Widerrufsbelehrung</a> und die <a href="recht.html#datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und akzeptiert.</span></label>
+        </div>
+
+        <div class="co-summary">
+          <h3>Deine Bestellung</h3>
+          <div id="co-lines"></div>
+          <div class="row"><span>Zwischensumme</span><span id="co-sub"></span></div>
+          <div class="row"><span>Versand</span><span id="co-ship"></span></div>
+          <div class="row total"><span>Gesamt <small>(inkl. MwSt.)</small></span><strong id="co-total"></strong></div>
+        </div>
+      </div>
+      <p class="error" id="co-error" role="alert" hidden></p>
+      <button type="submit" class="btn btn-primary btn-block" id="co-submit">Zahlungspflichtig bestellen</button>
+    </form>
+
+    <div class="demo" id="co-demo" hidden>
+      <h3>Demo-Modus</h3>
+      <p>Die Zahlung ist noch nicht eingerichtet – es wurde <strong>keine Bestellung abgeschickt</strong> und nichts abgebucht. So würde die Bestätigung aussehen. Anleitung zum Freischalten steht in der README.</p>
+      <button type="button" class="btn btn-primary" id="demo-close">Verstanden</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
