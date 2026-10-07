@@ -1,5 +1,5 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/musik/", "permanent": false }
+    { "source": "/", "destination": "/blitzer/", "permanent": false }
   ]
 }
