@@ -3,7 +3,7 @@
   const $ = (id) => document.getElementById(id);
   const CART_KEY = 'jwg-cart-v1';
   let catalog = null;
-  let product = null;
+  let product = null; // aktuell angezeigtes Produkt
   let cart = [];
   let size = null;
   let qty = 1;
@@ -20,7 +20,7 @@
   function loadCart() {
     try {
       const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-      cart = (Array.isArray(raw) ? raw : []).filter((i) => i && i.id === product.id && product.sizes.includes(i.size))
+      cart = (Array.isArray(raw) ? raw : []).filter((i) => i && productOf(i.id) && productOf(i.id).sizes.includes(i.size))
         .map((i) => ({ id: i.id, size: i.size, qty: Math.min(catalog.maxQtyPerItem, Math.max(1, parseInt(i.qty, 10) || 1)) }));
     } catch { cart = []; }
   }
@@ -28,12 +28,13 @@
     try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch { /* privater Modus */ }
     renderCart();
   }
-  const subtotal = () => cart.reduce((s, i) => s + product.priceCents * i.qty, 0);
+  const productOf = (id) => catalog.products.find((p) => p.id === id);
+  const subtotal = () => cart.reduce((s, i) => s + productOf(i.id).priceCents * i.qty, 0);
   const count = () => cart.reduce((s, i) => s + i.qty, 0);
 
   function addToCart() {
     if (!size) { $('size-hint').hidden = false; return; }
-    const ex = cart.find((i) => i.size === size);
+    const ex = cart.find((i) => i.id === product.id && i.size === size);
     if (ex) ex.qty = Math.min(catalog.maxQtyPerItem, ex.qty + qty);
     else cart.push({ id: product.id, size, qty });
     saveCart();
@@ -49,12 +50,13 @@
     $('cart-foot').hidden = cart.length === 0;
     if (!cart.length) { body.append(el('p', { className: 'empty', textContent: 'Dein Warenkorb ist leer.' })); return; }
     cart.forEach((item) => {
+      const p = productOf(item.id);
       const step = (d) => { item.qty = Math.min(catalog.maxQtyPerItem, Math.max(1, item.qty + d)); saveCart(); };
       body.append(el('div', { className: 'line' },
-        el('img', { src: product.image, alt: '', width: 72, height: 84 }),
+        el('img', { src: p.images[0].src, alt: '', width: 72, height: 84 }),
         el('div', {},
-          el('div', { className: 'line-title', textContent: product.name }),
-          el('div', { className: 'line-meta', textContent: `${product.color} · Größe ${item.size} · ${eur(product.priceCents)}` }),
+          el('div', { className: 'line-title', textContent: p.name }),
+          el('div', { className: 'line-meta', textContent: `${p.color}${p.sizes.length > 1 ? ` · Größe ${item.size}` : ''} · ${eur(p.priceCents)}` }),
           el('div', { className: 'line-actions' },
             el('div', { className: 'qty-sm' },
               el('button', { type: 'button', textContent: '−', ariaLabel: 'Weniger', onclick: () => step(-1) }),
@@ -104,9 +106,12 @@
   function renderSummary() {
     const method = $('co-form').elements.delivery.value;
     const lines = $('co-lines');
-    lines.replaceChildren(...cart.map((i) => el('div', { className: 'co-line' },
-      el('span', { textContent: `${i.qty}× ${product.name} (${i.size})` }),
-      el('span', { textContent: eur(product.priceCents * i.qty) }))));
+    lines.replaceChildren(...cart.map((i) => {
+      const p = productOf(i.id);
+      return el('div', { className: 'co-line' },
+        el('span', { textContent: `${i.qty}× ${p.name}${p.sizes.length > 1 ? ` (${i.size})` : ''}` }),
+        el('span', { textContent: eur(p.priceCents * i.qty) }));
+    }));
     const ship = shippingCents(method);
     $('co-sub').textContent = eur(subtotal());
     $('co-ship').textContent = ship === 0 ? 'kostenlos' : eur(ship);
@@ -132,6 +137,7 @@
     btn.disabled = true;
     btn.textContent = 'Einen Moment …';
     try {
+      if (window.SHOP_DEMO) { f.hidden = true; $('co-demo').hidden = false; return; }
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -151,28 +157,51 @@
   }
 
   // ---------- Produktseite ----------
-  const GALLERY = [
-    ['img/front.jpg', 'Vorderseite mit JWG-Logo'],
-    ['img/back.jpg', 'Rückseite mit Goethe-Print'],
-    ['img/detail-front.jpg', 'Detail: Brust-Logo'],
-    ['img/detail-back.jpg', 'Detail: Rückenprint'],
-  ];
-  function renderProduct() {
+  function renderGrid() {
+    const grid = $('product-grid');
+    grid.replaceChildren(...catalog.products.map((p) => el('button', {
+      type: 'button', className: 'card', id: `card-${p.id}`, onclick: () => selectProduct(p.id, true),
+    },
+      el('img', { src: p.images[0].src, alt: '', loading: 'lazy', width: 615, height: 715 }),
+      el('span', { className: 'card-name', textContent: p.name }),
+      el('span', { className: 'card-price', textContent: eur(p.priceCents) }))));
+  }
+
+  function selectProduct(id, scroll) {
+    product = productOf(id) || catalog.products[0];
+    size = product.sizes.length === 1 ? product.sizes[0] : null;
+    qty = 1;
+    $('qty-val').textContent = qty;
+    $('size-hint').hidden = true;
     $('p-name').textContent = product.name;
+    $('p-sub').textContent = product.subtitle;
     $('p-price').textContent = eur(product.priceCents);
     $('p-color').textContent = product.color;
+    document.querySelectorAll('.card').forEach((c) => c.setAttribute('aria-current', String(c.id === `card-${product.id}`)));
+
     const list = $('size-list');
-    product.sizes.forEach((s) => list.append(el('label', {},
-      el('input', { type: 'radio', name: 'size', value: s, onchange: () => { size = s; $('size-hint').hidden = true; } }),
+    list.replaceChildren(...product.sizes.map((s) => el('label', {},
+      el('input', { type: 'radio', name: 'size', value: s, checked: product.sizes.length === 1, onchange: () => { size = s; $('size-hint').hidden = true; } }),
       el('span', { textContent: s }))));
+    list.closest('fieldset').querySelector('legend').textContent = product.sizes.length === 1 ? 'Größe (nur eine)' : 'Größe';
+
+    $('p-facts').replaceChildren(...product.facts.map((f) => el('li', { textContent: f })));
+
     const thumbs = $('thumbs');
-    GALLERY.forEach(([src, alt], i) => thumbs.append(el('button', {
-      type: 'button', role: 'tab', ariaSelected: String(i === 0), ariaLabel: alt,
-      onclick: () => {
-        $('main-img').src = src; $('main-img').alt = `JWG Hoodie – ${alt}`;
-        thumbs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b === thumbs.children[i])));
-      },
-    }, el('img', { src, alt: '', loading: 'lazy' }))));
+    const show = (i) => {
+      const im = product.images[i];
+      $('main-img').src = im.src;
+      $('main-img').alt = `${product.name} – ${im.alt}`;
+      [...thumbs.children].forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
+    };
+    thumbs.replaceChildren(...product.images.map((im, i) => el('button', {
+      type: 'button', role: 'tab', ariaSelected: String(i === 0), ariaLabel: im.alt, onclick: () => show(i),
+    }, el('img', { src: im.src, alt: '', loading: 'lazy' }))));
+    show(0);
+    if (scroll) $('produkt').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function renderInfo() {
     const d = catalog.delivery;
     $('info-shipping').textContent = `Versand ${eur(d.shipping.priceCents)} (ab ${eur(d.shipping.freeFromCents)} kostenlos) nach DE, AT und CH.`
       + (d.pickup.enabled ? ' Alternativ kannst du deine Bestellung kostenlos in der Schule abholen.' : '');
@@ -201,11 +230,12 @@
     try {
       catalog = await (await fetch('catalog.json')).json();
     } catch {
-      $('p-name').textContent = 'Shop konnte nicht geladen werden – bitte über einen Webserver öffnen.';
+      $('product-grid').textContent = 'Shop konnte nicht geladen werden – bitte über einen Webserver öffnen.';
       return;
     }
-    product = catalog.products[0];
-    renderProduct();
+    renderGrid();
+    renderInfo();
+    selectProduct(catalog.products[0].id, false);
     loadCart();
     renderCart();
     showBanner();

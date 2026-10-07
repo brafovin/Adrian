@@ -5,11 +5,72 @@
     {
       "id": "jwg-hoodie",
       "name": "JWG Hoodie",
-      "subtitle": "Johann Wolfgang von Goethe Schule",
+      "subtitle": "Oversized Kapuzenpullover",
       "priceCents": 3990,
       "sizes": ["S", "M", "L", "XL", "XXL"],
       "color": "Schwarz",
-      "image": "img/front.jpg"
+      "images": [
+        { "src": "img/front.jpg", "alt": "Vorderseite mit JWG-Logo" },
+        { "src": "img/back.jpg", "alt": "Rückseite mit Goethe-Print" },
+        { "src": "img/detail-front.jpg", "alt": "Detail: Brust-Logo" },
+        { "src": "img/detail-back.jpg", "alt": "Detail: Rückenprint" }
+      ],
+      "facts": [
+        "Kleines Brust-Logo „JWG“ mit Goethe-Porträt in Weiß",
+        "Großer Rückenprint „Johann Wolfgang von Goethe Schule“",
+        "Lockerer Oversized-Schnitt, Kapuze mit Kordel, Kängurutasche"
+      ]
+    },
+    {
+      "id": "jwg-shirt",
+      "name": "JWG T-Shirt",
+      "subtitle": "Klassisches Rundhals-Shirt",
+      "priceCents": 2490,
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "color": "Schwarz",
+      "images": [
+        { "src": "img/tshirt-front.jpg", "alt": "Vorderseite mit kleinem Brust-Logo" },
+        { "src": "img/tshirt-back.jpg", "alt": "Rückseite mit Goethe-Print" }
+      ],
+      "facts": [
+        "Kleines Goethe-Porträt auf der Brust",
+        "Großer Rückenprint „Johann Wolfgang von Goethe Schule“",
+        "Rundhalsausschnitt, gerader Schnitt"
+      ]
+    },
+    {
+      "id": "jwg-beanie",
+      "name": "JWG Mütze",
+      "subtitle": "Beanie mit breitem Umschlag",
+      "priceCents": 1990,
+      "sizes": ["Einheitsgröße"],
+      "color": "Schwarz",
+      "images": [
+        { "src": "img/beanie-front.jpg", "alt": "Beanie mit Goethe-Porträt" },
+        { "src": "img/beanie-detail.jpg", "alt": "Detail: Porträt auf dem Umschlag" }
+      ],
+      "facts": [
+        "Goethe-Porträt in Weiß auf dem Umschlag",
+        "Breiter Umschlag, Strick-Optik",
+        "Einheitsgröße"
+      ]
+    },
+    {
+      "id": "jwg-tote",
+      "name": "JWG Stoffbeutel",
+      "subtitle": "Tragetasche für Bücher & Co.",
+      "priceCents": 1290,
+      "sizes": ["Einheitsgröße"],
+      "color": "Natur",
+      "images": [
+        { "src": "img/tote-front.jpg", "alt": "Stoffbeutel mit Goethe-Schule-Logo" },
+        { "src": "img/tote-detail.jpg", "alt": "Detail: Druck" }
+      ],
+      "facts": [
+        "Schwarzer Druck „Johann Wolfgang von Goethe Schule“",
+        "Zwei lange Henkel zum Schultern",
+        "Naturfarbener Stoff"
+      ]
     }
   ],
   "delivery": {
