@@ -53,7 +53,9 @@ Installierbare Web-App (PWA) mit Karte: zeigt alle Blitzer im **40-km-Radius** u
 - **Rechtlich:** In Deutschland darf der Fahrer Blitzerwarner während der Fahrt nicht nutzen (§ 23 Abs. 1c StVO).
 
 ## JWG Shop (`shop/` + `api/`)
-Onlineshop für den **JWG Hoodie** (Johann Wolfgang von Goethe Schule): Produktseite mit Galerie und Größenwahl, Warenkorb (bleibt im Browser gespeichert), eigene Kasse (Name, E-Mail, Versand/Abholung, AGB-Häkchen, „Zahlungspflichtig bestellen“) und Bezahlung über **Stripe Checkout**. Erreichbar unter `/shop/`.
+Onlineshop für die **JWG Kollektion** (Johann Wolfgang von Goethe Schule: Hoodie, T-Shirt, Mütze, Stoffbeutel): Produktübersicht, Produktseite mit Galerie und Größenwahl, Warenkorb (bleibt im Browser gespeichert), eigene Kasse (Name, E-Mail, Versand/Abholung, AGB-Häkchen, „Zahlungspflichtig bestellen“) und Bezahlung über **Stripe Checkout**. Erreichbar unter `/shop/`.
+
+**Produkte** (`shop/catalog.json`): Die Bilder von T-Shirt, Mütze und Beutel sind selbst gezeichnete Mockups (Logo aus dem Hoodie-Bild), keine Fotos – bei echten Produkten bitte durch Fotos ersetzen. Die Preise sind Platzhalter.
 
 **Einstellungen** (Preis, Größen, Versandkosten, Abholung) stehen in `shop/catalog.json`. Der Server liest die Preise nur von dort – Preise aus dem Browser werden ignoriert.
 

@@ -24,6 +24,15 @@ test('Gratisversand ab Schwelle, Abholung kostenlos', () => {
   assert.equal(handler.buildOrder({ ...base, delivery: 'pickup' }).shippingCents, 0);
 });
 
+test('Mehrere Produkte, Einheitsgröße', () => {
+  const o = handler.buildOrder({ ...base, items: [{ id: 'jwg-hoodie', size: 'M', qty: 1 }, { id: 'jwg-beanie', size: 'Einheitsgröße', qty: 2 }, { id: 'jwg-tote', size: 'Einheitsgröße', qty: 1 }] });
+  assert.equal(o.subtotal, 3990 + 2 * 1990 + 1290);
+  const p = handler.stripeParams(o, 'https://shop.test');
+  assert.equal(p.get('line_items[1][price_data][product_data][name]'), 'JWG Mütze – Schwarz');
+  assert.equal(p.get('line_items[0][price_data][product_data][images][0]'), 'https://shop.test/shop/img/front.jpg');
+  assert.throws(() => handler.buildOrder({ ...base, items: [{ id: 'jwg-beanie', size: 'M', qty: 1 }] }));
+});
+
 test('Ungültige Eingaben werden abgelehnt', () => {
   for (const bad of [
     { ...base, items: [] },

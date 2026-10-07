@@ -46,8 +46,8 @@ function stripeParams(order, origin) {
     p.set(`${k}[quantity]`, String(l.qty));
     p.set(`${k}[price_data][currency]`, catalog.currency);
     p.set(`${k}[price_data][unit_amount]`, String(l.product.priceCents));
-    p.set(`${k}[price_data][product_data][name]`, `${l.product.name} – ${l.product.color}, Größe ${l.size}`);
-    p.set(`${k}[price_data][product_data][images][0]`, `${origin}/shop/${l.product.image}`);
+    p.set(`${k}[price_data][product_data][name]`, l.product.sizes.length > 1 ? `${l.product.name} – ${l.product.color}, Größe ${l.size}` : `${l.product.name} – ${l.product.color}`);
+    p.set(`${k}[price_data][product_data][images][0]`, `${origin}/shop/${l.product.images[0].src}`);
   });
   const so = 'shipping_options[0][shipping_rate_data]';
   p.set(`${so}[type]`, 'fixed_amount');

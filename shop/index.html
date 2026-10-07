@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JWG Shop – Hoodie der Goethe Schule</title>
-<meta name="description" content="Der offizielle JWG Hoodie der Johann Wolfgang von Goethe Schule – schwarz, oversized, mit Brust- und Rückenprint.">
+<title>JWG Shop – Kollektion der Goethe Schule</title>
+<meta name="description" content="Die JWG Kollektion der Johann Wolfgang von Goethe Schule: Hoodie, T-Shirt, Mütze und Stoffbeutel.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -22,21 +22,26 @@
 <main>
   <section class="hero">
     <p class="eyebrow">Johann Wolfgang von Goethe Schule</p>
-    <h1>Der JWG&nbsp;Hoodie</h1>
-    <p class="lead">Schwarz. Oversized. Mit Goethe auf dem Rücken.</p>
-    <a class="btn btn-primary" href="#produkt">Jetzt bestellen</a>
+    <h1>Die JWG&nbsp;Kollektion</h1>
+    <p class="lead">Schwarz. Schlicht. Mit Goethe.</p>
+    <a class="btn btn-primary" href="#kollektion">Jetzt ansehen</a>
+  </section>
+
+  <section class="collection" id="kollektion" aria-label="Kollektion">
+    <div class="grid" id="product-grid"></div>
   </section>
 
   <section class="product" id="produkt">
     <div class="gallery">
-      <div class="gallery-main"><img id="main-img" src="img/front.jpg" alt="JWG Hoodie, Vorderseite mit kleinem JWG-Logo" width="615" height="715"></div>
+      <div class="gallery-main"><img id="main-img" src="img/front.jpg" alt="" width="615" height="715"></div>
       <div class="thumbs" id="thumbs" role="tablist" aria-label="Produktbilder"></div>
     </div>
 
     <div class="buy">
       <h2 id="p-name">JWG Hoodie</h2>
+      <p class="subtitle" id="p-sub"></p>
       <p class="price"><span id="p-price"></span> <small>inkl. MwSt., zzgl. <a href="#versand">Versand</a></small></p>
-      <p class="color">Farbe: <strong id="p-color">Schwarz</strong></p>
+      <p class="color">Farbe: <strong id="p-color"></strong></p>
 
       <fieldset class="sizes">
         <legend>Größe</legend>
@@ -53,11 +58,7 @@
         <button type="button" class="btn btn-primary btn-grow" id="add-btn">In den Warenkorb</button>
       </div>
 
-      <ul class="facts">
-        <li>Kleines Brust-Logo „JWG“ mit Goethe-Porträt in Weiß</li>
-        <li>Großer Rückenprint „Johann Wolfgang von Goethe Schule“</li>
-        <li>Lockerer Oversized-Schnitt, Kapuze mit Kordel, Kängurutasche</li>
-      </ul>
+      <ul class="facts" id="p-facts"></ul>
     </div>
   </section>
 
