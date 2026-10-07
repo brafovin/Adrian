@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Blitzer-Warner</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="map"></div>
+
+<header id="top">
+  <div id="status">GPS wartet …</div>
+  <div id="speed"><b id="speedVal">0</b><small>km/h</small></div>
+</header>
+
+<div id="alert" class="hidden" role="alert" aria-live="assertive">
+  <div class="alert-icon">📸</div>
+  <div class="alert-text">
+    <b id="alertDist">2000 m</b>
+    <span id="alertInfo">Blitzer voraus</span>
+  </div>
+</div>
+
+<aside id="panel">
+  <div id="nextRow">
+    <div>
+      <small>Nächster Blitzer voraus</small>
+      <b id="nextDist">–</b>
+    </div>
+    <div>
+      <small>Im Umkreis von <span id="radiusLbl">40</span> km</small>
+      <b id="count">0</b>
+    </div>
+  </div>
+  <div id="btnRow">
+    <button id="startBtn" class="primary">▶ Warnung starten</button>
+    <button id="locBtn" title="Auf meinen Standort zentrieren">◎</button>
+    <button id="menuBtn" title="Einstellungen">⚙</button>
+  </div>
+</aside>
+
+<div id="sheet" class="hidden">
+  <div class="sheet-card">
+    <h2>Einstellungen</h2>
+    <label>Warnung ab
+      <select id="warnDist">
+        <option value="1000">1 km</option>
+        <option value="1500">1,5 km</option>
+        <option value="2000" selected>2 km</option>
+        <option value="3000">3 km</option>
+      </select>
+    </label>
+    <label class="row"><input type="checkbox" id="optSound" checked> Warnton</label>
+    <label class="row"><input type="checkbox" id="optVibrate" checked> Vibration</label>
+    <label class="row"><input type="checkbox" id="optFollow" checked> Karte folgt mir</label>
+    <label class="row"><input type="checkbox" id="optHeading" checked> Nur Blitzer in Fahrtrichtung melden</label>
+    <button id="testBeep">🔊 Warnton testen</button>
+    <button id="demoBtn">🚗 Demo-Fahrt (ohne GPS)</button>
+    <button id="reloadBtn">⟳ Blitzer neu laden</button>
+    <p class="hint">Blitzer-Daten: © OpenStreetMap-Mitwirkende (ODbL). Mobile Blitzer sind darin nicht enthalten.
+      Die Warnung funktioniert nur, solange die App geöffnet und der Bildschirm an ist.
+      Hinweis: In Deutschland ist die Nutzung von Blitzerwarnern durch den Fahrer während der Fahrt verboten (§ 23 Abs. 1c StVO).
+      Nutze die App z. B. als Beifahrer oder zur Routenplanung.</p>
+    <button id="closeSheet" class="primary">Fertig</button>
+  </div>
+</div>
+
+<div id="toast" class="hidden"></div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

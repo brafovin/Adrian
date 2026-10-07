@@ -41,3 +41,13 @@ Auf Vercel/anderem Static-Hosting unter `/musik/` lauffähig; auf dem Handy übe
 **Architektur** (`musik/js/`): `core/` (Speicher, Router, Overlays) · `data/` (Katalog-Fassade + austauschbarer `CatalogProvider`) · `services/` (auth, player, favorites, playlists, library, settings, mediasession) · `ui/` · `views/`.
 Für echte Musik/viele Künstler: einen `RemoteCatalogProvider` mit den Methoden aus `data/provider.js` implementieren (Paginierung via `limit/offset`) und in `main.js` an `catalog.init()` übergeben – UI und Player bleiben unverändert.
 Demo-Assets neu erzeugen: `python3 musik/tools/build_demo_assets.py` (numpy, Pillow, ffmpeg).
+
+## Blitzer-Warner (`blitzer/`)
+Installierbare Web-App (PWA) mit Karte: zeigt alle Blitzer im **40-km-Radius** um deinen Standort und warnt **2 km vorher** per Piepton (plus Vibration und Banner mit Restdistanz).
+
+- **Daten:** OpenStreetMap-Blitzer (`highway=speed_camera`, `enforcement=maxspeed`) über die Overpass API, 12 h lokal zwischengespeichert. Mobile Blitzer sind darin nicht enthalten.
+- **Warnstufen:** ab 2 km (einstellbar 1–3 km), dann 1 km, 500 m, 250 m – mit jeder Stufe mehr und höhere Pieptöne. Es wird nur gewarnt, wenn sich der Blitzer in Fahrtrichtung befindet (abschaltbar).
+- **Bedienung:** „Warnung starten“ tippen (schaltet den Ton frei und hält den Bildschirm an). „Einstellungen → Demo-Fahrt“ simuliert eine Fahrt auf einen Blitzer zu, ohne GPS.
+- **Starten:** `npx http-server blitzer -p 8080` (GPS braucht https oder localhost); auf Vercel unter `/blitzer/`; auf dem Handy „Zum Startbildschirm hinzufügen“.
+- **Grenzen:** Als Web-App läuft die Warnung nur, solange die App im Vordergrund und der Bildschirm an ist. Für Betrieb im Hintergrund wäre eine native App nötig.
+- **Rechtlich:** In Deutschland darf der Fahrer Blitzerwarner während der Fahrt nicht nutzen (§ 23 Abs. 1c StVO).
