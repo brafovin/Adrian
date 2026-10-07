@@ -1,5 +1,5 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/nova-slash.html", "permanent": false }
+    { "source": "/", "destination": "/musik/", "permanent": false }
   ]
 }
