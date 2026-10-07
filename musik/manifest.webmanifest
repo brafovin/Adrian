@@ -1,0 +1,19 @@
+{
+  "name": "ROUGE – Musik in Rot & Schwarz",
+  "short_name": "ROUGE",
+  "description": "Moderne Musik-Streaming-App (Demo-Inhalte).",
+  "lang": "de",
+  "start_url": "./#/home",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090a",
+  "theme_color": "#09090a",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    { "src": "assets/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

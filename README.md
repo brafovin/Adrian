@@ -25,3 +25,19 @@ Arcade-Schneidespiel im Weltraum – `nova-slash.html` öffnen (eine Datei, kein
 - **20 Level** mit steigender Schwierigkeit, neuen Zieltypen, Flugmustern und Herausforderungen (Boss, Meteoritenschauer, Minenfeld, Turbo). Ergebnisbildschirm mit 1–3 Sternen.
 - **Shop & Waffen:** 5 Waffen mit eigenen Spielmechaniken (nachleuchtende Spur, träge Hammer-Schockwelle, zwei Klingen, Kettenblitz) plus 4 Upgrades je Waffe.
 - Fortschritt (Münzen, Level, Waffen, Upgrades, Highscore, Combo) wird automatisch im `localStorage` gespeichert. Sound und Musik werden per WebAudio erzeugt.
+
+## ROUGE – Musik-Streaming-App (`musik/`)
+Moderne, installierbare Musik-App (PWA) in Rot & Schwarz für Smartphones – aktuell nur mit **JUL** und **eigenen Demo-Inhalten**.
+Keine geschützten Songs, Cover oder Fotos: Audio und Grafiken werden mit `musik/tools/build_demo_assets.py` selbst erzeugt (CC0) und sind überall als **DEMO** gekennzeichnet.
+
+**Starten** (ES-Module brauchen einen Webserver; für Spulen im Song muss er Range-Anfragen unterstützen):
+```
+npx http-server musik -p 8080 -c-1      # dann http://localhost:8080
+```
+Auf Vercel/anderem Static-Hosting unter `/musik/` lauffähig; auf dem Handy über „Zum Startbildschirm hinzufügen“ installieren.
+
+**Funktionen:** Splash, Start (Zuletzt gehört, Beliebt, Playlists, JUL, Neu), Künstler-/Album-/Playlist-Seiten, Suche (Songs/Alben/Künstler/Playlists), Favoriten mit Herz-Animation, eigene Playlists (erstellen, bearbeiten, Songs hinzufügen/entfernen, löschen), Bibliothek, Mini-Player + Vollbild-Player (Seek per Touch, Shuffle, Repeat, Lautstärke, Warteschlange), Autoplay, Wiedergabe läuft bei Seitenwechsel weiter, Sperrbildschirm-Steuerung (Media Session), Konten (lokal, PBKDF2) oder Gastmodus, Einstellungen, dauerhafte Speicherung in IndexedDB (inkl. Wiedergabeposition).
+
+**Architektur** (`musik/js/`): `core/` (Speicher, Router, Overlays) · `data/` (Katalog-Fassade + austauschbarer `CatalogProvider`) · `services/` (auth, player, favorites, playlists, library, settings, mediasession) · `ui/` · `views/`.
+Für echte Musik/viele Künstler: einen `RemoteCatalogProvider` mit den Methoden aus `data/provider.js` implementieren (Paginierung via `limit/offset`) und in `main.js` an `catalog.init()` übergeben – UI und Player bleiben unverändert.
+Demo-Assets neu erzeugen: `python3 musik/tools/build_demo_assets.py` (numpy, Pillow, ffmpeg).
