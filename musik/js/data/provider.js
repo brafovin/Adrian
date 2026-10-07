@@ -139,7 +139,9 @@ export class MapCatalogProvider {
   async recommend(seedTrackId, { exclude = [], limit = 10 } = {}) {
     const seed = this.tracks.get(seedTrackId);
     const skip = new Set(exclude);
-    const pool = [...this.tracks.values()].filter((t) => !skip.has(t.id) && (!seed || t.artistIds.some((a) => seed.artistIds.includes(a))));
+    const all = [...this.tracks.values()].filter((t) => !skip.has(t.id));
+    const same = all.filter((t) => !seed || t.artistIds.some((a) => seed.artistIds.includes(a)));
+    const pool = same.length ? same : all;
     // gewichtete Zufallsauswahl nach Beliebtheit
     return pool
       .map((t) => ({ t, k: Math.random() * (40 + t.popularity) }))

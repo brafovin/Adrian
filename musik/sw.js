@@ -7,7 +7,7 @@ const VERSION = 'rouge-v1';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest',
   'css/base.css', 'css/components.css', 'css/views.css', 'css/player.css',
-  'data/catalog.json', 'assets/img/icon-192.png',
+  'data/catalog.json', 'data/artists.json', 'assets/img/icon-192.png',
 ];
 
 self.addEventListener('install', (event) => {
