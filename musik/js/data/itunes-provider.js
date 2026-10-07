@@ -1,40 +1,56 @@
 /**
  * Katalog-Anbieter auf Basis der öffentlichen iTunes Search API von Apple.
  *
- * Liefert für Songs offizielle 30-Sekunden-Hörproben (previewUrl) und Cover.
- * Es werden keine Audiodateien gespeichert oder weiterverteilt: Die App lädt Metadaten und
- * Hörproben zur Laufzeit direkt von Apple. Die Rechte liegen bei den Rechteinhabern; vollständige
- * Songs sind nur über Apple Music verfügbar (Link im Song-Menü).
+ * Liefert für Songs offizielle 30-Sekunden-Hörproben (previewUrl) und Cover. Es werden keine
+ * Audiodateien gespeichert oder weiterverteilt: Metadaten und Hörproben kommen zur Laufzeit direkt
+ * von Apple. Die Rechte liegen bei den Rechteinhabern; vollständige Songs gibt es nur über Apple Music
+ * (Link im Song-Menü).
  *
- * Die API ist ratenbegrenzt (ca. 20 Anfragen/Minute je IP) – darum wird ein Schnappschuss der
- * Katalogdaten lokal zwischengespeichert und Albumtracks werden erst bei Bedarf nachgeladen.
+ * Skalierung auf viele Künstler: Ein statischer Index (data/artists.json, erzeugt mit
+ * tools/resolve_artists.py) enthält Name, Apple-ID und Bild aller Künstler. Songs und Alben eines
+ * Künstlers werden erst geladen, wenn er geöffnet/gesucht/abgespielt wird, und danach lokal
+ * zwischengespeichert. Die API ist ratenbegrenzt (~20 Anfragen/Minute je IP), daher laufen alle
+ * Anfragen gedrosselt über eine gemeinsame Warteschlange.
  */
 import { storage } from '../core/storage.js';
 import { normalize } from '../core/util.js';
 import { MapCatalogProvider } from './provider.js';
 
 const API = 'https://itunes.apple.com';
-const SNAPSHOT_KEY = 'catalog:itunes:v1';
-const SNAPSHOT_TTL = 24 * 3600 * 1000;
+const TTL = 24 * 3600 * 1000;
 const PREVIEW_SECONDS = 30;
+const MIN_GAP_MS = 450;
 
 const artwork = (url, size) => (url ? url.replace(/\/\d+x\d+(bb)?\.(jpg|png)$/, `/${size}x${size}bb.$2`) : null);
 const day = (iso) => String(iso || '').slice(0, 10) || '1970-01-01';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function api(path, params) {
-  const url = `${API}/${path}?${new URLSearchParams({ country: 'de', ...params })}`;
-  let lastErr;
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return (await res.json()).results || [];
-      lastErr = new Error(`iTunes API ${res.status}`);
-    } catch (err) {
-      lastErr = err;
+// ---- gedrosselte Anfrage-Warteschlange ----
+let queue = Promise.resolve();
+let lastStart = 0;
+
+function api(path, params) {
+  const job = queue.then(async () => {
+    const url = `${API}/${path}?${new URLSearchParams({ country: 'de', ...params })}`;
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const wait = MIN_GAP_MS - (Date.now() - lastStart);
+      if (wait > 0) await sleep(wait);
+      lastStart = Date.now();
+      try {
+        const res = await fetch(url);
+        if (res.ok) return (await res.json()).results || [];
+        lastErr = new Error(`iTunes API ${res.status}`);
+        if (res.status === 403 || res.status === 429) await sleep(4000 * (attempt + 1)); // Ratenlimit
+      } catch (err) {
+        lastErr = err;
+        await sleep(800);
+      }
     }
-    await new Promise((r) => setTimeout(r, 900));
-  }
-  throw lastErr;
+    throw lastErr;
+  });
+  queue = job.catch(() => {});
+  return job;
 }
 
 export class ItunesCatalogProvider extends MapCatalogProvider {
@@ -44,56 +60,73 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
     previews: true,
   };
 
-  /** @param {{ artists: { id: string, itunesId: number, name: string, tagline: string, description: string }[] }} config */
+  /**
+   * @param {{ indexUrl: string, overrides?: Record<string, object>, preload?: string[], defaults?: object }} config
+   */
   constructor(config) {
     super();
     this.config = config;
-    this.lastLive = 0;
-    this.liveCache = new Map();
+    this.ready = new Map(); // artistId -> Promise
+    this.liveCache = new Set();
     this.albumLoaded = new Set();
     this.albumMissing = new Set();
+    this.byItunes = new Map();
   }
 
   async init() {
-    const snap = storage.get(SNAPSHOT_KEY);
-    const fresh = snap && Date.now() - snap.at < SNAPSHOT_TTL && snap.signature === this.#signature();
-    if (fresh) return this.#apply(snap.data);
-    try {
-      const data = await this.#fetchAll();
-      storage.set(SNAPSHOT_KEY, { at: Date.now(), signature: this.#signature(), data });
-      this.#apply(data);
-    } catch (err) {
-      if (!snap || snap.signature !== this.#signature()) throw err;
-      console.warn('[itunes] nutze älteren Schnappschuss', err);
-      this.#apply(snap.data);
-    }
-  }
-
-  #signature() {
-    return this.config.artists.map((a) => a.itunesId).join(',');
-  }
-
-  async #fetchAll() {
-    const parts = await Promise.all(this.config.artists.map(async (a) => {
-      const [songs, albums] = await Promise.all([
-        api('lookup', { id: a.itunesId, entity: 'song', limit: 200 }),
-        api('lookup', { id: a.itunesId, entity: 'album', limit: 200 }),
-      ]);
-      return { cfg: a, songs: songs.filter((r) => r.wrapperType === 'track'), albums: albums.filter((r) => r.wrapperType === 'collection') };
+    const res = await fetch(this.config.indexUrl);
+    if (!res.ok) throw new Error(`Künstlerindex nicht ladbar (${res.status})`);
+    const index = await res.json();
+    const artists = index.map((a) => ({
+      id: a.id,
+      itunesId: a.itunesId,
+      name: a.name,
+      tagline: 'Rap',
+      description: '',
+      genres: [a.genre || 'Hip-Hop/Rap'],
+      image: a.image,
+      ...this.config.defaults,
+      ...this.config.overrides?.[a.id],
     }));
-    const tracks = [];
-    const albums = [];
-    const seen = new Set();
-    for (const { cfg, songs, albums: al } of parts) {
-      songs.filter((r) => r.previewUrl && r.artistId === cfg.itunesId).forEach((r, i) => {
-        if (seen.has(r.trackId)) return;
-        seen.add(r.trackId);
-        tracks.push(this.#mapTrack(r, cfg.id, 100 - i * 0.4));
-      });
-      al.forEach((r) => albums.push(this.#mapAlbum(r, cfg.id)));
+    this.setData({ artists });
+    artists.forEach((a) => this.byItunes.set(a.itunesId, a));
+    // Hauptkünstler vorladen (Startseite); scheitert alles, löst der Aufrufer den Demo-Fallback aus.
+    const results = await Promise.allSettled((this.config.preload || []).map((id) => this.ensureArtist(id)));
+    if (results.length && results.every((r) => r.status === 'rejected')) throw results[0].reason;
+  }
+
+  // ---------- Laden pro Künstler ----------
+  ensureArtist(id) {
+    if (!this.ready.has(id)) {
+      this.ready.set(id, this.#loadArtist(id).catch((err) => {
+        this.ready.delete(id);
+        throw err;
+      }));
     }
-    if (!tracks.length) throw new Error('Keine Titel von der iTunes-API erhalten');
-    return { tracks, albums };
+    return this.ready.get(id);
+  }
+
+  async #loadArtist(id) {
+    const artist = this.artists.get(id);
+    if (!artist) return;
+    const key = `catalog:itunes:a:${artist.itunesId}`;
+    const snap = storage.get(key);
+    if (snap && Date.now() - snap.at < TTL) return this.#apply(artist, snap.data);
+    try {
+      const songs = await api('lookup', { id: artist.itunesId, entity: 'song', limit: 200 });
+      const albums = await api('lookup', { id: artist.itunesId, entity: 'album', limit: 200 });
+      const data = {
+        tracks: songs.filter((r) => r.wrapperType === 'track' && r.previewUrl && r.artistId === artist.itunesId)
+          .map((r, i) => this.#mapTrack(r, artist.id, 100 - i * 0.4)),
+        albums: albums.filter((r) => r.wrapperType === 'collection').map((r) => this.#mapAlbum(r, artist.id)),
+      };
+      storage.set(key, { at: Date.now(), data });
+      this.#apply(artist, data);
+    } catch (err) {
+      if (!snap) throw err;
+      console.warn('[itunes] nutze älteren Schnappschuss für', artist.name, err);
+      this.#apply(artist, snap.data);
+    }
   }
 
   #mapTrack(r, artistId, popularity) {
@@ -119,11 +152,10 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
 
   #mapAlbum(r, artistId) {
     const name = r.collectionName || '';
-    const single = / - Single$/.test(name);
     return {
       id: `it-c${r.collectionId}`,
       title: name.replace(/ - (Single|EP)$/, ''),
-      type: single ? 'single' : 'album',
+      type: / - Single$/.test(name) ? 'single' : 'album',
       artistIds: [artistId],
       year: Number(String(r.releaseDate).slice(0, 4)) || '',
       cover: { small: artwork(r.artworkUrl100, 200), large: artwork(r.artworkUrl100, 600) },
@@ -134,33 +166,16 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
     };
   }
 
-  #apply({ tracks, albums }) {
-    const byAlbum = new Map();
-    for (const t of tracks) (byAlbum.get(t.albumId) || byAlbum.set(t.albumId, []).get(t.albumId)).push(t);
-    const artists = this.config.artists.map((a) => {
-      const own = tracks.filter((t) => t.artistIds[0] === a.id);
-      const top = own.slice().sort((x, y) => y.popularity - x.popularity)[0];
-      return {
-        id: a.id,
-        name: a.name,
-        tagline: a.tagline,
-        description: a.description,
-        genres: ['Rap'],
-        image: top ? { small: top.cover.small, large: artwork(top.cover.large, 1000) } : null,
-        externalUrl: a.url,
-      };
-    });
-    const playlists = this.config.artists.flatMap((a) => {
-      const own = tracks.filter((t) => t.artistIds[0] === a.id);
-      const top = own.slice().sort((x, y) => y.popularity - x.popularity).slice(0, 15).map((t) => t.id);
-      const recent = own.slice().sort((x, y) => y.addedAt.localeCompare(x.addedAt)).slice(0, 12).map((t) => t.id);
-      return [
-        { id: `pl-${a.id}-top`, title: `${a.name} Essentials`, description: `Die beliebtesten Hörproben von ${a.name}.`, ownerName: 'ROUGE', artistIds: [a.id], trackIds: top },
-        { id: `pl-${a.id}-new`, title: `${a.name} Neu`, description: `Die neuesten Veröffentlichungen von ${a.name}.`, ownerName: 'ROUGE', artistIds: [a.id], trackIds: recent },
-      ];
-    });
-    for (const al of albums) al.trackIds = (byAlbum.get(al.id) || []).map((t) => t.id);
-    this.setData({ artists, albums, tracks, playlists });
+  #apply(artist, { tracks, albums }) {
+    for (const t of tracks) this.tracks.set(t.id, t);
+    for (const a of albums) this.albums.set(a.id, a);
+    const sorted = [...tracks].sort((x, y) => y.popularity - x.popularity);
+    const newest = [...tracks].sort((x, y) => y.addedAt.localeCompare(x.addedAt));
+    const pl = (suffix, title, description, list) => ({ id: `pl-${artist.id}-${suffix}`, title, description, ownerName: 'ROUGE', artistIds: [artist.id], trackIds: list.map((t) => t.id) });
+    if (tracks.length) {
+      this.playlists.set(`pl-${artist.id}-top`, pl('top', `${artist.name} Essentials`, `Die beliebtesten Hörproben von ${artist.name}.`, sorted.slice(0, 15)));
+      this.playlists.set(`pl-${artist.id}-new`, pl('new', `${artist.name} Neu`, `Die neuesten Veröffentlichungen von ${artist.name}.`, newest.slice(0, 12)));
+    }
   }
 
   /** Lädt fehlende Titel eines Albums nach (die Künstler-Abfrage ist auf 200 Songs begrenzt). */
@@ -171,36 +186,47 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
     const have = [...this.tracks.values()].filter((t) => t.albumId === albumId).length;
     if (album && have >= (album.trackCount || 0)) return;
     try {
-      const rows = await api('lookup', { id: albumId.slice(4), entity: 'song' });
-      this.#addSongs(rows);
+      this.#addSongs(await api('lookup', { id: albumId.slice(4), entity: 'song' }));
     } catch (err) {
       this.albumLoaded.delete(albumId);
       console.warn('[itunes] Album konnte nicht nachgeladen werden', err);
     }
   }
 
-  /** Nimmt Songs der konfigurierten Künstler in den Speicher auf. */
+  /** Nimmt Songs bekannter Künstler (aus dem Index) in den Speicher auf. */
   #addSongs(rows, popularity = 40) {
-    let added = 0;
     for (const r of rows) {
       if (r.wrapperType !== 'track' || !r.previewUrl) continue;
-      const cfg = this.config.artists.find((a) => a.itunesId === r.artistId);
-      if (!cfg || this.tracks.has(`it-${r.trackId}`)) continue;
-      this.tracks.set(`it-${r.trackId}`, this.#mapTrack(r, cfg.id, popularity));
-      added++;
+      const artist = this.byItunes.get(r.artistId);
+      if (!artist || this.tracks.has(`it-${r.trackId}`)) continue;
+      this.tracks.set(`it-${r.trackId}`, this.#mapTrack(r, artist.id, popularity));
     }
-    return added;
+  }
+
+  // ---------- Abfragen (laden bei Bedarf) ----------
+  async listTracks(opts = {}) {
+    if (opts.artistId) await this.ensureArtist(opts.artistId);
+    return super.listTracks(opts);
+  }
+
+  async listAlbums(opts = {}) {
+    if (opts.artistId) await this.ensureArtist(opts.artistId);
+    return super.listAlbums(opts);
+  }
+
+  async listPlaylists(opts = {}) {
+    if (opts.artistId) await this.ensureArtist(opts.artistId);
+    return super.listPlaylists(opts);
   }
 
   async getTracks(ids) {
     const missing = ids.filter((id) => id.startsWith('it-') && !id.startsWith('it-c') && !this.tracks.has(id));
-    if (missing.length) {
+    for (let i = 0; i < missing.length; i += 50) {
       try {
-        for (let i = 0; i < missing.length; i += 50) {
-          this.#addSongs(await api('lookup', { id: missing.slice(i, i + 50).map((x) => x.slice(3)).join(','), entity: 'song' }));
-        }
+        this.#addSongs(await api('lookup', { id: missing.slice(i, i + 50).map((x) => x.slice(3)).join(','), entity: 'song' }));
       } catch (err) {
         console.warn('[itunes] Titel konnten nicht nachgeladen werden', err);
+        break;
       }
     }
     return super.getTracks(ids);
@@ -213,8 +239,8 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
       missing.forEach((id) => this.albumMissing.add(id));
       try {
         for (const r of await api('lookup', { id: missing.map((x) => x.slice(4)).join(','), entity: 'album' })) {
-          const cfg = this.config.artists.find((a) => a.itunesId === r.artistId);
-          if (r.wrapperType === 'collection' && cfg) this.albums.set(`it-c${r.collectionId}`, this.#mapAlbum(r, cfg.id));
+          const artist = this.byItunes.get(r.artistId);
+          if (r.wrapperType === 'collection' && artist) this.albums.set(`it-c${r.collectionId}`, this.#mapAlbum(r, artist.id));
         }
       } catch (err) {
         console.warn('[itunes] Alben konnten nicht nachgeladen werden', err);
@@ -223,22 +249,25 @@ export class ItunesCatalogProvider extends MapCatalogProvider {
     return super.getAlbums(ids);
   }
 
-  /** Lokale Suche; findet sie wenig Songs, wird zusätzlich live bei Apple nach weiteren Titeln gesucht. */
+  /**
+   * Suche: Treffer-Künstler werden vollständig geladen (Songs/Alben/Playlists erscheinen dann mit),
+   * zusätzlich findet eine Live-Suche bei Apple einzelne Titel aller bekannten Künstler.
+   */
   async search(query, opts = {}) {
-    let result = await super.search(query, opts);
     const q = normalize(query);
     const wantsTracks = !opts.types || opts.types.includes('tracks');
-    if (wantsTracks && q.length >= 3 && result.tracks.length < 4 && Date.now() - this.lastLive > 2500) {
-      this.lastLive = Date.now();
+    if (q.length >= 2) {
+      const hits = [...this.artists.values()].filter((a) => normalize(a.name).includes(q)).slice(0, 3);
+      await Promise.allSettled(hits.map((a) => this.ensureArtist(a.id)));
+    }
+    let result = await super.search(query, opts);
+    if (wantsTracks && q.length >= 3 && result.tracks.length < 6 && !this.liveCache.has(q)) {
+      this.liveCache.add(q);
       try {
-        if (!this.liveCache.has(q)) {
-          for (const cfg of this.config.artists) {
-            this.#addSongs(await api('search', { term: `${cfg.name} ${query}`, entity: 'song', limit: 40, attribute: 'songTerm' }));
-          }
-          this.liveCache.set(q, true);
-        }
+        this.#addSongs(await api('search', { term: query, entity: 'song', limit: 50 }));
         result = await super.search(query, opts);
       } catch (err) {
+        this.liveCache.delete(q);
         console.warn('[itunes] Live-Suche fehlgeschlagen', err);
       }
     }

@@ -26,7 +26,7 @@ export const trackCard = (track, tracks, index, context) =>
 export const artistCard = (artist) =>
   card({
     href: `#/artist/${artist.id}`,
-    coverEl: cover(artist.image, { variant: 'large', cls: 'cover-card cover-round' }),
+    coverEl: cover(artist.image, { cls: 'cover-card cover-round' }),
     title: artist.name,
     subtitle: 'Künstler',
     round: true,

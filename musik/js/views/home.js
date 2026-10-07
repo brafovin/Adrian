@@ -6,7 +6,7 @@ import { favorites } from '../services/favorites.js';
 import { library } from '../services/library.js';
 import { playlists } from '../services/playlists.js';
 import { createPlaylistFlow, playAll, playArtist, playTracks } from '../ui/actions.js';
-import { albumCard, createPlaylistCard, playlistCard, trackCard, trackList } from '../ui/cards.js';
+import { albumCard, artistCard, createPlaylistCard, playlistCard, trackCard, trackList } from '../ui/cards.js';
 import { cover, mosaic, scroller, sectionHeader } from '../ui/components.js';
 import { icon, logoMark } from '../ui/icons.js';
 
@@ -31,7 +31,8 @@ export async function homeView(ctx) {
   ctx.on('playlists:change', () => ctx.refresh());
 
   const user = auth.user;
-  const artists = await catalog.artists();
+  const allArtists = await catalog.artists();
+  const artists = APP.preload.map((id) => allArtists.find((a) => a.id === id)).filter(Boolean);
   const [popular, newest, editorial, recent, albumsByArtist] = await Promise.all([
     catalog.tracks({ sort: 'popularity', limit: 6 }),
     catalog.tracks({ sort: 'newest', limit: 12 }),
@@ -58,7 +59,7 @@ export async function homeView(ctx) {
     ...editorial.map((p, i) => quickTile({ href: `#/playlist/${p.id}`, coverEl: mosaic(editorialTracks[i], 'tile-cover'), title: p.title })),
   ];
 
-  const heroes = artists.length === 1
+  const heroes = !artists.length ? null : artists.length === 1
     ? heroCard(artists[0])
     : h('div', { class: 'hero-row' }, artists.map(heroCard));
 
@@ -78,6 +79,9 @@ export async function homeView(ctx) {
       h('p', null, 'Ton univers. Ta musique.')),
     h('div', { class: 'tiles' }, tiles),
     heroes,
+    allArtists.length > artists.length && h('section', { class: 'section' },
+      sectionHeader('Künstler', { href: '#/search?browse=artists', label: `Alle ${allArtists.length}` }),
+      scroller(allArtists.map(artistCard))),
     recentSection,
     h('section', { class: 'section' },
       sectionHeader('Beliebte Songs', { href: '#/search?browse=popular', label: 'Alle anzeigen' }),

@@ -106,7 +106,7 @@ function initKeyboard() {
 /** Bevorzugt die iTunes-Hörproben; ohne Verbindung fällt die App auf den lokalen Demo-Katalog zurück. */
 async function initCatalog() {
   try {
-    await catalog.init(new ItunesCatalogProvider({ artists: APP.artists }));
+    await catalog.init(new ItunesCatalogProvider({ indexUrl: APP.artistsUrl, overrides: APP.artistOverrides, preload: APP.preload, defaults: { description: APP.artistDescription } }));
   } catch (err) {
     console.warn('[catalog] iTunes nicht erreichbar, nutze Demo-Katalog', err);
     await catalog.init(new StaticCatalogProvider(APP.catalogUrl));
