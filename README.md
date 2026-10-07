@@ -27,7 +27,7 @@ Arcade-Schneidespiel im Weltraum – `nova-slash.html` öffnen (eine Datei, kein
 - Fortschritt (Münzen, Level, Waffen, Upgrades, Highscore, Combo) wird automatisch im `localStorage` gespeichert. Sound und Musik werden per WebAudio erzeugt.
 
 ## ROUGE – Musik-Streaming-App (`musik/`)
-Moderne, installierbare Musik-App (PWA) in Rot & Schwarz für Smartphones mit **JUL** und **Bobby Vandamme**.
+Moderne, installierbare Musik-App (PWA) in Rot & Schwarz für Smartphones mit **JUL**, **Bobby Vandamme** und 114 weiteren deutschsprachigen Rappern (redaktionelle Auswahl, kein offizielles Ranking; Liste in `musik/tools/resolve_artists.py`, Ergebnis in `musik/data/artists.json`). Songs eines Künstlers werden erst beim Öffnen/Suchen geladen.
 **Inhalte:** Die App lädt zur Laufzeit die offiziellen **30-Sekunden-Hörproben** und Cover über die öffentliche iTunes Search API von Apple (`js/data/itunes-provider.js`; Künstler in `js/config.js`). Es werden keine Audiodateien im Repo gespeichert oder weiterverteilt; vollständige Songs gibt es über den Link „In Apple Music öffnen“. Ohne Verbindung fällt die App auf eigene, lizenzfreie **Demo-Tracks** (`musik/tools/build_demo_assets.py`, CC0) zurück. Die API ist ratenbegrenzt, darum wird der Katalog 24 h lokal zwischengespeichert.
 
 **Starten** (ES-Module brauchen einen Webserver; für Spulen im Song muss er Range-Anfragen unterstützen):
