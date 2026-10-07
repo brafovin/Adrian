@@ -1,0 +1,378 @@
+{
+ "version": 1,
+ "artists": [
+  {
+   "id": "jul",
+   "name": "JUL",
+   "tagline": "Französischer Künstler",
+   "description": "Dieses Profil ist ein Platzhalter. In der aktuellen Version enthält die App ausschließlich eigene, lizenzfreie Demo-Tracks (CC0) und generierte Cover – keine geschützten Songs, Bilder oder Texte. Echte, lizenzierte Musik wird später über den Katalog-Anbieter eingebunden.",
+   "genres": [
+    "Rap",
+    "Demo"
+   ],
+   "image": {
+    "small": "assets/img/artist-jul-sm.jpg",
+    "large": "assets/img/artist-jul.jpg"
+   },
+   "demo": true
+  }
+ ],
+ "albums": [
+  {
+   "id": "alb-rouge-session",
+   "title": "Rouge Session",
+   "type": "album",
+   "artistIds": [
+    "jul"
+   ],
+   "year": 2026,
+   "cover": {
+    "small": "assets/img/alb-rouge-session-sm.jpg",
+    "large": "assets/img/alb-rouge-session.jpg"
+   },
+   "trackIds": [
+    "nuit-rouge",
+    "boulevard",
+    "neon",
+    "cap-sur-minuit",
+    "etincelle"
+   ],
+   "addedAt": "2026-09-12",
+   "demo": true
+  },
+  {
+   "id": "alb-beton-neon",
+   "title": "Béton & Néon",
+   "type": "album",
+   "artistIds": [
+    "jul"
+   ],
+   "year": 2025,
+   "cover": {
+    "small": "assets/img/alb-beton-neon-sm.jpg",
+    "large": "assets/img/alb-beton-neon.jpg"
+   },
+   "trackIds": [
+    "quartier-calme",
+    "vitesse",
+    "sous-la-pluie",
+    "dernier-metro"
+   ],
+   "addedAt": "2025-11-03",
+   "demo": true
+  },
+  {
+   "id": "sgl-rideau-rouge",
+   "title": "Rideau Rouge",
+   "type": "single",
+   "artistIds": [
+    "jul"
+   ],
+   "year": 2026,
+   "cover": {
+    "small": "assets/img/sgl-rideau-rouge-sm.jpg",
+    "large": "assets/img/sgl-rideau-rouge.jpg"
+   },
+   "trackIds": [
+    "rideau-rouge"
+   ],
+   "addedAt": "2026-10-01",
+   "demo": true
+  },
+  {
+   "id": "sgl-mirage",
+   "title": "Mirage",
+   "type": "single",
+   "artistIds": [
+    "jul"
+   ],
+   "year": 2025,
+   "cover": {
+    "small": "assets/img/sgl-mirage-sm.jpg",
+    "large": "assets/img/sgl-mirage.jpg"
+   },
+   "trackIds": [
+    "mirage"
+   ],
+   "addedAt": "2025-12-20",
+   "demo": true
+  },
+  {
+   "id": "sgl-aube",
+   "title": "Aube",
+   "type": "single",
+   "artistIds": [
+    "jul"
+   ],
+   "year": 2026,
+   "cover": {
+    "small": "assets/img/sgl-aube-sm.jpg",
+    "large": "assets/img/sgl-aube.jpg"
+   },
+   "trackIds": [
+    "aube"
+   ],
+   "addedAt": "2026-09-28",
+   "demo": true
+  }
+ ],
+ "tracks": [
+  {
+   "id": "nuit-rouge",
+   "title": "Nuit Rouge",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-rouge-session",
+   "trackNumber": 1,
+   "duration": 42.74,
+   "sources": {
+    "low": "assets/audio/low/nuit-rouge.mp3",
+    "high": "assets/audio/high/nuit-rouge.mp3"
+   },
+   "addedAt": "2026-09-12",
+   "popularity": 96,
+   "demo": true
+  },
+  {
+   "id": "boulevard",
+   "title": "Boulevard",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-rouge-session",
+   "trackNumber": 2,
+   "duration": 45.08,
+   "sources": {
+    "low": "assets/audio/low/boulevard.mp3",
+    "high": "assets/audio/high/boulevard.mp3"
+   },
+   "addedAt": "2026-09-12",
+   "popularity": 88,
+   "demo": true
+  },
+  {
+   "id": "neon",
+   "title": "Néon",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-rouge-session",
+   "trackNumber": 3,
+   "duration": 43.58,
+   "sources": {
+    "low": "assets/audio/low/neon.mp3",
+    "high": "assets/audio/high/neon.mp3"
+   },
+   "addedAt": "2026-09-12",
+   "popularity": 91,
+   "demo": true
+  },
+  {
+   "id": "cap-sur-minuit",
+   "title": "Cap sur Minuit",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-rouge-session",
+   "trackNumber": 4,
+   "duration": 46.18,
+   "sources": {
+    "low": "assets/audio/low/cap-sur-minuit.mp3",
+    "high": "assets/audio/high/cap-sur-minuit.mp3"
+   },
+   "addedAt": "2026-09-12",
+   "popularity": 74,
+   "demo": true
+  },
+  {
+   "id": "etincelle",
+   "title": "Étincelle",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-rouge-session",
+   "trackNumber": 5,
+   "duration": 42.14,
+   "sources": {
+    "low": "assets/audio/low/etincelle.mp3",
+    "high": "assets/audio/high/etincelle.mp3"
+   },
+   "addedAt": "2026-09-12",
+   "popularity": 82,
+   "demo": true
+  },
+  {
+   "id": "quartier-calme",
+   "title": "Quartier Calme",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-beton-neon",
+   "trackNumber": 1,
+   "duration": 49.0,
+   "sources": {
+    "low": "assets/audio/low/quartier-calme.mp3",
+    "high": "assets/audio/high/quartier-calme.mp3"
+   },
+   "addedAt": "2025-11-03",
+   "popularity": 69,
+   "demo": true
+  },
+  {
+   "id": "vitesse",
+   "title": "Vitesse",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-beton-neon",
+   "trackNumber": 2,
+   "duration": 42.6,
+   "sources": {
+    "low": "assets/audio/low/vitesse.mp3",
+    "high": "assets/audio/high/vitesse.mp3"
+   },
+   "addedAt": "2025-11-03",
+   "popularity": 79,
+   "demo": true
+  },
+  {
+   "id": "sous-la-pluie",
+   "title": "Sous la Pluie",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-beton-neon",
+   "trackNumber": 3,
+   "duration": 55.86,
+   "sources": {
+    "low": "assets/audio/low/sous-la-pluie.mp3",
+    "high": "assets/audio/high/sous-la-pluie.mp3"
+   },
+   "addedAt": "2025-11-03",
+   "popularity": 61,
+   "demo": true
+  },
+  {
+   "id": "dernier-metro",
+   "title": "Dernier Métro",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "alb-beton-neon",
+   "trackNumber": 4,
+   "duration": 44.64,
+   "sources": {
+    "low": "assets/audio/low/dernier-metro.mp3",
+    "high": "assets/audio/high/dernier-metro.mp3"
+   },
+   "addedAt": "2025-11-03",
+   "popularity": 77,
+   "demo": true
+  },
+  {
+   "id": "rideau-rouge",
+   "title": "Rideau Rouge",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "sgl-rideau-rouge",
+   "trackNumber": 1,
+   "duration": 41.0,
+   "sources": {
+    "low": "assets/audio/low/rideau-rouge.mp3",
+    "high": "assets/audio/high/rideau-rouge.mp3"
+   },
+   "addedAt": "2026-10-01",
+   "popularity": 93,
+   "demo": true
+  },
+  {
+   "id": "mirage",
+   "title": "Mirage",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "sgl-mirage",
+   "trackNumber": 1,
+   "duration": 41.68,
+   "sources": {
+    "low": "assets/audio/low/mirage.mp3",
+    "high": "assets/audio/high/mirage.mp3"
+   },
+   "addedAt": "2025-12-20",
+   "popularity": 85,
+   "demo": true
+  },
+  {
+   "id": "aube",
+   "title": "Aube",
+   "artistIds": [
+    "jul"
+   ],
+   "albumId": "sgl-aube",
+   "trackNumber": 1,
+   "duration": 44.2,
+   "sources": {
+    "low": "assets/audio/low/aube.mp3",
+    "high": "assets/audio/high/aube.mp3"
+   },
+   "addedAt": "2026-09-28",
+   "popularity": 72,
+   "demo": true
+  }
+ ],
+ "playlists": [
+  {
+   "id": "pl-rouge-essentials",
+   "title": "Rouge Essentials",
+   "description": "Die stärksten Demo-Tracks im Überblick.",
+   "ownerName": "ROUGE",
+   "artistIds": [
+    "jul"
+   ],
+   "trackIds": [
+    "nuit-rouge",
+    "rideau-rouge",
+    "neon",
+    "boulevard",
+    "mirage",
+    "etincelle"
+   ],
+   "demo": true
+  },
+  {
+   "id": "pl-night-drive",
+   "title": "Night Drive",
+   "description": "Tempo hoch, Fenster runter – Demo-Mix für die Nachtfahrt.",
+   "ownerName": "ROUGE",
+   "artistIds": [
+    "jul"
+   ],
+   "trackIds": [
+    "vitesse",
+    "etincelle",
+    "neon",
+    "mirage",
+    "dernier-metro"
+   ],
+   "demo": true
+  },
+  {
+   "id": "pl-calme",
+   "title": "Calme",
+   "description": "Ruhige Demo-Tracks zum Runterkommen.",
+   "ownerName": "ROUGE",
+   "artistIds": [
+    "jul"
+   ],
+   "trackIds": [
+    "quartier-calme",
+    "sous-la-pluie",
+    "aube",
+    "cap-sur-minuit"
+   ],
+   "demo": true
+  }
+ ]
+}
