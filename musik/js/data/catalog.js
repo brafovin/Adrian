@@ -22,7 +22,7 @@ async function hydrateTracks(raw) {
       ...t,
       artists,
       artistName: artists.map((a) => a.name).join(', '),
-      album: album ? { id: album.id, title: album.title, year: album.year, type: album.type } : null,
+      album: album ? { id: album.id, title: album.title, year: album.year, type: album.type } : t.albumTitle ? { id: t.albumId, title: t.albumTitle } : null,
       cover: t.cover || album?.cover || null,
     };
   });
@@ -52,6 +52,17 @@ export const catalog = {
     await provider.init();
   },
 
+  /** Quelle des Katalogs (Label, Hinweistext, Hörproben ja/nein). */
+  get info() {
+    return provider?.info || { label: '', notice: '', previews: false };
+  },
+
+  async artists() {
+    const list = await provider.listArtists();
+    list.forEach((a) => cache.artist.set(a.id, a));
+    return list;
+  },
+
   async getArtist(id) {
     await ensure('artist', [id], (ids) => provider.getArtists(ids));
     return cache.artist.get(id) || null;
@@ -64,7 +75,7 @@ export const catalog = {
     return (await this.getTracks([id]))[0] || null;
   },
   async getAlbum(id) {
-    await ensure('album', [id], async (ids) => hydrateAlbums(await provider.getAlbums(ids)));
+    await ensure('album', [id], async (ids) => hydrateAlbums(await provider.getAlbums(ids, { remote: true })));
     const raw = cache.album.get(id);
     if (!raw) return null;
     if (!raw.artistName) cache.album.set(id, (await hydrateAlbums([raw]))[0]);

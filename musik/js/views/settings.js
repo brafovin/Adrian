@@ -2,6 +2,7 @@ import { APP } from '../config.js';
 import { downloadJson, h } from '../core/util.js';
 import { userData } from '../core/userdata.js';
 import { auth, AuthError } from '../services/auth.js';
+import { catalog } from '../data/catalog.js';
 import { library } from '../services/library.js';
 import { settings } from '../services/settings.js';
 import { pageHeader } from '../ui/components.js';
@@ -114,7 +115,7 @@ export async function settingsView(ctx) {
 
   const about = group('Über die App',
     row({ iconName: 'info', label: APP.name, sub: `Version ${APP.version} · ${APP.tagline}` }),
-    row({ iconName: 'note', label: 'Demo-Inhalte', sub: 'Alle Songs, Cover und Bilder sind selbst erzeugte Platzhalter (CC0). Echte, lizenzierte Musik wird später über den Katalog angebunden.' }),
+    row({ iconName: 'note', label: catalog.info.previews ? 'Hörproben & Cover' : 'Demo-Inhalte', sub: catalog.info.previews ? catalog.info.notice : 'Alle Songs, Cover und Bilder sind selbst erzeugte Platzhalter (CC0). Echte, lizenzierte Musik wird später über den Katalog angebunden.' }),
     row({
       iconName: 'info', label: 'Technik & Lizenzen', sub: 'Offene Webtechnik, keine Fremdbibliotheken',
       onClick: () => openSheet({
@@ -122,7 +123,7 @@ export async function settingsView(ctx) {
         content: h('div', { class: 'about-sheet' },
           h('p', null, 'ROUGE ist eine installierbare Web-App (PWA) in reinem HTML, CSS und JavaScript – ohne externe Bibliotheken.'),
           h('p', null, 'Speicherung: IndexedDB. Wiedergabe: HTML5-Audio mit Media-Session-Steuerung (Sperrbildschirm).'),
-          h('p', null, 'Demo-Audio und -Grafiken werden mit dem Skript tools/build_demo_assets.py erzeugt und stehen unter CC0.')),
+          h('p', null, catalog.info.previews ? 'Metadaten, Cover und 30-Sekunden-Hörproben werden zur Laufzeit von der iTunes Search API (Apple) geladen und nicht in der App gespeichert.' : 'Demo-Audio und -Grafiken werden mit dem Skript tools/build_demo_assets.py erzeugt und stehen unter CC0.')),
       }),
     }));
 
@@ -144,7 +145,7 @@ export async function settingsView(ctx) {
       toggle('shuffle', 'Zufällige Wiedergabe', 'Neue Listen gemischt abspielen', 'shuffle'),
       segmented('repeat', 'Wiederholen', [['off', 'Aus'], ['all', 'Alle'], ['one', 'Song']], null, 'repeat')),
     group('Audioqualität',
-      segmented('quality', 'Streaming-Qualität', [['auto', 'Automatisch'], ['low', 'Niedrig'], ['high', 'Hoch']], 'Automatisch spart Daten bei langsamer Verbindung. Gilt ab dem nächsten Song.', 'tune')),
+      segmented('quality', 'Streaming-Qualität', [['auto', 'Automatisch'], ['low', 'Niedrig'], ['high', 'Hoch']], catalog.info.previews ? 'Hörproben liegen von Apple in fester Qualität vor (AAC); die Einstellung gilt für eigene Demo-Songs.' : 'Automatisch spart Daten bei langsamer Verbindung. Gilt ab dem nächsten Song.', 'tune')),
     group('Benachrichtigungen',
       toggle('toasts', 'Hinweise in der App', 'Kurze Einblendungen, z. B. „Favorisiert“', 'bell'),
       toggle('lockscreen', 'Sperrbildschirm-Steuerung', 'Titel, Cover und Tasten im Sperrbildschirm und in der Benachrichtigungsleiste', 'lock'),

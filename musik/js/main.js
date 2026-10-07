@@ -15,6 +15,8 @@ import { closeAll, closeTop, hasOverlay } from './core/overlays.js';
 import { createRouter } from './core/router.js';
 import { initStorage } from './core/storage.js';
 import { catalog } from './data/catalog.js';
+import { ItunesCatalogProvider } from './data/itunes-provider.js';
+import { StaticCatalogProvider } from './data/provider.js';
 import { auth } from './services/auth.js';
 import { favorites } from './services/favorites.js';
 import { library } from './services/library.js';
@@ -101,12 +103,22 @@ function initKeyboard() {
   });
 }
 
+/** Bevorzugt die iTunes-Hörproben; ohne Verbindung fällt die App auf den lokalen Demo-Katalog zurück. */
+async function initCatalog() {
+  try {
+    await catalog.init(new ItunesCatalogProvider({ artists: APP.artists }));
+  } catch (err) {
+    console.warn('[catalog] iTunes nicht erreichbar, nutze Demo-Katalog', err);
+    await catalog.init(new StaticCatalogProvider(APP.catalogUrl));
+  }
+}
+
 async function boot() {
   const started0 = performance.now();
   try {
     await initStorage();
     auth.init();
-    await catalog.init();
+    await initCatalog();
   } catch (err) {
     console.error('[boot]', err);
     showSplashError('Die App konnte nicht gestartet werden. Bitte prüfe deine Verbindung.');

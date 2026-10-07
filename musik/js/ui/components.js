@@ -31,6 +31,13 @@ export function mosaic(tracks, cls = '') {
   return cover(first?.cover, { variant: 'large', cls: `${cls} ${first ? '' : 'cover-empty'}` });
 }
 
+/** Kennzeichnung für Demo-Inhalte bzw. 30-Sekunden-Hörproben. */
+export function trackBadge(track) {
+  if (track.preview) return h('span', { class: 'badge-demo', title: '30-Sekunden-Hörprobe' }, '30 S');
+  if (track.demo) return h('span', { class: 'badge-demo', title: 'Demo-Inhalt' }, 'DEMO');
+  return null;
+}
+
 export function equalizer() {
   return h('span', { class: 'eq', 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i'));
 }
@@ -71,8 +78,8 @@ export function songRow(track, { onPlay, onMenu, number, showDuration = false, f
       lead,
       h('span', { class: 'song-text' },
         h('span', { class: 'song-title' }, track.title),
-        h('span', { class: 'song-sub' }, track.demo && h('span', { class: 'badge-demo' }, 'DEMO'), h('span', { class: 'song-artist' }, track.artistName)))),
-    showDuration && formatTime && h('span', { class: 'song-dur' }, formatTime(track.duration)),
+        h('span', { class: 'song-sub' }, trackBadge(track), h('span', { class: 'song-artist' }, track.artistName)))),
+    showDuration && formatTime && h('span', { class: 'song-dur' }, formatTime(track.fullDuration || track.duration)),
     heartButton(track.id),
     h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Weitere Optionen', onclick: (e) => { e.stopPropagation(); onMenu?.(track); } }, icon('more', 24)));
 }

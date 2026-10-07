@@ -21,6 +21,11 @@ export async function playAlbum(albumId, { shuffle } = {}) {
   player.playTracks(tracks, 0, { context: album?.title || 'Album', shuffle });
 }
 
+export async function playAll({ shuffle } = {}) {
+  const tracks = await catalog.tracks({ sort: 'popularity', limit: 500 });
+  player.playTracks(tracks, 0, { context: 'Alle Songs', shuffle });
+}
+
 export async function playArtist(artistId, { shuffle } = {}) {
   const [artist, tracks] = await Promise.all([catalog.getArtist(artistId), catalog.tracks({ artistId, sort: 'popularity', limit: 500 })]);
   player.playTracks(tracks, 0, { context: artist?.name || 'Künstler', shuffle });
@@ -72,6 +77,9 @@ export function openTrackMenu(track, { tracks, index, context = '', playlistId, 
         onChanged?.();
       }),
     }));
+  }
+  if (track.externalUrl) {
+    items.push(menuItem({ iconName: 'play', label: 'Vollständigen Song in Apple Music öffnen', sub: 'Öffnet apple.com in neuem Tab', onClick: act(() => window.open(track.externalUrl, '_blank', 'noopener')) }));
   }
   if (track.album) items.push(menuItem({ iconName: 'album', label: 'Zum Album', sub: track.album.title, onClick: () => navigateFromOverlay(`/album/${track.album.id}`) }));
   if (track.artists?.[0]) items.push(menuItem({ iconName: 'person', label: 'Zum Künstler', sub: track.artists[0].name, onClick: () => navigateFromOverlay(`/artist/${track.artists[0].id}`) }));

@@ -1,4 +1,3 @@
-import { APP } from '../config.js';
 import { navigate, replaceUrl } from '../core/nav.js';
 import { debounce, h, normalize, pluralize, setChildren } from '../core/util.js';
 import { catalog } from '../data/catalog.js';
@@ -17,7 +16,7 @@ const FILTERS = [
 ];
 
 const BROWSE = [
-  { id: 'artist', title: 'JUL', icon: 'person', href: `#/artist/${APP.featuredArtistId}` },
+  { id: 'artists', title: 'Künstler', icon: 'person' },
   { id: 'songs', title: 'Alle Songs', icon: 'note' },
   { id: 'new', title: 'Neuheiten', icon: 'clock' },
   { id: 'albums', title: 'Alben & Singles', icon: 'album' },
@@ -89,7 +88,8 @@ export async function searchView(ctx) {
     chips.hidden = true;
     const titles = Object.fromEntries(BROWSE.map((b) => [b.id, b.title]));
     let content;
-    if (browse === 'albums') content = (await catalog.albums({ artistId: APP.featuredArtistId })).map(albumRow);
+    if (browse === 'artists') content = (await catalog.artists()).map(artistRow);
+    else if (browse === 'albums') content = (await catalog.albums({ limit: 100 })).map(albumRow);
     else if (browse === 'playlists') content = await playlistRows([...playlists.list(), ...(await catalog.playlists({}))]);
     else {
       const sort = browse === 'new' ? 'newest' : 'popularity';
@@ -130,7 +130,7 @@ export async function searchView(ctx) {
     if (show('playlists') && plRows.length) {
       sections.push(h('section', { class: 'section' }, filter === 'all' && sectionHeader('Playlists'), h('div', { class: 'list' }, plRows)));
     }
-    results.replaceChildren(...(sections.length ? sections : [emptyState({ iconName: 'search', title: `Keine Treffer für „${q}“`, text: 'Prüfe die Schreibweise oder suche nach „JUL“.' })]));
+    results.replaceChildren(...(sections.length ? sections : [emptyState({ iconName: 'search', title: `Keine Treffer für „${q}“`, text: 'Prüfe die Schreibweise oder suche nach einem Künstler, z. B. „JUL“ oder „Bobby Vandamme“.' })]));
   }
 
   const debounced = debounce(() => { run(); }, 160);

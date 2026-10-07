@@ -18,7 +18,7 @@ export async function playlistView(ctx) {
 
   const tracks = await catalog.getTracks(pl.trackIds);
   const title = pl.name || pl.title;
-  const total = tracks.reduce((s, t) => s + t.duration, 0);
+  const total = tracks.reduce((s, t) => s + (t.fullDuration || t.duration), 0);
   const owner = mine ? auth.user?.username || 'Du' : pl.ownerName;
 
   return h('div', { class: 'view-playlist' },

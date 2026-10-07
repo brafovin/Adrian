@@ -9,7 +9,7 @@ import { icon } from '../ui/icons.js';
 export async function albumView(ctx) {
   const [album, tracks] = await Promise.all([catalog.getAlbum(ctx.params.id), catalog.albumTracks(ctx.params.id)]);
   if (!album) return emptyState({ iconName: 'album', title: 'Album nicht gefunden', action: h('a', { class: 'btn btn-primary', href: '#/home' }, 'Zur Startseite') });
-  const total = tracks.reduce((s, t) => s + t.duration, 0);
+  const total = tracks.reduce((s, t) => s + (t.fullDuration || t.duration), 0);
 
   const saveBtn = h('button', { class: 'icon-btn icon-btn-lg', type: 'button' });
   const paintSave = () => {
@@ -35,10 +35,11 @@ export async function albumView(ctx) {
           album.artists.map((a, i) => [i ? ', ' : '', h('a', { href: `#/artist/${a.id}` }, a.name)]), ),
         h('p', { class: 'album-meta' },
           `${album.type === 'single' ? 'Single' : 'Album'} · ${album.year} · ${tracks.length} ${tracks.length === 1 ? 'Song' : 'Songs'} · ${formatLong(total)}`),
-        album.demo && h('span', { class: 'badge-demo' }, 'DEMO'))),
+        tracks[0]?.preview ? h('span', { class: 'badge-demo' }, '30-S-HÖRPROBEN') : album.demo && h('span', { class: 'badge-demo' }, 'DEMO'))),
     h('div', { class: 'action-bar' },
       h('button', { class: 'btn-fab', type: 'button', 'aria-label': `${album.title} abspielen`, onclick: () => playAlbum(album.id) }, icon('play', 34)),
       h('button', { class: 'icon-btn icon-btn-lg', type: 'button', 'aria-label': 'Zufällig abspielen', onclick: () => playAlbum(album.id, { shuffle: true }) }, icon('shuffle', 28)),
-      saveBtn),
+      saveBtn,
+      album.externalUrl && h('a', { class: 'btn btn-ghost btn-sm', href: album.externalUrl, target: '_blank', rel: 'noopener' }, 'Apple Music')),
     h('section', { class: 'section' }, trackList(tracks, { context: album.title, numbered: true, showDuration: true })));
 }
