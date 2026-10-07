@@ -5,7 +5,7 @@ import { closeOverlay, openOverlay } from '../core/overlays.js';
 import { formatTime, h } from '../core/util.js';
 import { player } from '../services/player.js';
 import { openTrackMenu } from './actions.js';
-import { cover, heartButton, playButton } from './components.js';
+import { cover, heartButton, playButton, trackBadge } from './components.js';
 import { icon } from './icons.js';
 import { openQueue } from './queue.js';
 import { createSlider } from './slider.js';
@@ -29,7 +29,7 @@ export function openFullPlayer() {
   const context = h('div', { class: 'player-context-name' });
   const elapsed = h('span', { class: 'time' }, '0:00');
   const remaining = h('span', { class: 'time' }, '-0:00');
-  const badge = h('span', { class: 'badge-demo' }, 'DEMO');
+  const badgeSlot = h('span', { class: 'badge-slot' });
 
   const progress = createSlider({
     label: 'Wiedergabeposition',
@@ -55,7 +55,7 @@ export function openFullPlayer() {
     : h('div', { class: 'player-volume player-volume-na' }, h('span', null, 'Lautstärke über die Gerätetasten'));
   const el = h('section', { class: 'player', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Player' },
     bg, top, stage,
-    h('div', { class: 'player-info' }, h('div', { class: 'player-titles' }, titleEl, h('div', { class: 'player-sub' }, badge, artistEl)), heartSlot),
+    h('div', { class: 'player-info' }, h('div', { class: 'player-titles' }, titleEl, h('div', { class: 'player-sub' }, badgeSlot, artistEl)), heartSlot),
     h('div', { class: 'player-progress' }, progress.el, h('div', { class: 'player-times' }, elapsed, remaining)),
     h('div', { class: 'player-controls' },
       shuffleBtn,
@@ -79,7 +79,7 @@ export function openFullPlayer() {
     titleEl.textContent = t.title;
     artistEl.textContent = t.artistName;
     artistEl.href = `#/artist/${t.artists?.[0]?.id || ''}`;
-    badge.hidden = !t.demo;
+    badgeSlot.replaceChildren(...[trackBadge(t)].filter(Boolean));
     context.textContent = player.state.context || t.album?.title || 'Deine Musik';
     heartSlot.replaceChildren(heartButton(t.id, 'heart-lg'));
     coverSlot.classList.remove('swap');

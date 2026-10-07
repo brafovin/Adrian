@@ -129,3 +129,9 @@
 .queue-row.is-current .song-title { color: var(--red-hi); }
 .queue-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.8rem; padding: 0.3rem 0; text-align: left; }
 .queue-main .song-cover .cover { width: 100%; }
+
+/* ===== Mehrere Künstler auf der Startseite ===== */
+.hero-row { display: flex; gap: 0.8rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); padding: 1.5rem var(--gutter) 0.4rem; scrollbar-width: none; margin-top: 0; }
+.hero-row::-webkit-scrollbar { display: none; }
+.hero-row .artist-hero-card { flex: none; width: calc(100% - 2.6rem); margin: 0; scroll-snap-align: start; }
+.badge-slot { display: contents; }

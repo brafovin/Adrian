@@ -1,12 +1,11 @@
 import { APP } from '../config.js';
-import { navigate } from '../core/nav.js';
 import { h } from '../core/util.js';
 import { catalog } from '../data/catalog.js';
 import { auth } from '../services/auth.js';
 import { favorites } from '../services/favorites.js';
 import { library } from '../services/library.js';
 import { playlists } from '../services/playlists.js';
-import { createPlaylistFlow, playArtist, playTracks } from '../ui/actions.js';
+import { createPlaylistFlow, playAll, playArtist, playTracks } from '../ui/actions.js';
 import { albumCard, createPlaylistCard, playlistCard, trackCard, trackList } from '../ui/cards.js';
 import { cover, mosaic, scroller, sectionHeader } from '../ui/components.js';
 import { icon, logoMark } from '../ui/icons.js';
@@ -16,18 +15,29 @@ function quickTile({ coverEl, title, href, onClick, cls = '' }) {
   return href ? h('a', { class: `tile ${cls}`, href }, inner) : h('button', { class: `tile ${cls}`, type: 'button', onclick: onClick }, inner);
 }
 
+function heroCard(artist) {
+  return h('section', { class: 'artist-hero-card' },
+    h('a', { class: 'hero-link', href: `#/artist/${artist.id}`, 'aria-label': `${artist.name} – Künstlerseite öffnen` },
+      cover(artist.image, { variant: 'large', cls: 'hero-bg' }),
+      h('span', { class: 'hero-shade' }),
+      h('span', { class: 'hero-text' },
+        h('span', { class: 'eyebrow' }, 'Im Mittelpunkt'),
+        h('span', { class: 'hero-name' }, artist.name),
+        h('span', { class: 'hero-sub' }, artist.tagline))),
+    h('button', { class: 'hero-play', type: 'button', 'aria-label': `${artist.name} abspielen`, onclick: () => playArtist(artist.id) }, icon('play', 30)));
+}
+
 export async function homeView(ctx) {
   ctx.on('playlists:change', () => ctx.refresh());
 
   const user = auth.user;
-  const artistId = APP.featuredArtistId;
-  const [artist, popular, albums, newest, editorial, recent] = await Promise.all([
-    catalog.getArtist(artistId),
-    catalog.tracks({ artistId, sort: 'popularity', limit: 5 }),
-    catalog.albums({ artistId }),
-    catalog.tracks({ artistId, sort: 'newest', limit: 10 }),
+  const artists = await catalog.artists();
+  const [popular, newest, editorial, recent, albumsByArtist] = await Promise.all([
+    catalog.tracks({ sort: 'popularity', limit: 6 }),
+    catalog.tracks({ sort: 'newest', limit: 12 }),
     catalog.playlists({ limit: 2 }),
     catalog.getTracks(library.recentIds().slice(0, 12)),
+    Promise.all(artists.map((a) => catalog.albums({ artistId: a.id, limit: 12 }))),
   ]);
   const myCards = await Promise.all(playlists.list().slice(0, 12).map(playlistCard));
   const editorialTracks = await Promise.all(editorial.map((p) => catalog.getTracks(p.trackIds.slice(0, 4))));
@@ -41,22 +51,16 @@ export async function homeView(ctx) {
       title: `Favoriten${favorites.count() ? ` · ${favorites.count()}` : ''}`,
     }),
     quickTile({
-      onClick: () => playArtist(artistId, { shuffle: true }),
+      onClick: () => playAll({ shuffle: true }),
       coverEl: h('span', { class: 'tile-cover tile-shuffle' }, icon('shuffle', 24)),
-      title: `${artist?.name || 'Alle'} Mix`,
+      title: 'Zufalls-Mix',
     }),
     ...editorial.map((p, i) => quickTile({ href: `#/playlist/${p.id}`, coverEl: mosaic(editorialTracks[i], 'tile-cover'), title: p.title })),
   ];
 
-  const hero = artist && h('section', { class: 'artist-hero-card' },
-    h('a', { class: 'hero-link', href: `#/artist/${artist.id}`, 'aria-label': `${artist.name} – Künstlerseite öffnen` },
-      cover(artist.image, { variant: 'large', cls: 'hero-bg' }),
-      h('span', { class: 'hero-shade' }),
-      h('span', { class: 'hero-text' },
-        h('span', { class: 'eyebrow' }, 'Im Mittelpunkt'),
-        h('span', { class: 'hero-name' }, artist.name),
-        h('span', { class: 'hero-sub' }, artist.tagline))),
-    h('button', { class: 'hero-play', type: 'button', 'aria-label': `${artist.name} abspielen`, onclick: () => playArtist(artist.id) }, icon('play', 30)));
+  const heroes = artists.length === 1
+    ? heroCard(artists[0])
+    : h('div', { class: 'hero-row' }, artists.map(heroCard));
 
   const recentSection = h('section', { class: 'section' },
     sectionHeader('Zuletzt gehört', recent.length ? { href: '#/library', label: 'Bibliothek' } : {}),
@@ -73,19 +77,19 @@ export async function homeView(ctx) {
       h('h1', null, name ? `Bienvenue, ${name}` : 'Bienvenue'),
       h('p', null, 'Ton univers. Ta musique.')),
     h('div', { class: 'tiles' }, tiles),
-    hero,
+    heroes,
     recentSection,
     h('section', { class: 'section' },
-      sectionHeader('Beliebte Songs', { href: `#/artist/${artistId}` }),
+      sectionHeader('Beliebte Songs', { href: '#/search?browse=popular', label: 'Alle anzeigen' }),
       trackList(popular, { context: 'Beliebte Songs' })),
     h('section', { class: 'section' },
       sectionHeader('Deine Playlists', myCards.length ? { href: '#/library' } : {}),
       scroller(createPlaylistCard(() => createPlaylistFlow({ open: true })), myCards)),
-    h('section', { class: 'section' },
-      sectionHeader(artist?.name || 'Künstler', { href: `#/artist/${artistId}`, label: 'Zur Künstlerseite' }),
-      scroller(albums.map(albumCard))),
+    artists.map((a, i) => albumsByArtist[i].length > 0 && h('section', { class: 'section' },
+      sectionHeader(a.name, { href: `#/artist/${a.id}`, label: 'Zur Künstlerseite' }),
+      scroller(albumsByArtist[i].map(albumCard)))),
     h('section', { class: 'section' },
       sectionHeader('Neu hinzugefügt'),
       scroller(newest.map((t, i) => trackCard(t, newest, i, 'Neu hinzugefügt')))),
-    h('p', { class: 'demo-note' }, 'Alle Inhalte sind eigene Demo-Platzhalter (CC0) – keine geschützten Songs.'));
+    catalog.info.notice && h('p', { class: 'demo-note' }, catalog.info.notice));
 }

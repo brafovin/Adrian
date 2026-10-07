@@ -11,12 +11,12 @@ export async function artistView(ctx) {
 
   const [tracks, albums, singles, pls] = await Promise.all([
     catalog.tracks({ artistId: artist.id, sort: 'popularity', limit: 500 }),
-    catalog.albums({ artistId: artist.id, type: 'album' }),
-    catalog.albums({ artistId: artist.id, type: 'single' }),
+    catalog.albums({ artistId: artist.id, type: 'album', limit: 30 }),
+    catalog.albums({ artistId: artist.id, type: 'single', limit: 30 }),
     catalog.playlists({ artistId: artist.id }),
   ]);
   const playlistCards = await Promise.all(pls.map(playlistCard));
-  const total = tracks.reduce((s, t) => s + t.duration, 0);
+  const total = tracks.reduce((s, t) => s + (t.fullDuration || t.duration), 0);
 
   const listHost = h('div');
   let expanded = false;

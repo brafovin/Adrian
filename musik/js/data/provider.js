@@ -18,20 +18,21 @@
  */
 import { normalize } from '../core/util.js';
 
-export class StaticCatalogProvider {
-  constructor(url) {
-    this.url = url;
+/** Gemeinsame Logik für Anbieter, die ihre Daten im Speicher halten (Listen, Suche, Empfehlungen). */
+export class MapCatalogProvider {
+  /** Hinweise für die UI (Quelle, Hörproben-Kennzeichnung). */
+  info = { label: 'Katalog', notice: '', previews: false };
+
+  setData({ artists = [], albums = [], tracks = [], playlists = [] }) {
+    const byId = (list) => new Map(list.map((x) => [x.id, x]));
+    this.artists = byId(artists);
+    this.albums = byId(albums);
+    this.tracks = byId(tracks);
+    this.playlists = byId(playlists);
   }
 
-  async init() {
-    const res = await fetch(this.url, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`Katalog konnte nicht geladen werden (${res.status})`);
-    const data = await res.json();
-    const byId = (list) => new Map(list.map((x) => [x.id, x]));
-    this.artists = byId(data.artists);
-    this.albums = byId(data.albums);
-    this.tracks = byId(data.tracks);
-    this.playlists = byId(data.playlists);
+  async listArtists() {
+    return [...this.artists.values()].filter((a) => !a.hidden);
   }
 
   #pick(map, ids) {
@@ -52,13 +53,14 @@ export class StaticCatalogProvider {
   }
 
   async listTracks({ sort = 'popularity', artistId, albumId, limit = 50, offset = 0 } = {}) {
+    if (albumId) await this.loadAlbumTracks?.(albumId);
     let list = [...this.tracks.values()];
     if (artistId) list = list.filter((t) => t.artistIds.includes(artistId));
     if (albumId) list = list.filter((t) => t.albumId === albumId);
     const sorters = {
       popularity: (a, b) => b.popularity - a.popularity,
       newest: (a, b) => b.addedAt.localeCompare(a.addedAt) || b.popularity - a.popularity,
-      album: (a, b) => a.trackNumber - b.trackNumber,
+      album: (a, b) => (a.discNumber || 1) * 1000 + a.trackNumber - ((b.discNumber || 1) * 1000 + b.trackNumber),
       title: (a, b) => a.title.localeCompare(b.title, 'fr'),
     };
     return list.sort(sorters[sort] || sorters.popularity).slice(offset, offset + limit);
@@ -68,7 +70,7 @@ export class StaticCatalogProvider {
     let list = [...this.albums.values()];
     if (artistId) list = list.filter((a) => a.artistIds.includes(artistId));
     if (type) list = list.filter((a) => a.type === type);
-    return list.sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(offset, offset + limit);
+    return list.sort((a, b) => b.addedAt.localeCompare(a.addedAt) || a.title.localeCompare(b.title)).slice(offset, offset + limit);
   }
 
   async listPlaylists({ artistId, limit = 50, offset = 0 } = {}) {
@@ -144,5 +146,21 @@ export class StaticCatalogProvider {
       .sort((a, b) => b.k - a.k)
       .slice(0, limit)
       .map((x) => x.t);
+  }
+}
+
+/** Demo-Katalog aus data/catalog.json (eigene, lizenzfreie Inhalte). */
+export class StaticCatalogProvider extends MapCatalogProvider {
+  info = { label: 'Demo-Katalog', notice: 'Alle Inhalte sind eigene Demo-Platzhalter (CC0) – keine geschützten Songs.', previews: false };
+
+  constructor(url) {
+    super();
+    this.url = url;
+  }
+
+  async init() {
+    const res = await fetch(this.url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`Katalog konnte nicht geladen werden (${res.status})`);
+    this.setData(await res.json());
   }
 }
