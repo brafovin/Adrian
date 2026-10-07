@@ -1,0 +1,20 @@
+{
+  "shopName": "JWG Shop",
+  "currency": "eur",
+  "products": [
+    {
+      "id": "jwg-hoodie",
+      "name": "JWG Hoodie",
+      "subtitle": "Johann Wolfgang von Goethe Schule",
+      "priceCents": 3990,
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "color": "Schwarz",
+      "image": "img/front.jpg"
+    }
+  ],
+  "delivery": {
+    "shipping": { "label": "Versand (Deutschland, Österreich, Schweiz)", "priceCents": 490, "freeFromCents": 8000, "countries": ["DE", "AT", "CH"] },
+    "pickup": { "enabled": true, "label": "Abholung in der Schule (kostenlos)", "priceCents": 0 }
+  },
+  "maxQtyPerItem": 10
+}

@@ -51,3 +51,19 @@ Installierbare Web-App (PWA) mit Karte: zeigt alle Blitzer im **40-km-Radius** u
 - **Starten:** `npx http-server blitzer -p 8080` (GPS braucht https oder localhost); auf Vercel unter `/blitzer/`; auf dem Handy „Zum Startbildschirm hinzufügen“.
 - **Grenzen:** Als Web-App läuft die Warnung nur, solange die App im Vordergrund und der Bildschirm an ist. Für Betrieb im Hintergrund wäre eine native App nötig.
 - **Rechtlich:** In Deutschland darf der Fahrer Blitzerwarner während der Fahrt nicht nutzen (§ 23 Abs. 1c StVO).
+
+## JWG Shop (`shop/` + `api/`)
+Onlineshop für den **JWG Hoodie** (Johann Wolfgang von Goethe Schule): Produktseite mit Galerie und Größenwahl, Warenkorb (bleibt im Browser gespeichert), eigene Kasse (Name, E-Mail, Versand/Abholung, AGB-Häkchen, „Zahlungspflichtig bestellen“) und Bezahlung über **Stripe Checkout**. Erreichbar unter `/shop/`.
+
+**Einstellungen** (Preis, Größen, Versandkosten, Abholung) stehen in `shop/catalog.json`. Der Server liest die Preise nur von dort – Preise aus dem Browser werden ignoriert.
+
+**Bezahlung scharf schalten (Vercel):**
+1. Konto bei [stripe.com](https://stripe.com) anlegen, im Dashboard unter *Einstellungen → Zahlungsarten* Karte, PayPal, Klarna, SEPA usw. aktivieren.
+2. In Vercel → *Settings → Environment Variables*: `STRIPE_SECRET_KEY` = dein Geheimschlüssel (`sk_test_…` zum Testen, später `sk_live_…`). Optional `SITE_URL` (z. B. `https://mein-shop.de`).
+3. Neu deployen. Bestellungen (Name, Adresse, Telefon, Artikel) und Auszahlungen siehst du im Stripe-Dashboard; Stripe verschickt die Zahlungsbelege.
+Ohne `STRIPE_SECRET_KEY` läuft die Kasse im **Demo-Modus** (es wird nichts bestellt oder abgebucht).
+
+**Vor dem Livegang:** `shop/recht.html` (Impressum, AGB, Widerruf, Datenschutz) ist nur eine Vorlage – gelbe Stellen ausfüllen und prüfen lassen. Für Name und Logo der Schule am besten die Erlaubnis der Schule einholen.
+
+**Lokal testen:** `npx http-server . -p 8080` → `http://localhost:8080/shop/` (Demo-Modus). Echte Zahlung lokal: `npx vercel dev` mit `STRIPE_SECRET_KEY`.
+**Tests:** `node --test shop/tests/checkout.test.js`
