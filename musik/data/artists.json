@@ -418,5 +418,745 @@
    "small": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/0b/fd/11/0bfd116e-03c7-6f98-b599-3242a9029daf/886447064467.jpg/200x200bb.jpg",
    "large": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/0b/fd/11/0bfd116e-03c7-6f98-b599-3242a9029daf/886447064467.jpg/1000x1000bb.jpg"
   }
+ },
+ {
+  "id": "jamule",
+  "name": "Jamule",
+  "itunesId": 1439887928,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/4d/d4/58/4dd45863-ccbf-ead3-f5e0-a5ad71d2efa0/21UMGIM34604.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/4d/d4/58/4dd45863-ccbf-ead3-f5e0-a5ad71d2efa0/21UMGIM34604.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "loredana",
+  "name": "Loredana",
+  "itunesId": 1397775892,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0a/42/15/0a42155e-3b8c-5264-06a6-541a8422956f/20UMGIM01530.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/0a/42/15/0a42155e-3b8c-5264-06a6-541a8422956f/20UMGIM01530.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "majoe",
+  "name": "Majoe",
+  "itunesId": 520107918,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ca/27/8e/ca278e18-ab34-7dd4-e34f-84872c09eea8/mzm.aizgujkd.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ca/27/8e/ca278e18-ab34-7dd4-e34f-84872c09eea8/mzm.aizgujkd.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "moe-phoenix",
+  "name": "Moe Phoenix",
+  "itunesId": 278109135,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/22/57/bd/2257bd25-a37e-ad5d-de8c-9a7bdb154044/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/22/57/bd/2257bd25-a37e-ad5d-de8c-9a7bdb154044/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "mozzik",
+  "name": "Mozzik",
+  "itunesId": 898007980,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/8b/20/db/8b20db59-b19b-16e6-d458-dda72971c2ac/04019589002028.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/8b/20/db/8b20db59-b19b-16e6-d458-dda72971c2ac/04019589002028.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "pashanim",
+  "name": "Pashanim",
+  "itunesId": 1455932742,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f4/2d/2d/f42d2d8e-af24-12ab-82c6-9a6d61242a45/20UMGIM33417.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f4/2d/2d/f42d2d8e-af24-12ab-82c6-9a6d61242a45/20UMGIM33417.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "k-i-z",
+  "name": "K.I.Z",
+  "itunesId": 103930765,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music/73/aa/2f/mzi.qatoyibi.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music/73/aa/2f/mzi.qatoyibi.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "fard",
+  "name": "Fard",
+  "itunesId": 118431127,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music49/v4/a4/e4/72/a4e472c4-ec18-353d-3630-228477b5fd52/dj.kehqwgin.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music49/v4/a4/e4/72/a4e472c4-ec18-353d-3630-228477b5fd52/dj.kehqwgin.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "chefket",
+  "name": "Chefket",
+  "itunesId": 293229393,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music2/v4/3a/ab/53/3aab53c7-a611-ad71-973d-fef9ce9da753/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music2/v4/3a/ab/53/3aab53c7-a611-ad71-973d-fef9ce9da753/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "montez",
+  "name": "Montez",
+  "itunesId": 306772285,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6e/6d/a4/6e6da492-3e35-1116-5163-a74ffacb99a5/21UMGIM64459.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6e/6d/a4/6e6da492-3e35-1116-5163-a74ffacb99a5/21UMGIM64459.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "ali-bumaye",
+  "name": "Ali Bumaye",
+  "itunesId": 976623319,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music30/v4/a6/59/b3/a659b34f-4ee5-092e-9283-e95f6e3ae3d5/886445990188.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music30/v4/a6/59/b3/a659b34f-4ee5-092e-9283-e95f6e3ae3d5/886445990188.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "massiv",
+  "name": "Massiv",
+  "itunesId": 4602025,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music/15/be/b9/mzi.fgadyusz.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music/15/be/b9/mzi.fgadyusz.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "animus",
+  "name": "Animus",
+  "itunesId": 74294119,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/2a/07/e9/2a07e9a8-f30c-9437-b599-72a201b5d4b2/cover_4062851796217.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/2a/07/e9/2a07e9a8-f30c-9437-b599-72a201b5d4b2/cover_4062851796217.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "joka",
+  "name": "Joka",
+  "itunesId": 1529408302,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/14/a4/e4/14a4e4bb-273e-897d-35fd-5a2300b3f4a3/00602577128868.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/14/a4/e4/14a4e4bb-273e-897d-35fd-5a2300b3f4a3/00602577128868.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "said",
+  "name": "Said",
+  "itunesId": 1355127031,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/6b/06/dc/6b06dc57-5805-5f02-ba98-8a5494103599/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/6b/06/dc/6b06dc57-5805-5f02-ba98-8a5494103599/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "manuellsen",
+  "name": "Manuellsen",
+  "itunesId": 92367126,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music20/v4/24/0a/fa/240afa71-ae28-7278-328c-55f308a597da/4251234310144_1448.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music20/v4/24/0a/fa/240afa71-ae28-7278-328c-55f308a597da/4251234310144_1448.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "pa-sports",
+  "name": "PA Sports",
+  "itunesId": 300874389,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/46/f1/e1/46f1e10a-f494-e63d-80a0-5b8d2d32df6b/dj.gutvntul.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/46/f1/e1/46f1e10a-f494-e63d-80a0-5b8d2d32df6b/dj.gutvntul.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "kianush",
+  "name": "Kianush",
+  "itunesId": 439865159,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/46/f1/e1/46f1e10a-f494-e63d-80a0-5b8d2d32df6b/dj.gutvntul.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/46/f1/e1/46f1e10a-f494-e63d-80a0-5b8d2d32df6b/dj.gutvntul.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "sinan-g",
+  "name": "Sinan-G",
+  "itunesId": 319655218,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/12/3c/24/123c2447-efe8-b816-a2ae-b8dc0fcdf6af/04270000166525.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/12/3c/24/123c2447-efe8-b816-a2ae-b8dc0fcdf6af/04270000166525.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "azzi-memo",
+  "name": "Azzi Memo",
+  "itunesId": 1094236560,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/53/58/f5/5358f572-e29e-ced2-8b14-d4df9934e063/190295238834.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/53/58/f5/5358f572-e29e-ced2-8b14-d4df9934e063/190295238834.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "nazar",
+  "name": "Nazar",
+  "itunesId": 121112102,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/69/e1/c6/69e1c638-c07f-de7f-fd13-83f1697f27cc/00602567663324.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/69/e1/c6/69e1c638-c07f-de7f-fd13-83f1697f27cc/00602567663324.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "trettmann",
+  "name": "Trettmann",
+  "itunesId": 1027740393,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d2/49/08/d24908aa-3460-1f16-16ca-58a553fd90c3/04019593415869.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d2/49/08/d24908aa-3460-1f16-16ca-58a553fd90c3/04019593415869.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "ski-aggu",
+  "name": "Ski Aggu",
+  "itunesId": 1538538452,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/bb/02/c5/bb02c589-014a-c950-a7fb-8fc45b19c5c5/23UMGIM56309.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/bb/02/c5/bb02c589-014a-c950-a7fb-8fc45b19c5c5/23UMGIM56309.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "badmomzjay",
+  "name": "badmómzjay",
+  "itunesId": 1467754372,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/81/d0/30/81d0303a-e352-8595-cc84-612f8abdf116/20UM1IM14871.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/81/d0/30/81d0303a-e352-8595-cc84-612f8abdf116/20UM1IM14871.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "shirin-david",
+  "name": "Shirin David",
+  "itunesId": 945659329,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/5b/57/e4/5b57e495-4eb1-1e50-e403-187e62843480/04019589003049.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/5b/57/e4/5b57e495-4eb1-1e50-e403-187e62843480/04019589003049.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "juju",
+  "name": "Juju",
+  "itunesId": 1071455432,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/57/10/ee/5710eeff-8e65-8551-3119-36cfa5649749/19UMGIM25278.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/57/10/ee/5710eeff-8e65-8551-3119-36cfa5649749/19UMGIM25278.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "nura",
+  "name": "Nura",
+  "itunesId": 1368178707,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/ba/d5/8e/bad58ec8-786e-e4d2-346c-7b62cfe40488/04019593413230.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/ba/d5/8e/bad58ec8-786e-e4d2-346c-7b62cfe40488/04019593413230.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "sxtn",
+  "name": "SXTN",
+  "itunesId": 1231662712,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/2d/2d/24/2d2d2408-d274-dad1-a883-8c4e4f8b1097/cover_4050215180208.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/2d/2d/24/2d2d2408-d274-dad1-a883-8c4e4f8b1097/cover_4050215180208.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "haiyti",
+  "name": "Haiyti",
+  "itunesId": 1050784155,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b1/c0/ec/b1c0ec37-4fbb-139d-de0d-1d7fb08ef1fe/886449548682.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b1/c0/ec/b1c0ec37-4fbb-139d-de0d-1d7fb08ef1fe/886449548682.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "lary",
+  "name": "Lary",
+  "itunesId": 1684949660,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/55/fa/e5/55fae550-2de9-75fa-1d0f-c451fb8fd1c3/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/55/fa/e5/55fae550-2de9-75fa-1d0f-c451fb8fd1c3/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "yung-hurn",
+  "name": "Yung Hurn",
+  "itunesId": 1133631946,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cb/6e/4d/cb6e4d64-13a9-9e96-4a82-6a98e0064acf/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cb/6e/4d/cb6e4d64-13a9-9e96-4a82-6a98e0064acf/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "rin",
+  "name": "RIN",
+  "itunesId": 1199624018,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music30/v4/a6/59/b3/a659b34f-4ee5-092e-9283-e95f6e3ae3d5/886445990188.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music30/v4/a6/59/b3/a659b34f-4ee5-092e-9283-e95f6e3ae3d5/886445990188.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "bausa",
+  "name": "Bausa",
+  "itunesId": 708229222,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/78/b3/dd/78b3dd18-1363-33db-0a8c-809c9bee513c/190295732172.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/78/b3/dd/78b3dd18-1363-33db-0a8c-809c9bee513c/190295732172.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "capo",
+  "name": "CAPO",
+  "itunesId": 81498434,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/49/d9/aa/49d9aa36-56da-6192-1591-050be0e8872b/190295818418.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/49/d9/aa/49d9aa36-56da-6192-1591-050be0e8872b/190295818418.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "gringo",
+  "name": "GRiNGO",
+  "itunesId": 686466413,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/18/26/f4/1826f42c-04a5-8c42-87c6-5490d84ef4dc/886447725177.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/18/26/f4/1826f42c-04a5-8c42-87c6-5490d84ef4dc/886447725177.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "fatoni",
+  "name": "Fatoni",
+  "itunesId": 435285458,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/9a/0c/5b/9a0c5be4-65fc-7341-1f70-1d26b81d54fa/cover_3614974401519.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/9a/0c/5b/9a0c5be4-65fc-7341-1f70-1d26b81d54fa/cover_3614974401519.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "samy-deluxe",
+  "name": "Samy Deluxe",
+  "itunesId": 14812598,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6c/93/24/6c9324a2-5941-2f8c-c819-95c2a47478ce/00724353320256.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6c/93/24/6c9324a2-5941-2f8c-c819-95c2a47478ce/00724353320256.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "dendemann",
+  "name": "Dendemann",
+  "itunesId": 104013120,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f0/92/80/f0928077-9bdc-2f0e-8510-a5911161d3a5/00602567787976.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f0/92/80/f0928077-9bdc-2f0e-8510-a5911161d3a5/00602567787976.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "blumentopf",
+  "name": "Blumentopf",
+  "itunesId": 13780910,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/89/16/d0/8916d047-0e0d-e5e8-95cb-3388cfa8bd6e/mzi.wkrejnku.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/89/16/d0/8916d047-0e0d-e5e8-95cb-3388cfa8bd6e/mzi.wkrejnku.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "fettes-brot",
+  "name": "Fettes Brot",
+  "itunesId": 14608682,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/f9/03/0a/f9030ac7-97af-cc41-6cd5-90ce6ee6464b/886447600573.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/f9/03/0a/f9030ac7-97af-cc41-6cd5-90ce6ee6464b/886447600573.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "die-fantastischen-vier",
+  "name": "Die Fantastischen Vier",
+  "itunesId": 14842255,
+  "genre": "Pop",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/25/2e/1f/252e1fc7-d9e5-8be7-99cd-97348153b2c4/886446827223.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/25/2e/1f/252e1fc7-d9e5-8be7-99cd-97348153b2c4/886446827223.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "curse",
+  "name": "Curse",
+  "itunesId": 2512575,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b7/f6/41/b7f641e6-d7b8-826b-ff8f-56e01e45bb8d/190295897215.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b7/f6/41/b7f641e6-d7b8-826b-ff8f-56e01e45bb8d/190295897215.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "azad",
+  "name": "Azad",
+  "itunesId": 14771519,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/4d/08/4a/4d084a0c-b711-aab0-19a8-c0dd86d657bc/886446063898.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/4d/08/4a/4d084a0c-b711-aab0-19a8-c0dd86d657bc/886446063898.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "ali-as",
+  "name": "Ali As",
+  "itunesId": 616735359,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/85/e1/cf/85e1cf75-3b0c-2b43-1d85-e9225d061009/dj.ourezogk.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/85/e1/cf/85e1cf75-3b0c-2b43-1d85-e9225d061009/dj.ourezogk.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "frauenarzt",
+  "name": "Frauenarzt",
+  "itunesId": 78622143,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/67/37/13/6737137f-5eca-72d8-4ce5-de7b7f24312a/21UMGIM32764.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/67/37/13/6737137f-5eca-72d8-4ce5-de7b7f24312a/21UMGIM32764.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "automatikk",
+  "name": "Automatikk",
+  "itunesId": 128951246,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music/dc/92/45/mzi.luqulbrj.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music/dc/92/45/mzi.luqulbrj.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "tua",
+  "name": "Tua",
+  "itunesId": 204965577,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b1/c0/ec/b1c0ec37-4fbb-139d-de0d-1d7fb08ef1fe/886449548682.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b1/c0/ec/b1c0ec37-4fbb-139d-de0d-1d7fb08ef1fe/886449548682.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "sierra-kidd",
+  "name": "Sierra Kidd",
+  "itunesId": 711487407,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/23/b7/78/23b778c9-201c-57e0-5f60-0445f180fb33/190295731847.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/23/b7/78/23b778c9-201c-57e0-5f60-0445f180fb33/190295731847.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "reezy",
+  "name": "reezy",
+  "itunesId": 1172737396,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/1a/f9/74/1af97453-7a5d-837f-da7b-00f1090f6712/886448075813.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/1a/f9/74/1af97453-7a5d-837f-da7b-00f1090f6712/886448075813.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "leon-machere",
+  "name": "Leon Machère",
+  "itunesId": 1160959824,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/af/74/68/af746812-a421-9457-a31b-5cc54ddb4de7/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/af/74/68/af746812-a421-9457-a31b-5cc54ddb4de7/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "18-karat",
+  "name": "18 Karat",
+  "itunesId": 1071784805,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/98/76/55/98765543-b800-c26e-61c0-e51099bf8431/190295860776.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/98/76/55/98765543-b800-c26e-61c0-e51099bf8431/190295860776.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "nate57",
+  "name": "Nate57",
+  "itunesId": 377396854,
+  "genre": "Hip-Hop",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/2f/b7/332fb761-4e23-b1c9-7477-a526b2b9a128/cover_4260554718141.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/33/2f/b7/332fb761-4e23-b1c9-7477-a526b2b9a128/cover_4260554718141.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "jazeek",
+  "name": "Jazeek",
+  "itunesId": 1599246909,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/55/69/54/55695499-5002-434a-6db2-8b076d1b4103/25UMGIM32592.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/55/69/54/55695499-5002-434a-6db2-8b076d1b4103/25UMGIM32592.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "brudi030",
+  "name": "Brudi030",
+  "itunesId": 1269046916,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/ab/a7/6c/aba76c8e-ee00-7b76-4b82-c17b1523b769/19UMGIM41473.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/ab/a7/6c/aba76c8e-ee00-7b76-4b82-c17b1523b769/19UMGIM41473.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "mortel",
+  "name": "Mortel",
+  "itunesId": 1247465948,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/36/f1/7a/36f17ad8-3cda-3305-9f33-fda81c17fe11/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/36/f1/7a/36f17ad8-3cda-3305-9f33-fda81c17fe11/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "ahzumjot",
+  "name": "Ahzumjot",
+  "itunesId": 467402021,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/b7/48/da/b748dac4-db8b-aca4-9409-43a0c7bad58a/886445831412.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/b7/48/da/b748dac4-db8b-aca4-9409-43a0c7bad58a/886445831412.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "yassin",
+  "name": "Yassin",
+  "itunesId": 1108143022,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/e7/c9/8c/e7c98ce4-2fad-a970-ddfd-2c0ccb35a23f/00602567012252.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/e7/c9/8c/e7c98ce4-2fad-a970-ddfd-2c0ccb35a23f/00602567012252.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "edgar-wasser",
+  "name": "Edgar Wasser",
+  "itunesId": 485262237,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/9a/0c/5b/9a0c5be4-65fc-7341-1f70-1d26b81d54fa/cover_3614974401519.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/9a/0c/5b/9a0c5be4-65fc-7341-1f70-1d26b81d54fa/cover_3614974401519.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "dame",
+  "name": "Dame",
+  "itunesId": 1348081826,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/34/2c/a2/342ca27f-91d0-24f0-02c1-34b718cb3cb5/859713993808_cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/34/2c/a2/342ca27f-91d0-24f0-02c1-34b718cb3cb5/859713993808_cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "kalazh44",
+  "name": "Kalazh44",
+  "itunesId": 1054120109,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f7/7c/f2/f77cf2dc-5094-db69-13ec-806c8b77a228/cover.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f7/7c/f2/f77cf2dc-5094-db69-13ec-806c8b77a228/cover.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "ssio",
+  "name": "SSIO",
+  "itunesId": 516761060,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/d8/74/72/d874725f-930c-4c1b-94e1-278b5e4ea535/04019593414176.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/d8/74/72/d874725f-930c-4c1b-94e1-278b5e4ea535/04019593414176.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "schwesta-ewa",
+  "name": "Schwesta Ewa",
+  "itunesId": 516761018,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/35/ed/2d/35ed2d30-c679-15ed-bb69-22c7ba77b2f4/04019593412868.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/35/ed/2d/35ed2d30-c679-15ed-bb69-22c7ba77b2f4/04019593412868.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "xatar",
+  "name": "XATAR",
+  "itunesId": 278109155,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music20/v4/84/8c/78/848c7851-8449-5cc6-430e-f8163783f979/dj.btnvsbry.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music20/v4/84/8c/78/848c7851-8449-5cc6-430e-f8163783f979/dj.btnvsbry.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "kay-one",
+  "name": "Kay One",
+  "itunesId": 156146111,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/e1/b2/96/e1b296b7-091a-391d-715e-a88abe57b897/4049324950536_1448.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/e1/b2/96/e1b296b7-091a-391d-715e-a88abe57b897/4049324950536_1448.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "sun-diego",
+  "name": "Sun Diego",
+  "itunesId": 1369293319,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/6b/3c/04/6b3c04aa-805d-3549-f661-a60f3ee1f2a6/04019593413247.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/6b/3c/04/6b3c04aa-805d-3549-f661-a60f3ee1f2a6/04019593413247.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "jalil",
+  "name": "Jalil",
+  "itunesId": 325052682,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/ae/a1/65/aea165fe-df6f-8f38-e2d2-dcdc586f4190/886448467519.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/ae/a1/65/aea165fe-df6f-8f38-e2d2-dcdc586f4190/886448467519.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "hava",
+  "name": "Hava",
+  "itunesId": 1442002086,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/38/b0/c7/38b0c7ce-395e-ee03-9a20-9000217b9fc9/0.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/38/b0/c7/38b0c7ce-395e-ee03-9a20-9000217b9fc9/0.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "lune",
+  "name": "Lune",
+  "itunesId": 1535165109,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/0b/81/f3/0b81f3b7-0cd4-468d-24d1-97dc2e19c62a/190295128685.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/0b/81/f3/0b81f3b7-0cd4-468d-24d1-97dc2e19c62a/190295128685.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "blokkmonsta",
+  "name": "Blokkmonsta",
+  "itunesId": 251895719,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/71/c1/36/71c1365d-91a1-9ad4-903b-e8fe7b70e0d7/dj.yqvjdmfa.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/71/c1/36/71c1365d-91a1-9ad4-903b-e8fe7b70e0d7/dj.yqvjdmfa.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "retrogott",
+  "name": "Retrogott",
+  "itunesId": 320179811,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/29/65/20/296520f1-1fc6-5dac-db42-62e570af0d45/809259495915.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/29/65/20/296520f1-1fc6-5dac-db42-62e570af0d45/809259495915.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "megaloh",
+  "name": "Megaloh",
+  "itunesId": 118789046,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/3f/a6/f7/3fa6f7a0-8197-f179-a4c9-b26a656577eb/18UMGIM24232.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/3f/a6/f7/3fa6f7a0-8197-f179-a4c9-b26a656577eb/18UMGIM24232.rgb.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "cr7z",
+  "name": "Cr7z",
+  "itunesId": 585242332,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/28/47/8a/28478abc-8fb5-df42-0c20-2bcbc4a88863/886447410141.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/28/47/8a/28478abc-8fb5-df42-0c20-2bcbc4a88863/886447410141.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "kurdo",
+  "name": "Kurdo",
+  "itunesId": 573511609,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/0f/a2/ac/0fa2ac81-e931-e583-4602-776a207e33fa/dj.xqbzcagk.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/0f/a2/ac/0fa2ac81-e931-e583-4602-776a207e33fa/dj.xqbzcagk.jpg/1000x1000bb.jpg"
+  }
+ },
+ {
+  "id": "sugar-mmfk",
+  "name": "Sugar MMFK",
+  "itunesId": 1044615156,
+  "genre": "Hip-Hop/Rap",
+  "image": {
+   "small": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d6/71/a6/d671a6f8-0f4c-631d-ee80-3f7e5875b0f7/19UMGIM46119.rgb.jpg/200x200bb.jpg",
+   "large": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d6/71/a6/d671a6f8-0f4c-631d-ee80-3f7e5875b0f7/19UMGIM46119.rgb.jpg/1000x1000bb.jpg"
+  }
  }
 ]
