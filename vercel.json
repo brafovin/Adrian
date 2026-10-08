@@ -6,6 +6,12 @@
       "destination": "/onlineshop/",
       "permanent": false
     },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "adrian-sunset.*" }],
+      "destination": "/carworld/",
+      "permanent": false
+    },
     { "source": "/", "destination": "/blitzer/", "permanent": false }
   ]
 }
