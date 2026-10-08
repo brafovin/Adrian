@@ -98,7 +98,7 @@ export class Player {
       v.step(STEP, inp, env);
       const hits = collideStatic(v, this.hull, world.grid, { yCar: this.y, scratch: this.scratch });
       for (const h of hits) this.impacts.push(h);
-      opts.traffic?.collide(v, this.hull, this.impacts);
+      opts.traffic?.collide(v, this.hull, this.impacts, this.y);
       this.accum -= STEP;
     }
     // Weltgrenze: sanft zurückdrängen
