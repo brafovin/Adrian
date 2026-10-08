@@ -64,6 +64,8 @@ Getestet heißt: headless Chromium (Software‑GL) + `node --test`, **nicht** au
   ab. Dichte und Reichweite hängen von der Qualitätsstufe ab.
 - **Licht:** Nachmittag → Sonnenuntergang → Dämmerung → Nacht (oder Übergang); goldenes Gegenlicht, lange
   Schatten, Bloom, Reflexions‑IBL; nachts schalten Straßenlaternen, Fahrzeuglicht und Fensterlicht.
+- **Reifenspuren und Reifenqualm** (`js/effects.js`): schwarze Bremsspuren/Driftspuren (Ringpuffer) und weißer Qualm
+  bei Durchdrehen, Handbremse und Drift – gesteuert vom Schlupf der einzelnen Räder.
 - **Kameras:** Verfolger, weit, Motorhaube, Cockpit, freie Foto‑Kamera; Wandblockade, geschwindigkeitsabhängiges
   FOV und Wackeln.
 - **Garage:** dunkler Showroom mit Spiegelboden und Lichtleisten; Wechsel zwischen den vier Autos; Kamera‑Presets
@@ -120,7 +122,6 @@ bedient, ersetzt die prozedurale Karosserie, ohne dass Physik, Kamera, Garage od
 - **Echte Fahrzeugmodelle** (siehe oben) – der größte Hebel für „AAA‑Look“.
 - **Türen öffnen in der Garage** ist nicht umgesetzt; der Innenraum ist über die Cockpit‑/Innenraum‑Kamera sichtbar.
 - **Tiefgarage:** Es gibt ein mehrstöckiges Parkhaus, aber keine echte unterirdische Garage.
-- **Reifenspuren / Reifenqualm** fehlen; Quietschen ist nur akustisch.
 - **Schadensmodell** fehlt (Kollisionen verändern Karosserie nicht).
 - **Echte‑Hardware‑Messung:** Bildrate habe ich nur mit Software‑Rendering gesehen. Die Qualitätsstufen und die
   automatische Auflösung (DRS) sind dafür gebaut, aber auf echten GPUs unvermessen.
