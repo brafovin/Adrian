@@ -61,7 +61,8 @@ Getestet heißt: headless Chromium (Software‑GL) + `node --test`, **nicht** au
   und Aussichtspunkt, Brücken/Hochstraßen, Autobahn mit Auf‑/Abfahrten, Tunnel, Parkhaus („Skyline Deck“),
   Autotreff‑Platz („Sunset Plaza“), Tankstellen, Ampeln, Fahrbahnmarkierungen, Schilder, Bürgersteige.
 - **Verkehr & Fußgänger:**
-  - Je nach Qualitätsstufe 30 / 60 / 100 / 150 KI‑Fahrzeuge (Pkw, SUV, Transporter, Sportwagen, Lkw, Busse, auch gelbe Taxis) in der Umgebung des Spielers.
+  - Je nach Qualitätsstufe 30 / 60 / 100 / 150 KI‑Fahrzeuge (Pkw, SUV, Transporter, Sportwagen, Lkw, Busse, gelbe Taxis) in der Umgebung des Spielers.
+  - **Polizeiautos** (schwarz‑weiß, ca. 4–7 % des Verkehrs): etwa die Hälfte fährt im Einsatz mit rot‑blauem Blitzlicht, Sirene (Heul‑ oder Jaulton mit Doppler und Raumklang) und höherem Tempo, die anderen Streife. Es gibt kein Fahndungs‑/Verfolgungssystem; die Sirene ist synthetisch und von mir nicht angehört.
   - Auf dem Straßenraster fahren sie in Spuren, halten Abstand und Haltelinien, beachten Ampeln und Vorfahrt (Linksabbieger geben dem Gegenverkehr nach, Kreuzungen werden nicht blockiert) und biegen mit Spurdisziplin ab.
   - Auf Küstenstraße, Autobahn (über der Unterführung auf eigener Ebene) und den Bergstraßen fahren sie Polylinien‑Spuren, in Kurven langsamer.
   - Nach einem Zusammenstoß rutschen sie als freie Körper weiter.
