@@ -86,14 +86,31 @@ function satBoxBox(H, B) {
     if (ov <= 0) return null;
     if (ov < best) { best = ov; bn = dist >= 0 ? [a[0], a[1]] : [-a[0], -a[1]]; }
   }
-  // Kontaktpunkt: Eckpunkt des Fahrzeugs, der am weitesten in -n liegt
-  let pxm = 0, pzm = 0, minD = Infinity;
+  // Kontaktpunkt: Mitte der Überlappung (entlang der Normalen auf halber Eindringtiefe, seitlich in der Mitte des
+  // gemeinsamen Bereichs). Bei einer frontalen Wand liegt er mittig -> kein Drehmoment.
+  const n0 = bn[0], n1 = bn[1], t0 = -n1, t1 = n0;
+  const projR = (ax, ay, hx, hz, fx, fz, lx, lz) => Math.abs(fx * ax + fz * ay) * hx + Math.abs(lx * ax + lz * ay) * hz;
+  const rHn = projR(n0, n1, H.hl, H.hw, H.fx, H.fz, H.lx, H.lz), rBn = projR(n0, n1, B.hx, B.hz, axB1[0], axB1[1], axB2[0], axB2[1]);
+  const rHt = projR(t0, t1, H.hl, H.hw, H.fx, H.fz, H.lx, H.lz), rBt = projR(t0, t1, B.hx, B.hz, axB1[0], axB1[1], axB2[0], axB2[1]);
+  const distN = dx * n0 + dz * n1, distT = dx * t0 + dz * t1; // Fahrzeugmitte relativ zu B
+  const mN = (distN - rHn + rBn) / 2;
+  const lo = Math.max(distT - rHt, -rBt), hi = Math.min(distT + rHt, rBt);
+  const mT = hi > lo ? (lo + hi) / 2 : distT;
+  // Berühren nur eine oder zwei Fahrzeugecken (schräger Aufprall), ist deren Mittelwert der Kontakt (Dreh-Effekt wie in echt).
+  // Liegt keine Fahrzeugecke im Bereich des Hindernisses (z. B. Pfosten sticht in die Seite), gilt der Überlappungsmittelpunkt.
+  const cs = [];
+  let cmin = Infinity;
   for (const sf of [-1, 1]) for (const sl of [-1, 1]) {
-    const px = H.cx + H.fx * H.hl * sf + H.lx * H.hw * sl, pz = H.cz + H.fz * H.hl * sf + H.lz * H.hw * sl;
-    const d = (px - B.cx) * bn[0] + (pz - B.cz) * bn[1];
-    if (d < minD) { minD = d; pxm = px; pzm = pz; }
+    const cx = H.cx + H.fx * H.hl * sf + H.lx * H.hw * sl, cz = H.cz + H.fz * H.hl * sf + H.lz * H.hw * sl;
+    const d = (cx - B.cx) * n0 + (cz - B.cz) * n1;
+    cs.push([cx, cz, d]); cmin = Math.min(cmin, d);
   }
-  return { nx: bn[0], nz: bn[1], depth: best, px: pxm, pz: pzm };
+  let ax = 0, az = 0, cnt = 0;
+  for (const c of cs) if (c[2] < cmin + 0.1) { ax += c[0]; az += c[1]; cnt++; }
+  ax /= cnt; az /= cnt;
+  const lat = (ax - B.cx) * t0 + (az - B.cz) * t1;
+  if (Math.abs(lat) <= rBt + 0.05) return { nx: n0, nz: n1, depth: best, px: ax, pz: az };
+  return { nx: n0, nz: n1, depth: best, px: B.cx + n0 * mN + t0 * mT, pz: B.cz + n1 * mN + t1 * mT };
 }
 
 function satBoxCircle(H, C) {

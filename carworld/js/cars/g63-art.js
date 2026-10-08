@@ -6,6 +6,7 @@ import { canvas, canvasTexture, carbonMaterial, matBlackGloss, matChrome, matDar
 import { leatherMaterial, makeCluster, TIFFANY } from './interior.js';
 
 export const TEAL = 0x19c7c0;
+const INT_TEAL = 0x11aebf;   // Tiffany Blue (leicht ins Blaue verschoben, damit es im warmen Licht wie im Referenzbild wirkt)
 
 // ---------------------------------------------------------------------------------------------
 // Carbon-Sammler: viele Teile -> ein Mesh, UV als Kastenprojektion in Metern (ein Material, gleiche Gewebegröße überall)
@@ -29,7 +30,7 @@ export const xf = (x, y, z, rx = 0, ry = 0, rz = 0) => _m.compose(_p.set(x, y, z
 
 export function carbonKit(tile = 0.075) {
   const mat = carbonMaterial({ repeat: 1 });
-  mat.color.setScalar(0.5); mat.normalScale.set(0.12, 0.12); mat.roughness = 0.3; mat.metalness = 0.5; mat.envMapIntensity = 0.9;
+  mat.color.setScalar(0.8); mat.normalScale.set(0.2, 0.2); mat.roughness = 0.3; mat.metalness = 0.9; mat.envMapIntensity = 1.6;
   const geos = [];
   const add = (geo, m4) => {
     const g = geo.index ? geo.toNonIndexed() : geo.clone();
@@ -40,7 +41,7 @@ export function carbonKit(tile = 0.075) {
     boxUV(g, tile);
     geos.push(g);
   };
-  const box = (w, h, d, r, x, y, z, rx = 0, ry = 0, rz = 0) => add(new RoundedBoxGeometry(w, h, d, 3, Math.min(r, Math.min(w, h, d) * 0.45)), xf(x, y, z, rx, ry, rz));
+  const box = (w, h, d, r, x, y, z, rx = 0, ry = 0, rz = 0) => add(new RoundedBoxGeometry(w, h, d, r <= 0.012 ? 1 : 2, Math.min(r, Math.min(w, h, d) * 0.45)), xf(x, y, z, rx, ry, rz));
   const addMesh = (mesh) => { mesh.updateMatrixWorld(true); add(mesh.geometry, mesh.matrixWorld); };
   const build = () => { const m = new THREE.Mesh(mergeGeometries(geos), mat); m.castShadow = true; m.receiveShadow = false; return m; };
   return { mat, add, addMesh, box, build, count: () => geos.length };
@@ -89,7 +90,7 @@ export function mansoryTex(w, h, { bg = null, fg = '#d9dde2', wings = true, font
 // ---------------------------------------------------------------------------------------------
 // Innenraum (komplett Tiffany Blue)
 
-const rbg = (w, h, d, r = 0.02, seg = 3) => new RoundedBoxGeometry(w, h, d, seg, Math.max(0.001, Math.min(r, w * 0.49, h * 0.49, d * 0.49)));
+const rbg = (w, h, d, r = 0.02, seg = r <= 0.015 ? 1 : 2) => new RoundedBoxGeometry(w, h, d, seg, Math.max(0.001, Math.min(r, w * 0.49, h * 0.49, d * 0.49)));
 
 class Batch {
   constructor() { this.m = new Map(); }
@@ -140,7 +141,7 @@ function doorTexture(flip, W = 1024, H = 760) {
   const c = canvas(W, H), g = c.getContext('2d');
   if (flip) { g.translate(W, 0); g.scale(-1, 1); }
   // Leder
-  g.fillStyle = '#17b5ad'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#14aebf'; g.fillRect(0, 0, W, H);
   const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, 'rgba(255,255,255,0.10)'); gr.addColorStop(1, 'rgba(0,0,0,0.18)');
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
   const stitch = (pts, col = '#0a4f4c', lw = 2) => {
@@ -187,15 +188,58 @@ function doorTexture(flip, W = 1024, H = 760) {
   return tex;
 }
 
+
+/** Kombiinstrument im Mansory-Stil (gleiche Schnittstelle wie makeCluster: draw(kmh, rpmFrac, gear, ev)). */
+function makeG63Cluster() {
+  const W = 768, H = 288;
+  const c = canvas(W, H), g = c.getContext('2d');
+  const tex = canvasTexture(c);
+  const A = '#27e6d8';
+  const draw = (kmh, rpmFrac, gear, ev = false) => {
+    g.fillStyle = '#03060a'; g.fillRect(0, 0, W, H);
+    const bg = g.createRadialGradient(W / 2, H / 2, 20, W / 2, H / 2, W * 0.55); bg.addColorStop(0, 'rgba(20,150,150,0.20)'); bg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    const dial = (cx, cy, R, frac, maxLab, nTick, labelFn, unit, red) => {
+      const a0 = Math.PI * 0.75, span = Math.PI * 1.5;
+      g.lineCap = 'round';
+      g.strokeStyle = '#1b2a34'; g.lineWidth = 14; g.beginPath(); g.arc(cx, cy, R, a0, a0 + span); g.stroke();
+      if (red) { g.strokeStyle = '#9a1c22'; g.lineWidth = 14; g.beginPath(); g.arc(cx, cy, R, a0 + span * 0.82, a0 + span); g.stroke(); }
+      const f = Math.max(0, Math.min(1, frac));
+      g.strokeStyle = A; g.shadowColor = A; g.shadowBlur = 14; g.lineWidth = 14; g.beginPath(); g.arc(cx, cy, R, a0, a0 + span * f); g.stroke(); g.shadowBlur = 0;
+      g.lineWidth = 3; g.strokeStyle = '#8fa4ae';
+      for (let i = 0; i <= nTick; i++) {
+        const a = a0 + (span * i) / nTick, big = i % 2 === 0;
+        g.beginPath(); g.moveTo(cx + Math.cos(a) * (R - 22), cy + Math.sin(a) * (R - 22)); g.lineTo(cx + Math.cos(a) * (R - (big ? 40 : 32)), cy + Math.sin(a) * (R - (big ? 40 : 32))); g.stroke();
+        if (big) { g.fillStyle = '#cfe6ea'; g.font = 'bold 20px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(labelFn(i / nTick), cx + Math.cos(a) * (R - 62), cy + Math.sin(a) * (R - 62)); }
+      }
+      // Zeiger
+      const an = a0 + span * f;
+      g.strokeStyle = '#ffffff'; g.lineWidth = 5; g.shadowColor = A; g.shadowBlur = 10;
+      g.beginPath(); g.moveTo(cx + Math.cos(an) * 22, cy + Math.sin(an) * 22); g.lineTo(cx + Math.cos(an) * (R - 18), cy + Math.sin(an) * (R - 18)); g.stroke(); g.shadowBlur = 0;
+      g.fillStyle = '#10181e'; g.beginPath(); g.arc(cx, cy, 18, 0, 7); g.fill(); g.strokeStyle = A; g.lineWidth = 3; g.stroke();
+      g.fillStyle = '#7fa0a8'; g.font = '18px Arial'; g.textAlign = 'center'; g.fillText(unit, cx, cy + R * 0.55);
+    };
+    dial(180, 150, 120, ev ? rpmFrac : rpmFrac, 8, 16, (u) => String(Math.round(u * 8)), ev ? '%' : 'x1000 /min', !ev);
+    dial(588, 150, 120, kmh / 320, 320, 16, (u) => String(Math.round(u * 320)), 'km/h', false);
+    g.fillStyle = A; g.shadowColor = A; g.shadowBlur = 16; g.font = 'bold 84px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(String(gear), W / 2, H * 0.52); g.shadowBlur = 0;
+    g.fillStyle = '#d9f6f3'; g.font = '26px Georgia, serif'; g.fillText('MANSORY', W / 2, 40);
+    g.fillStyle = '#7fa0a8'; g.font = '20px Arial'; g.fillText(Math.round(kmh) + ' km/h', W / 2, H - 38);
+    tex.needsUpdate = true;
+  };
+  draw(0, 0, 'P');
+  return { texture: tex, draw };
+}
+
 export function buildG63Interior() {
   const g = new THREE.Group();
   const batch = new Batch();
   const SEAT_Z = 0.4, DRV_Z = -0.4;
 
   // ---- Materialien
-  const lea = leatherMaterial({ color: TIFFANY, rough: 0.5 });
-  const leaDash = leatherMaterial({ color: 0x0fa9a2, rough: 0.62 });
-  const quilt = quiltFactory(TIFFANY, '#0a4a47');
+  const lea = leatherMaterial({ color: INT_TEAL, rough: 0.5 });
+  const leaDash = leatherMaterial({ color: 0x0e9fb2, rough: 0.62 });
+  const quilt = quiltFactory(INT_TEAL, '#073f4a');
   const carbon = carbonMaterial({ repeat: 5 }); carbon.normalScale.set(0.25, 0.25); carbon.color.setScalar(0.8);
   const gloss = matBlackGloss();
   const chrome = matChrome();
@@ -203,6 +247,7 @@ export function buildG63Interior() {
   const carpet = new THREE.MeshStandardMaterial({ color: 0x0b4f4c, roughness: 0.95, metalness: 0 });
   const glowTeal = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 1.6, roughness: 0.4 });
   const matteBlack = new THREE.MeshStandardMaterial({ color: 0x08090a, roughness: 0.7, metalness: 0.2 });
+  const tealGlow = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 1.4, roughness: 0.4 });
 
   // ---- Boden, Rückwand, Laderaum
   batch.add(new THREE.BoxGeometry(2.9, 0.04, 1.66), carpet, mx(-0.62, 0.46, 0));
@@ -232,7 +277,7 @@ export function buildG63Interior() {
   batch.add(rbg(0.03, 0.06, 0.32, 0.02), matteBlack, mx(0.53, 0.86, 0.56, 0, 0, 0.1));
 
   // Anzeigen (Plane auf der Fahrerseite der Glasfläche, zeigt nach hinten/oben)
-  const cluster = makeCluster('#1fe0d2');
+  const cluster = makeG63Cluster();
   const scrNormalY = -Math.PI / 2;
   const mkScreen = (mat, w, h, z) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
@@ -263,13 +308,11 @@ export function buildG63Interior() {
   const bladeGeo = (R, n) => {
     const geos = [];
     for (let i = 0; i < n; i++) {
-      const b = new THREE.BoxGeometry(0.004, R * 0.78, R * 0.22);
-      b.translate(0, R * 0.42, 0); b.rotateX(0.0); b.rotateZ(0);
-      const m = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), 0);
-      // Blatt: Drehung um x (Düsenachse), leicht angestellt um die Blattachse
+      const b = new THREE.BoxGeometry(0.022, R * 0.8, 0.0035);
+      b.rotateY(0.6);
+      b.translate(0, R * 0.46, 0);
       b.applyMatrix4(new THREE.Matrix4().makeRotationX((i / n) * Math.PI * 2));
       geos.push(b);
-      void m;
     }
     return mergeGeometries(geos);
   };
@@ -279,36 +322,38 @@ export function buildG63Interior() {
     const gp = new THREE.Group();
     gp.position.set(x, y, z); gp.rotation.z = tilt; // Achse = x, Blick nach hinten (-x)
     const ring = new THREE.Mesh(new THREE.TorusGeometry(R, R * 0.12, 10, 40), chrome); ring.rotation.y = Math.PI / 2;
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(R * 0.98, 36), ventMatDark); disc.rotation.y = -Math.PI / 2; disc.position.x = 0.004;
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(R * 0.98, 36), ventMatDark); disc.rotation.y = -Math.PI / 2; disc.position.x = 0.012;
     const glow = new THREE.Mesh(new THREE.TorusGeometry(R * 0.84, R * 0.055, 8, 40), glowTeal); glow.rotation.y = Math.PI / 2; glow.position.x = -0.002;
-    const bl = new THREE.Mesh(bladeGeo(R, 16), bladeMat); bl.position.x = -0.004;
+    const bl = new THREE.Mesh(bladeGeo(R, 18), bladeMat); bl.position.x = -0.006;
     const hub = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.2, R * 0.2, 0.012, 16), chrome); hub.rotation.z = Math.PI / 2; hub.position.x = -0.006;
     gp.add(ring, disc, glow, bl, hub);
     g.add(gp);
   };
-  vent(0.438, 0.98, -0.27, 0.068, 0.2);
-  vent(0.443, 0.965, -0.005, 0.05, 0.2);
-  vent(0.438, 0.98, 0.27, 0.068, 0.2);
-  vent(0.43, 1.06, -0.78, 0.045, 0.2);
-  vent(0.43, 1.06, 0.8, 0.045, 0.2);
-  // Klima-Bedienfeld + Tastenreihe
+  const faceX = (y) => 0.425 + (1.04 - y) * 0.3214;    // Vorderseite (Fahrerseite) des Armaturenbretts in Höhe y
+  const TILT = 0.31;
+  batch.add(rbg(0.02, 0.34, 0.98, 0.05), gloss, mx(faceX(0.91) + 0.0, 0.91, 0, 0, 0, TILT));
+  batch.add(rbg(0.02, 0.022, 0.98, 0.008), tealGlow, mx(faceX(1.1) - 0.004, 1.1, 0, 0, 0, TILT));
+  vent(faceX(0.99) - 0.014, 0.99, -0.27, 0.066, TILT);
+  vent(faceX(0.975) - 0.014, 0.975, -0.005, 0.048, TILT);
+  vent(faceX(0.99) - 0.014, 0.99, 0.27, 0.066, TILT);
+  vent(faceX(1.07) - 0.004, 1.07, -0.78, 0.042, TILT);
+  vent(faceX(1.07) - 0.004, 1.07, 0.8, 0.042, TILT);
+  const onFace = (mesh, y, z, dx = 0.014) => { mesh.rotation.order = 'ZYX'; mesh.rotation.set(0, -Math.PI / 2, TILT); mesh.position.set(faceX(y) - dx, y, z); g.add(mesh); return mesh; };
   {
     const m1 = textPlaneMat(512, 160, (c, w, h) => {
       c.fillStyle = '#05070a'; c.fillRect(0, 0, w, h);
-      c.fillStyle = '#19c7c0'; c.font = 'bold 26px Arial'; c.textAlign = 'center';
-      c.fillText('21.5', w * 0.2, 60); c.fillText('21.0', w * 0.8, 60);
+      c.fillStyle = '#19e8dc'; c.font = 'bold 28px Arial'; c.textAlign = 'center';
+      c.fillText('21.5', w * 0.17, 58); c.fillText('21.0', w * 0.83, 58);
       c.strokeStyle = '#7fe9e1'; c.lineWidth = 3;
-      for (let i = 0; i < 4; i++) { c.strokeRect(36 + i * 112, 90, 80, 44); }
+      for (let i = 0; i < 4; i++) { c.strokeRect(36 + i * 112, 88, 80, 46); c.beginPath(); c.arc(76 + i * 112, 111, 9, 0, 7); c.stroke(); }
     }, { rough: 0.25, emissive: 0xffffff, transparent: false });
     m1.emissiveIntensity = 0.6;
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.07), m1);
-    p.rotation.y = -Math.PI / 2; p.rotation.z = 0.0; p.position.set(0.474, 0.865, -0.005); p.rotation.x = 0; g.add(p);
+    onFace(new THREE.Mesh(new THREE.PlaneGeometry(0.115, 0.08), m1), 0.855, 0.0, 0.0145);
     const m2 = textPlaneMat(1024, 96, (c, w, h) => {
       c.fillStyle = '#07090c'; c.fillRect(0, 0, w, h);
       for (let i = 0; i < 12; i++) { c.fillStyle = i % 3 === 1 ? '#19e8dc' : '#b9c2c9'; c.beginPath(); c.roundRect(20 + i * 82, 20, 64, 56, 10); c.fill(); }
     }, { rough: 0.3, metal: 0.6, transparent: false });
-    const r = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.043), m2);
-    r.rotation.y = -Math.PI / 2; r.position.set(0.52, 0.78, 0.0); r.rotation.z = 0; g.add(r);
+    onFace(new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.043), m2), 0.775, 0.0, 0.0145);
   }
 
   // ---- Mittelkonsole
@@ -370,16 +415,19 @@ export function buildG63Interior() {
     return m;
   };
   const doorL = doorMat(false), doorR = doorMat(true);
-  for (const [x0, x1] of [[-0.3, 0.62], [-1.25, -0.4]]) {
+  const doorTrims = [];   // je Tür eine Gruppe (Fahrzeugkoordinaten); der Aufrufer kann sie an die Tür hängen
+  for (const [idx, x0, x1] of [[0, -0.3, 0.62], [1, -1.25, -0.4]]) {
     const len = x1 - x0, xc = (x0 + x1) / 2;
     for (const s of [-1, 1]) {
       const mat = s < 0 ? doorL : doorR;
+      const grp = new THREE.Group();
       const slab = new THREE.Mesh(new THREE.BoxGeometry(len, 0.72, 0.05), [matteBlack, matteBlack, matteBlack, matteBlack, s < 0 ? mat : matteBlack, s < 0 ? matteBlack : mat]);
       slab.position.set(xc, 0.88, s * 0.845);
-      g.add(slab);
-      // Armlehne (Wulst) + Griff
-      batch.add(rbg(len * 0.8, 0.07, 0.1, 0.03), lea, mx(xc - len * 0.05, 1.12, s * 0.8));
-      batch.add(new THREE.CylinderGeometry(0.011, 0.011, len * 0.36, 10), chrome, mx(xc - s * 0.0 + (s < 0 ? -len * 0.12 : -len * 0.12), 0.995, s * 0.8, 0, 0, Math.PI / 2));
+      const arm = new THREE.Mesh(rbg(len * 0.34, 0.04, 0.06, 0.02), lea); arm.position.set(xc - len * 0.24, 1.07, s * 0.818);
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, len * 0.26, 10), chrome); handle.rotation.z = Math.PI / 2; handle.position.set(xc + len * 0.12, 1.0, s * 0.815);
+      grp.add(slab, arm, handle);
+      g.add(grp);
+      doorTrims.push({ idx, side: s, group: grp });
     }
   }
 
@@ -393,7 +441,7 @@ export function buildG63Interior() {
     const rimGeo = new THREE.TorusGeometry(R, 0.019, 14, 56, Math.PI * 2 - 0.9);
     rimGeo.rotateZ(Math.PI / 2 + 0.45 + Math.PI);
     const rim = new THREE.Mesh(rimGeo, lea); rim.rotation.y = Math.PI / 2;
-    const hubM = new THREE.Mesh(rbg(0.07, 0.15, 0.17, 0.04), lea); hubM.position.x = -0.01;
+    const hubM = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.07, 0.07, 28), lea); hubM.rotation.z = Math.PI / 2; hubM.position.x = -0.012;
     const spokeL = new THREE.Mesh(rbg(0.026, 0.045, R * 0.95, 0.012), lea); spokeL.position.set(0, 0, R * 0.55);
     const spokeR = spokeL.clone(); spokeR.position.z = -R * 0.55;
     const bottom = new THREE.Mesh(rbg(0.03, 0.04, R * 1.05, 0.012), carbon); bottom.position.set(0, -R * 0.84, 0);
@@ -412,6 +460,6 @@ export function buildG63Interior() {
   batch.add(new THREE.CylinderGeometry(0.04, 0.045, 0.3, 14), matteBlack, mx(0.52, 1.0, DRV_Z, 0, 0, Math.PI / 2 - 0.5));
 
   batch.build(g);
-  g.userData = { steer, cluster, cockpitEye: [-0.12, 1.62, DRV_Z] };
+  g.userData = { steer, cluster, cockpitEye: [-0.12, 1.62, DRV_Z], doorTrims };
   return g;
 }
