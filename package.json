@@ -1,0 +1,9 @@
+{
+  "name": "adrian",
+  "private": true,
+  "description": "Spiele, Apps und Shops. Die Abhängigkeit wird nur von api/chat.js (KI-Assistent im JWG.onlineshop) gebraucht.",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.132.1"
+  }
+}
