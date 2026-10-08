@@ -368,6 +368,38 @@ input:focus,select:focus{outline:3px solid var(--accent);outline-offset:1px}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,24px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:16px;max-width:min(560px,calc(100vw - 32px));padding:14px 16px;background:var(--navy);color:#fff;border:3px solid var(--sun);border-radius:3px;transition:opacity .2s,transform .2s;box-shadow:6px 6px 0 rgb(0 0 0 / .35)}
 .toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast button{background:none;border:0;padding:0;color:var(--sun);font-weight:700;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+/* Chat-Assistent */
+.chat-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;display:flex;align-items:center;gap:10px;padding:8px 18px 8px 8px;background:var(--sun);color:var(--navy);border:3px solid var(--navy);border-radius:999px;box-shadow:5px 5px 0 var(--navy);font:700 .9rem/1 var(--font-body);letter-spacing:.04em;text-transform:uppercase}
+.chat-fab[hidden]{display:none}
+.chat-fab:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--navy)}
+.chat-fab img{width:36px;height:36px;border-radius:50%;background:#fff;border:2px solid var(--navy)}
+.chat-panel{padding:0;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:56;width:min(410px,calc(100vw - 24px));height:min(620px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:3px solid var(--navy);box-shadow:8px 8px 0 var(--navy)}
+.chat-panel[hidden]{display:none}
+.chat-head{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;background:var(--cobalt);color:#fff;border-bottom:3px solid var(--navy)}
+.chat-head img{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid var(--navy);flex:none}
+.chat-head div{flex:1;min-width:0}
+.chat-head b{display:block;font:900 1.25rem/1 var(--font-display);text-transform:uppercase;letter-spacing:.03em}
+.chat-head small{display:block;font:500 .66rem/1.3 var(--font-mono);letter-spacing:.05em;text-transform:uppercase;color:#D5DDFF;margin-top:3px}
+.chat-x{width:34px;height:34px;flex:none;background:#fff;color:var(--navy);border:2px solid var(--navy);border-radius:3px;font:700 1rem/1 var(--font-body);padding:0}
+.chat-x:hover{background:var(--sun)}
+.chat-log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.msg-b{max-width:90%;padding:10px 12px;border:2.5px solid var(--navy);border-radius:12px 12px 12px 2px;background:var(--surface);color:var(--ink);font-size:.95rem;line-height:1.45;overflow-wrap:anywhere}
+.msg-b p{margin:0}
+.msg-b p+p,.msg-b p+ul,.msg-b ul+p{margin-top:8px}
+.msg-b ul{margin:0;padding-left:18px}
+.msg-b.me{align-self:flex-end;background:var(--sun);color:var(--navy);border-radius:12px 12px 2px 12px}
+.msg-b.typing{display:flex;gap:5px;align-items:center;padding:14px}
+.msg-b.typing i{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.msg-b.typing i:nth-child(2){animation-delay:.15s}.msg-b.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chat-link{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.chat-sug{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-top:2px solid var(--line);background:var(--surface);max-height:98px;overflow-y:auto}
+.chat-sug button{padding:6px 10px;background:var(--surface);color:var(--ink);border:2px solid var(--navy);border-radius:999px;font:600 .78rem/1.2 var(--font-body)}
+.chat-sug button:hover{background:var(--sun);color:var(--navy)}
+.chat-form{display:flex;gap:8px;padding:10px;border-top:3px solid var(--navy);background:var(--surface)}
+.chat-form input{flex:1;min-width:0;min-height:46px}
+.chat-form .btn{min-height:46px;padding:0 16px;box-shadow:3px 3px 0 var(--navy)}
+@media (max-width:720px){.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}.chat-fab span{display:none}.chat-fab{padding:8px}.chat-panel{right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:calc(100vw - 16px);height:min(78dvh,640px)}}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -405,6 +437,7 @@ input:focus,select:focus{outline:3px solid var(--accent);outline-offset:1px}
 'use strict';
 
 /* ---------- Daten ---------- */
+/* CATALOG:START */
 const COLORS={
   anthrazit:{name:'Anthrazit',hex:'#2E3336',acc:'#F5C400',code:'JWG-01'},
   marine:{name:'Marine',hex:'#1B2A4A',acc:'#F5C400',code:'JWG-02'},
@@ -451,15 +484,15 @@ const PRODUCTS=[
   fit:'Regular Fit, gerade geschnitten. Das T-Shirt fällt normal aus.',
   care:'Bei 40 °C waschen. Auf links trocknen. Auf niedriger Stufe bügeln.',
   table:{head:['Größe','Brustumfang','Länge','Ärmel'],unit:'cm',rows:SIZES.map((z,i)=>[z,98+i*4,68+i*2,20+i])}},
- {id:'hose',cat:'unten',photo:false,type:'pants',isNew:true,bg:'#CFC4FF',name:'Jogginghose Campus',short:'Hose',price:59,weight:360,orig:'marine',colors:['marine','anthrazit','tanne','mohn','senf','beere'],sizes:SIZES,temp:40,compo:'100 % BIO-BAUMWOLLE',
-  alt:'Jogginghose mit Seitenstreifen, JWG-Schriftzug und gesticktem Wappen am Oberschenkel',
-  tag:'Jogger mit Seitenstreifen und Wappen',
-  lead:'Die Jogginghose für Schule und Sport: 360 g/m² Bio-Baumwolle, innen angeraut, mit Seitenstreifen und gesticktem Wappen am Oberschenkel.',
-  points:['Gummibund mit flacher Kordel','Zwei Seitentaschen mit verdeckten Nähten','Rippbündchen am Saum','Seitenstreifen in Kontrastfarbe mit JWG-Schriftzug'],
-  material:'100 % Bio-Baumwolle, 360 g/m², innen angeraut. Bündchen 97 % Bio-Baumwolle, 3 % Elastan.',
-  fit:'Relaxed Fit mit verjüngtem Bein. Die Hose fällt normal aus.',
-  care:'Bei 40 °C auf links waschen. Nicht in den Trockner. Das Wappen nicht bügeln.',
-  table:{head:['Größe','Bund','Länge','Innenbein'],unit:'cm',rows:SIZES.map((z,i)=>[z,68+i*4,98+i*2,72+i])}},
+ {id:'hose',cat:'unten',photo:true,isNew:true,name:'Chino Campus',short:'Hose',price:59,weight:260,orig:'marine',colors:['marine','anthrazit','tanne','mohn','beere'],sizes:['W28','W30','W32','W34','W36','W38'],temp:40,compo:'97 % BIO-BAUMWOLLE, 3 % ELASTAN',
+  pos:'58% 50%',zoom:{x:55,y:52.7,s:2.8},alt:'Gefaltete Chino-Hose mit gesticktem Emblem aus Buch und Feder',
+  tag:'Chino mit gesticktem Buch-und-Feder-Emblem',
+  lead:'Die Chino für Schule und Alltag: 260 g/m² Bio-Baumwoll-Twill mit etwas Stretch, gerader Schnitt, mit gesticktem Emblem am Oberschenkel.',
+  points:['Gesticktes Emblem mit Buch und Feder am Oberschenkel','Schräge Eingrifftaschen und Gürtelschlaufen','Metallknopf in Messingfarbe','Bequemer Stretch-Anteil von 3 %'],
+  material:'97 % Bio-Baumwolle, 3 % Elastan, Twill, 260 g/m².',
+  fit:'Slim Fit mit geradem Bein. Die Chino fällt normal aus. Die Größen entsprechen der Bundweite in Zoll (W28 = 71 cm). Die Beinlänge ist bei allen Größen gleich (Innenbein 81 cm).',
+  care:'Bei 40 °C auf links waschen. Nicht in den Trockner. Das Emblem nicht bügeln.',
+  table:{head:['Größe','Bund','Hüfte','Innenbein'],unit:'cm',rows:[['W28',71,94,81],['W30',76,98,81],['W32',81,103,81],['W34',86,108,81],['W36',91,113,81],['W38',97,118,81]]}},
  {id:'guertel',cat:'unten',photo:false,type:'belt',isNew:true,bg:'#9EEBD3',name:'Gürtel Webband',short:'Gürtel',price:19,orig:'mohn',colors:['mohn','marine','anthrazit','tanne','senf','beere'],sizes:['S','M','L'],temp:30,compo:'100 % BIO-BAUMWOLLE',
   alt:'Webgürtel mit eingewebtem JWG-Schriftzug und Metallschnalle mit Wappen',
   tag:'Webgürtel mit Wappen auf der Schnalle',
@@ -487,19 +520,21 @@ const PRODUCTS=[
   fit:'Maße 38 × 42 cm, Henkellänge 70 cm, belastbar bis 10 kg.',
   care:'Bei 40 °C waschen, Druck auf links. Auf links bügeln.',
   table:{head:['Maß','Wert'],rows:[['Breite','38 cm'],['Höhe','42 cm'],['Henkellänge','70 cm'],['Belastbarkeit','10 kg']]}},
- {id:'schluesselband',cat:'zubehoer',photo:false,type:'lanyard',isNew:true,bg:'#FFC1DE',name:'Schlüsselband Campus',short:'Schlüsselband',price:7,orig:'tanne',colors:['tanne','mohn','marine','anthrazit','senf','beere'],sizes:ONE,temp:30,compo:'100 % RECYC. POLYESTER',
-  alt:'Schlüsselband mit eingewebtem Schriftzug, Karabiner und Anhänger mit Schulwappen',
-  tag:'Mit Karabiner und Wappen-Anhänger',
-  lead:'Das Schlüsselband für Spind, Ausweis und Schlüssel: 20 mm breit, mit eingewebtem Schriftzug, Karabiner und einem Anhänger mit dem Schulwappen.',
-  points:['20 mm breit, 90 cm lang','Eingewebter Schriftzug JWG und Goethe Schule','Karabiner aus Metall','Sicherheitsverschluss im Nacken, der bei Zug aufgeht'],
-  material:'Band 100 % recyceltes Polyester, 20 mm breit. Karabiner und Anhänger aus Metall.',
-  fit:'Einheitsgröße, 90 cm lang.',
-  care:'Bei 30 °C von Hand waschen. Nicht bügeln.',
-  table:{head:['Maß','Wert'],rows:[['Länge','90 cm'],['Breite','20 mm'],['Verschluss','Karabiner, Sicherheitsverschluss']]}}
+ {id:'schluesselband',cat:'zubehoer',photo:true,isNew:true,name:'Schlüsselband Campus',short:'Schlüsselband',price:7,orig:'marine',colors:['marine','anthrazit','tanne','mohn','beere'],sizes:ONE,temp:30,compo:'100 % RECYC. POLYESTER',
+  pos:'40% 50%',zoom:{x:33.3,y:57.8,s:2.6},alt:'Schlüsselband mit goldenem Wappen, Karabiner und Schlüsselring auf einem Holztisch',
+  tag:'Gold bedruckt, mit Karabiner und Schlüsselring',
+  lead:'Das Schlüsselband für Spind, Ausweis und Schlüssel: 25 mm breites Gurtband mit goldenem Wappen, mehrfach über die Länge wiederholt, mit Drehkarabiner und Schlüsselring.',
+  points:['25 mm breit, 90 cm lang, als Schlaufe genäht','Goldener Wappen-Druck, mehrfach wiederholt','Drehkarabiner mit Schlüsselring aus Metall','Weiches, flach gewebtes Gurtband'],
+  note:'Auf dem Foto sind Ausweishülle und Schlüssel nur Deko. Sie gehören nicht zum Lieferumfang.',
+  material:'Gurtband 100 % recyceltes Polyester, 25 mm breit. Karabiner und Ring aus vernickeltem Metall.',
+  fit:'Einheitsgröße, 90 cm lang. Als Schlaufe getragen hängt es auf etwa 45 cm.',
+  care:'Bei 30 °C von Hand waschen. Nicht bügeln, nicht in den Trockner.',
+  table:{head:['Maß','Wert'],rows:[['Länge','90 cm'],['Breite','25 mm'],['Verschluss','Drehkarabiner mit Schlüsselring']]}}
 ];
 const BY=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
 const FREE_FROM=60, SHIP_STD=4.9, SHIP_EXP=9.9, COUPON='WILLKOMMEN10';
 const VIEWS=p=>[['front',p.photo?'Foto':'Ansicht'],['detail','Detail'],['label','Etikett']];
+/* CATALOG:END */
 
 /* ---------- Helfer ---------- */
 const $=s=>document.querySelector(s);
@@ -513,27 +548,9 @@ const lum=h=>{const [r,g,b]=h2r(h).map(v=>v/255);return .2126*r+.7152*g+.0722*b}
 const onColor=h=>lum(h)>.55?'#0D1233':'#FFFFFF';
 const reduce=()=>{try{return window.matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 
-/* ---------- Illustrationen (Hose, Gürtel, Schlüsselband) ---------- */
-let UID=0,PC=0;
-const mir=g=>`<g transform="translate(400,0) scale(-1,1)">${g}</g>`;
-const seam=(P,d,op=.5,dash=0,w=1.2)=>`<path d="${d}" fill="none" stroke="${P.deep}" stroke-opacity="${op}" stroke-width="${w}"${dash?' stroke-dasharray="3 3"':''}/>`;
-const fold=(d,w=10,op=.16)=>`<path d="${d}" fill="none" stroke="#000" stroke-opacity="${op}" stroke-width="${w}" stroke-linecap="round"/>`;
-const seal=(x,y,s)=>`<image href="${WAPPEN}" x="${x}" y="${y}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet"/>`;
-function piece(P,d,fill,inner){
-  const k=P.id+'p'+(++PC);
-  return `<clipPath id="${k}"><path d="${d}"/></clipPath><path d="${d}" fill="${fill}" stroke="${P.edge}" stroke-width="1.4" stroke-linejoin="round"/><g clip-path="url(#${k})"><rect x="0" y="-24" width="400" height="464" fill="url(#${P.id}v)"/>${inner||''}</g>`;
-}
-function drawPants(P){
-  const S='M108,40 L292,40 C306,100 306,170 298,234 L286,394 L232,394 L212,214 Q200,196 188,214 L168,394 L114,394 L102,234 C94,170 94,100 108,40 Z';
-  let rl='';for(let x=116;x<=168;x+=6){rl+=`<line x1="${x}" y1="372" x2="${x-1}" y2="394" stroke="${P.deep}" stroke-opacity=".38"/>`}
-  const cuffL=`<path d="M112,372 L170,372 L168,394 L114,394 Z" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".5"/>${rl}`;
-  const stripe=`<path d="M105,76 C98,130 100,190 104,236 L116,372" fill="none" stroke="${P.acc}" stroke-width="7"/><path d="M114,76 C108,130 110,190 114,236 L124,372" fill="none" stroke="${P.acc}" stroke-width="2.5" stroke-opacity=".8"/>`;
-  const waist=`<path d="M106,40 L294,40 L295,72 L105,72 Z" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".5"/>`+[...Array(18)].map((_,i)=>`<line x1="${116+i*10}" y1="42" x2="${116+i*10}" y2="70" stroke="${P.deep}" stroke-opacity=".3"/>`).join('');
-  const inner=stripe+mir(stripe)+cuffL+mir(cuffL)+waist+seam(P,'M118,98 Q136,106 140,150',.55)+seam(P,'M282,98 Q264,106 260,150',.55)+seam(P,'M200,198 L200,236',.35)+fold('M140,250 Q152,306 144,356',14,.1)+fold('M262,240 Q252,300 258,356',14,.09);
-  const cords=`<path d="M192,60 C186,92 190,112 186,136" fill="none" stroke="${P.cord}" stroke-width="3.6" stroke-linecap="round"/><rect x="183.5" y="136" width="5" height="12" rx="1.6" fill="#A9AEB2" stroke="#0004"/><path d="M208,60 C214,92 210,108 214,130" fill="none" stroke="${P.cord}" stroke-width="3.6" stroke-linecap="round"/><rect x="211.5" y="130" width="5" height="12" rx="1.6" fill="#A9AEB2" stroke="#0004"/><circle cx="192" cy="58" r="3.6" fill="#A9AEB2" stroke="#0005"/><circle cx="208" cy="58" r="3.6" fill="#A9AEB2" stroke="#0005"/>`;
-  const jwg=`<text class="fd" transform="translate(273,248) rotate(90)" font-size="30" font-weight="900" fill="${P.acc}" letter-spacing="5">JWG</text>`;
-  return piece(P,S,P.hex,inner)+cords+jwg+`<circle cx="146" cy="178" r="27" fill="#000" opacity=".12"/>`+seal(120,152,52);
-}
+/* ---------- Illustration (Gürtel) ---------- */
+let UID=0;
+const seal=(x,y,sz)=>`<image href="${WAPPEN}" x="${x}" y="${y}" width="${sz}" height="${sz}" preserveAspectRatio="xMidYMid meet"/>`;
 function drawBelt(P){
   const cx=200,cy=238,R=126,W=34,pol=(d,r)=>[cx+r*Math.cos(d*Math.PI/180),cy+r*Math.sin(d*Math.PI/180)];
   const arc=(a0,a1,r)=>{const [x0,y0]=pol(a0,r),[x1,y1]=pol(a1,r);return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`};
@@ -545,14 +562,7 @@ function drawBelt(P){
   const buckle=`<rect x="${bx-40}" y="${by-34}" width="80" height="68" rx="12" fill="url(#${P.id}m)" stroke="#6B7075" stroke-width="2.4"/><rect x="${bx-30}" y="${by-24}" width="60" height="48" rx="8" fill="none" stroke="#6B7075" stroke-opacity=".6" stroke-width="1.6"/><circle cx="${bx}" cy="${by}" r="23" fill="#fff" fill-opacity=".35"/>`+seal(bx-22,by-22,44)+`<path d="M${bx+40},${by-6} h16 v12 h-16" fill="none" stroke="#6B7075" stroke-width="2.4"/>`;
   return ring+tail+buckle;
 }
-function drawLanyard(P){
-  const path='M200,282 L116,60 C110,38 124,22 146,22 L254,22 C276,22 290,38 284,60 Z';
-  const strap=`<path d="${path}" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="32" stroke-linejoin="round" transform="translate(3,5)"/><path d="${path}" fill="none" stroke="${P.hex}" stroke-width="30" stroke-linejoin="round"/><path d="${path}" fill="none" stroke="url(#${P.id}r2)" stroke-width="30" stroke-linejoin="round"/><path id="${P.id}tp" d="${path}" fill="none"/><text class="fd" font-size="14" font-weight="800" fill="${P.acc}" letter-spacing="2.4" dy="4.6"><textPath href="#${P.id}tp" startOffset="6">${'JWG · GOETHE SCHULE · '.repeat(7)}</textPath></text>`;
-  const metal=`<rect x="186" y="278" width="28" height="24" rx="5" fill="url(#${P.id}m)" stroke="#6B7075" stroke-width="2"/><circle cx="200" cy="318" r="11" fill="none" stroke="#9AA0A6" stroke-width="4.5"/><path d="M186,328 Q186,366 200,366 Q214,366 214,328 L208,328 Q208,358 200,358 Q192,358 192,328 Z" fill="url(#${P.id}m)" stroke="#6B7075" stroke-width="1.6"/><circle cx="200" cy="374" r="6" fill="none" stroke="#9AA0A6" stroke-width="3.6"/>`;
-  const tag=`<circle cx="203" cy="414" r="35" fill="#000" opacity=".16"/><circle cx="200" cy="410" r="35" fill="#fff" stroke="#9AA0A6" stroke-width="4"/>`+seal(168,378,64);
-  return strap+metal+tag;
-}
-const VB={pants:{front:'0 -24 400 464',detail:'71 137 150 82'},belt:{front:'0 -24 400 464',detail:'125 71 150 82'},lanyard:{front:'0 -24 400 464',detail:'125 365 150 82'}};
+const VB={belt:{front:'0 -24 400 464',detail:'125 71 150 82'}};
 function illu(type,ck,view,label){
   const C=COLORS[ck],hex=C.hex,light=lum(hex)>.5,id='g'+(++UID);
   const P={id,hex,acc:C.acc,light,shade:mix(hex,'#000000',.2),deep:mix(hex,'#000000',.42),hi:mix(hex,'#ffffff',.16),edge:light?mix(hex,'#000000',.34):mix(hex,'#ffffff',.3),cord:light?mix(hex,'#000000',.6):'#EEE9D9'};
@@ -560,7 +570,7 @@ function illu(type,ck,view,label){
    +`<linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EEF0F2"/><stop offset=".5" stop-color="#B9BEC3"/><stop offset="1" stop-color="#8E949A"/></linearGradient>`
    +`<linearGradient id="${id}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>`
    +`<linearGradient id="${id}r2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>`;
-  const art={pants:drawPants,belt:drawBelt,lanyard:drawLanyard}[type](P);
+  const art={belt:drawBelt}[type](P);
   return `<svg class="garment" viewBox="${VB[type][view]}" role="img" aria-label="${esc(label||'')}" focusable="false"><defs>${defs}</defs>${art}</svg>`;
 }
 
@@ -698,7 +708,7 @@ function viewHome(){
       <div class="rv">
         <span class="mono kicker">Motive</span>
         <h2 class="h2">Ein Wappen, viele Teile</h2>
-        <p class="lead" style="margin-top:20px">Das Wappen mit dem Goethe-Porträt, der Feder und dem aufgeschlagenen Buch sitzt auf Hoodie, Pullover, Cap, Hose, Gürtel und Schlüsselband. Dazu kommt der Schriftzug JWG, gestickt, gedruckt oder eingewebt.</p>
+        <p class="lead" style="margin-top:20px">Das Wappen mit dem Goethe-Porträt sitzt auf Hoodie, Pullover, T-Shirt, Cap, Stoffbeutel, Gürtel und Schlüsselband. Die Chino trägt das Emblem mit Buch und Feder. Dazu kommt der Schriftzug JWG, gestickt, gedruckt oder geprägt.</p>
         <div class="rcrops">
           <div class="rc"><span class="c"><img class="ph zoom" src="${IMG('hoodie','anthrazit')}" alt="Gesticktes Wappen auf dem Hoodie" style="--ox:51.5%;--oy:53%;--s:3.2"></span><b>Wappen</b><span class="t">gestickt am Hoodie</span></div>
           <div class="rc"><span class="c"><img class="ph zoom" src="${IMG('cap','marine')}" alt="Gesticktes Wappen auf der Cap" style="--ox:51%;--oy:45%;--s:3.2"></span><b>Porträt</b><span class="t">gestickt an der Cap</span></div>
@@ -772,6 +782,7 @@ function viewProduct(p){
       <div>
         <div class="stage" role="group" aria-label="Ansicht ${vlabel[s.view]}">${stage}</div>
         <div class="thumbs" role="group" aria-label="Ansichten">${views}</div>
+        ${p.photo&&s.color!==p.orig?'<p class="mono muted" style="margin-top:14px">Hinweis: Die Fotos in dieser Farbe sind digital umgefärbt.</p>':''}
       </div>
       <div class="buy">
         <div class="title">
@@ -794,6 +805,7 @@ function viewProduct(p){
           <button class="btn" data-act="add">In den Warenkorb</button>
         </div>
         <ul class="points">${p.points.map(x=>`<li>${x}</li>`).join('')}</ul>
+        ${p.note?`<p class="muted" style="font-size:.88rem">${p.note}</p>`:''}
         <div>
           <details open><summary>Material${p.weight?' und Stoffgewicht':''}</summary><div>${p.material}</div></details>
           <details id="sizedet"><summary>Passform und Maße</summary><div><p style="margin-bottom:14px">${p.fit}</p>${table}</div></details>
@@ -944,6 +956,7 @@ function render(keep){
   updCount();
   if(v.name==='checkout')updShipStd();
   if(v.name==='home'){revealSetup();heroStart()}
+  if(typeof chatSuggest==='function'&&CH.built&&CH.open)chatSuggest();
   if(!keep){window.scrollTo(0,0);try{app.focus({preventScroll:true})}catch(e){}}
 }
 function go(name,pid,scrollTo,color){
@@ -1083,9 +1096,187 @@ document.addEventListener('change',ev=>{
   if(el.matches('[data-pay]')){S.pay=el.value}
 });
 
+/* ---------- Chat-Assistent ---------- */
+const CH={open:false,msgs:[],busy:false,off:false,built:false};
+const norm=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').normalize('NFD').replace(/[̀-ͯ]/g,'');
+const ALIAS=[['hoodie',/hoodie|kapuzenpull/],['pullover',/pullover|pulli|sweater|sweatshirt/],['tshirt',/t-?shirt|\bshirt/],['hose',/\bhose|chino|jogger/],['guertel',/guertel|\bbelt/],['cap',/\bcap\b|kappe|muetze|basecap/],['stoffbeutel',/beutel|\btasche\b|\btote\b|jutebeutel/],['schluesselband',/schluesselband|schluesselbaender|lanyard|\bband\b/]];
+const CSYN={anthrazit:/anthrazit|\bgrau|schwarz/,marine:/marine|dunkelblau|navy/,tanne:/tanne|gruen/,mohn:/mohn|\brot\b/,senf:/senf|gelb/,beere:/beere|lila|violett/,natur:/natur|beige|leinen/,himmel:/himmel|hellblau/,salbei:/salbei|mint/,rose:/\brose|rosa|pink/};
+const findProducts=n=>ALIAS.filter(([,re])=>re.test(n)).map(([id])=>BY[id]);
+function findColors(n){const out=Object.entries(CSYN).filter(([,re])=>re.test(n)).map(([k])=>k);if(/\bblau\b/.test(n))['marine','himmel'].forEach(k=>{if(!out.includes(k))out.push(k)});return out}
+const bullets=a=>a.map(x=>'- '+x).join('\n');
+const cn=p=>p.colors.map(k=>COLORS[k].name).join(', ');
+const SHIP_A=()=>`Standardversand kostet ${eur(SHIP_STD)} und dauert 2 bis 4 Werktage. Ab ${eur(FREE_FROM)} Warenwert ist er kostenlos. Express kostet ${eur(SHIP_EXP)} und dauert 1 bis 2 Werktage. Geliefert wird nach Deutschland, Österreich und in die Schweiz.`;
+const RET_A='Du kannst innerhalb von 30 Tagen zurückschicken. Das Teil muss ungetragen sein, das Etikett muss dran bleiben. Das gesetzliche Widerrufsrecht von 14 Tagen bleibt davon unberührt.';
+const PAY_A='Im Checkout kannst du zwischen Karte, PayPal, Rechnung und SEPA-Lastschrift wählen. Wichtig: Das ist ein Demo-Shop, es wird keine Zahlung ausgeführt und nichts bestellt.';
+const COUP_A=`Mit dem Code **${COUPON}** bekommst du 10 % Rabatt auf die Ware. Gib ihn in der Kasse oder im Checkout im Feld „Gutscheincode“ ein.`;
+const HOW_A='So bestellst du: Teil auswählen, Farbe und Größe wählen, „In den Warenkorb“ klicken, in der Kasse die Menge prüfen, im Checkout Adresse, Versand- und Zahlungsart angeben und bestellen. Da es ein Demo-Shop ist, wird nichts wirklich bestellt oder abgebucht.';
+const GREET_A='Hallo! Ich bin der JWG-Assistent. Ich kenne alle 8 Produkte: Preise, Farben, Größen, Material, Pflege, Versand und Rückgabe. Was möchtest du wissen?';
+const FALL_A='Dazu habe ich in den Katalogdaten nichts gefunden. Ich kann dir Preise, Farben, Größen und Maße, Material, Pflege, Versand, Rückgabe, Zahlung und den Gutschein erklären. Frag zum Beispiel: „Welche Größe passt bei Brustumfang 98 cm zum Hoodie?“';
+function numIn(n,lo,hi){const m=(n.match(/\d{2,3}/g)||[]).map(Number).filter(x=>x>=lo&&x<=hi);return m.length?m[0]:null}
+function sizeAns(cur,n){
+  const p=cur[0];
+  if(!p) return 'Für welches Teil brauchst du die Größe? Hoodie, Pullover und T-Shirt gibt es in XS bis XXL, die Chino in W28 bis W38, den Gürtel in S, M und L. Cap, Stoffbeutel und Schlüsselband haben eine Einheitsgröße. Nenn mir Teil und Maß, zum Beispiel „Hoodie, Brustumfang 98 cm“.';
+  if(p.sizes.length===1) return `${p.name} gibt es nur in einer Größe. ${p.fit}`;
+  const rows=p.table.rows,head=p.table.head,hasChest=head.includes('Brustumfang'),hasWaist=head.includes('Bund')||head.includes('Taille bis');
+  const ease={hoodie:14,pullover:10,tshirt:8}[p.id]||10;
+  if(hasChest){
+    const c=numIn(n,70,140);
+    if(c){const row=rows.find(r=>r[1]-ease>=c-3);return row?`Bei einem Brustumfang von ${c} cm empfehle ich beim ${p.name} die Größe **${row[0]}**. Das Teil misst ${row[1]} cm im Brustumfang. ${p.fit}`:`Mit ${c} cm Brustumfang bist du über unserer größten Größe (${rows[rows.length-1][0]}, ${rows[rows.length-1][1]} cm Brustumfang des Teils).`}
+    return `Maße beim ${p.name} (Brustumfang des Teils, Länge, Ärmel in cm):\n`+bullets(rows.map(r=>`${r[0]}: ${r[1]} / ${r[2]} / ${r[3]}`))+`\n${p.fit}\nNenn mir deinen Brustumfang, dann suche ich die Größe heraus.`;
+  }
+  if(p.id==='hose'){
+    const w=numIn(n,60,110),wz=numIn(n,26,42);
+    const row=w?rows.find(r=>r[1]>=w):(wz?rows.find(r=>Number(r[0].slice(1))>=wz):null);
+    if(w||wz) return row?`Für ${w?`${w} cm Bund`:`W${wz}`} passt die Chino in **${row[0]}** (Bund ${row[1]} cm, Hüfte ${row[2]} cm, Innenbein ${row[3]} cm).`:'Das ist größer als unsere größte Chino (W38, 97 cm Bund).';
+    return `Die Chino gibt es in W28 bis W38. ${p.fit}\n`+bullets(rows.map(r=>`${r[0]}: Bund ${r[1]} cm, Hüfte ${r[2]} cm`));
+  }
+  if(p.id==='guertel'){
+    const w=numIn(n,60,130),row=w?rows.find(r=>parseInt(r[2])>=w):null;
+    if(w) return row?`Für ${w} cm Taille passt beim Gürtel Größe **${row[0]}** (${row[1]} lang, passt bis ${row[2]} Taille).`:'Das ist mehr als unsere größte Gürtelgröße L (bis 106 cm Taille).';
+    return `Der Gürtel gibt es in drei Größen:\n`+bullets(rows.map(r=>`${r[0]}: ${r[1]} lang, für Taille bis ${r[2]}`));
+  }
+  return p.fit;
+}
+function priceAns(cur,n){
+  const sorted=[...PRODUCTS].sort((a,b)=>a.price-b.price);
+  const m=/(?:unter|bis|max(?:imal)?|hoechstens)\s*(\d{1,3})/.exec(n);
+  if(m){const b=Number(m[1]),ok=sorted.filter(p=>p.price<=b);return ok.length?`Bis ${eur(b)} gibt es:\n`+bullets(ok.map(p=>`${p.name}: ${eur(p.price)}`)):`Unter ${eur(b)} habe ich nichts. Das günstigste Teil ist ${sorted[0].name} für ${eur(sorted[0].price)}.`}
+  if(/teuersten|teuerste/.test(n)&&!cur.length){const p=sorted[sorted.length-1];return `Das teuerste Teil ist ${p.name} für ${eur(p.price)}.`}
+  if(/guenstig|billig|preiswert/.test(n)&&!cur.length)return 'Am günstigsten sind:\n'+bullets(sorted.slice(0,3).map(p=>`${p.name}: ${eur(p.price)}`));
+  if(cur.length)return cur.map(p=>`${p.name} kostet ${eur(p.price)} inklusive 19 % MwSt.`).join('\n');
+  return 'Alle Preise:\n'+bullets(PRODUCTS.map(p=>`${p.name}: ${eur(p.price)}`))+`\nAlle Preise inklusive MwSt. Ab ${eur(FREE_FROM)} Warenwert ist der Versand kostenlos.`;
+}
+function colorAns(cur,cols){
+  if(cur.length){
+    return cur.map(p=>{
+      const miss=cols.filter(k=>!p.colors.includes(k));
+      const asked=cols.length?(miss.length===0?`Ja, ${p.name} gibt es in ${cols.map(k=>COLORS[k].name).join(' und ')}. `:`In ${miss.map(k=>COLORS[k].name).join(' und ')} gibt es ${p.name} nicht. `):'';
+      return `${asked}${p.name} gibt es in diesen Farben: ${cn(p)}.`;
+    }).join('\n')+(cur.some(p=>p.photo)?'\nBei den Fotos ist nur die Originalfarbe (' +cur.filter(p=>p.photo).map(p=>COLORS[p.orig].name).join(', ')+') echt fotografiert, die anderen Farben sind digital umgefärbt.':'');
+  }
+  if(cols.length){return cols.map(k=>{const ps=PRODUCTS.filter(p=>p.colors.includes(k));return `In ${COLORS[k].name} gibt es: ${ps.map(p=>p.name).join(', ')}.`}).join('\n')}
+  return 'Die Farben je Produkt:\n'+bullets(PRODUCTS.map(p=>`${p.name}: ${cn(p)}`))+'\nIm Abschnitt „Farbwelt“ auf der Startseite siehst du alle Teile in einer gewählten Farbe.';
+}
+function careAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.care}`).join('\n'):'Die Pflege steht auf jeder Produktseite und auf dem eingenähten Etikett. Die meisten Teile werden bei 40 °C auf links gewaschen und nicht in den Trockner gegeben. Cap, Gürtel und Schlüsselband wäschst du bei 30 °C von Hand. Zu welchem Teil möchtest du es genau wissen?'}
+function matAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.material}${p.weight?` Stoffgewicht ${p.weight} g/m².`:''}`).join('\n'):'Fast alle Teile sind aus Bio-Baumwolle. Das Schlüsselband besteht aus recyceltem Polyester. Das Stoffgewicht reicht von 190 g/m² (T-Shirt) bis 420 g/m² (Hoodie). Zu welchem Teil möchtest du Details?'}
+function motifAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.points.find(x=>/Wappen|Emblem|Druck|Logo|Schriftzug/i.test(x))||p.tag}.`).join('\n'):'Das Schulwappen mit Goethe-Porträt ist auf Hoodie, Pullover, Cap, Stoffbeutel, Gürtel und Schlüsselband zu sehen, das T-Shirt trägt das Schullogo, die Chino ein Emblem mit Buch und Feder. Gestickt ist es auf Hoodie, Pullover, T-Shirt, Cap und Chino, gedruckt auf Beutel und Schlüsselband, geprägt auf der Gürtelschnalle.'}
+function recoAns(n){return 'Meine Tipps:\n'+bullets([`Für jeden Tag: ${BY.hoodie.name} (${eur(BY.hoodie.price)}), schwer und innen angeraut`,`Leichter: ${BY.pullover.name} (${eur(BY.pullover.price)}) oder ${BY.tshirt.name} (${eur(BY.tshirt.price)})`,`Zum Anziehen für die Schule: ${BY.hose.name} (${eur(BY.hose.price)})`,`Kleine Geschenke: ${BY.schluesselband.name} (${eur(BY.schluesselband.price)}) oder ${BY.stoffbeutel.name} (${eur(BY.stoffbeutel.price)})`])+'\nSag mir dein Budget oder wofür du es brauchst, dann grenze ich es ein.'}
+function listAns(){return 'Das gibt es im Shop:\n'+bullets(PRODUCTS.map(p=>`${p.name} (${eur(p.price)}): ${p.tag}`))}
+function infoAns(p){return `${p.name} (${eur(p.price)}): ${p.lead}\nFarben: ${cn(p)}.\nGrößen: ${p.sizes.join(', ')}.`}
+function compareAns(a,b){return `${a.name} gegen ${b.name}:\n`+bullets([`Preis: ${eur(a.price)} gegen ${eur(b.price)}`,`Material: ${a.material}`+(b.material?` / ${b.material}`:''),`Passform: ${a.fit} / ${b.fit}`])}
+function localAnswer(q,ctx){
+  const n=norm(q),t=re=>re.test(n);
+  const ps=findProducts(n),cols=findColors(n);
+  const cur=ps.length?ps:(ctx&&BY[ctx.pid]?[BY[ctx.pid]]:[]);
+  if(n.length<30&&t(/^(hi|hallo|hey|moin|servus|guten (tag|morgen|abend))\b/))return GREET_A;
+  if(n.length<14&&t(/^(danke|vielen dank|super|top|perfekt|cool|ok)/))return 'Gern! Wenn du noch etwas zu den Produkten wissen willst, frag einfach.';
+  if(t(/versand|lieferung|liefer|porto|express|wann kommt|zustell/))return SHIP_A();
+  if(t(/rueckgabe|retoure|umtausch|zurueck(schicken|senden)|widerruf|erstattung|geld zurueck/))return RET_A;
+  if(t(/zahl|bezahl|paypal|klarna|rechnung|lastschrift|sepa|kreditkarte|visa|mastercard/))return PAY_A;
+  if(t(/gutschein|rabatt|\bcode\b|\bsale\b|aktion|coupon/))return COUP_A;
+  if(!ps.length&&t(/bestell|kaufen|warenkorb|checkout|kasse|wie funktioniert/))return HOW_A;
+  if(t(/etikett|waschsymbol|pflegesymbol|farbcode/))return 'In jedem Teil ist ein Pflegeetikett eingenäht. Darauf stehen Größe, Farbe mit Farbcode (z. B. JWG-04 für Mohn), die Zusammensetzung und fünf Pflegesymbole mit der Waschtemperatur. Auf jeder Produktseite siehst du das Etikett in der Ansicht „Etikett“.';
+  if(t(/nachhaltig|\bbio\b|oeko|fair\b|zertifik|gots|umwelt/))return 'Alle Stoffe sind Bio-Baumwolle, nur das Schlüsselband besteht aus recyceltem Polyester. Zu Zertifikaten habe ich im Katalog keine Angaben.';
+  if(t(/lager|verfuegbar|vorraetig|lieferbar|ausverkauft/))return 'Zum Lagerbestand habe ich keine Angaben, da dies ein Demo-Shop ist. Die Produktseite zeigt dir alle Farben und Größen, die es gibt.';
+  if(t(/umgefaerbt|echte fotos|echt aus|fotos? (echt|gestellt)|farbabweich/))return 'Bei Hoodie, Pullover, T-Shirt, Cap, Stoffbeutel, Chino und Schlüsselband ist nur die Originalfarbe echt fotografiert. Die anderen Farben sind digital umgefärbt, das steht auch auf der Produktseite. Der Gürtel ist gezeichnet. Die echte Farbe kann etwas abweichen.';
+  if(ps.length>=2&&t(/unterschied|vergleich|besser|\boder\b|versus|\bvs\b/))return compareAns(ps[0],ps[1]);
+  if(t(/groesse|passt|passen|fallen|\beng\b|\bweit\b|massen|tabelle|\bxs\b|\bxxl\b|\bxl\b|brust|taille|\bbund\b|hueft|kopfumfang|\bw\d\d\b/))return sizeAns(cur,n);
+  if(t(/pflege|wasch|trockner|buegel|einlauf|schrump|reinigung|maschine/))return careAns(cur);
+  if(t(/material|stoff|baumwolle|gewicht|g\/m|elastan|polyester|canvas|twill|jersey|angeraut|qualitaet|dick\b|schwer/))return matAns(cur);
+  if(t(/wappen|logo|motiv|stick|druck|goethe|schriftzug|emblem|aufnaeher/))return motifAns(cur);
+  if(t(/farbe|farben|farbig|welche farb/)||(cols.length&&cur.length))return colorAns(cur,cols);
+  if(cols.length)return colorAns(cur,cols);
+  if(t(/preis|kostet|kosten|euro|€|teuer|guenstig|billig|preiswert|budget|unter \d+|bis \d+/))return priceAns(cur,n);
+  if(t(/empfiehl|empfehlung|geschenk|tipp|welches teil|was passt|was soll ich|\bbeste/))return recoAns(n);
+  if(t(/produkte|sortiment|kollektion|uebersicht|was gibt|was habt|alles/))return listAns();
+  if(ps.length)return infoAns(ps[0]);
+  return FALL_A;
+}
+function chatCtx(){
+  const v=S.view;
+  if(v.name==='product'&&S.sel)return {page:'product',pid:S.sel.pid,color:S.sel.color,size:S.sel.size||null};
+  if(v.name==='cart'||v.name==='checkout')return {page:v.name,cart:S.cart.slice(0,10).map(l=>({pid:l.pid,color:l.color,size:l.size,qty:l.qty}))};
+  return {page:v.name};
+}
+async function askServer(){
+  const ctrl=new AbortController(),to=setTimeout(()=>ctrl.abort(),30000);
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:CH.msgs.slice(-12).map(m=>({role:m.role,content:m.text})),context:chatCtx()}),signal:ctrl.signal});
+    clearTimeout(to);
+    const j=await r.json().catch(()=>null);
+    if(r.status===429)return {reply:(j&&j.reply)||'Gerade sind zu viele Fragen eingegangen. Bitte versuch es in einer Minute noch einmal.',ai:true};
+    if(r.ok&&j&&typeof j.reply==='string'&&j.reply.trim())return {reply:j.reply,ai:true};
+    return null;
+  }catch(e){clearTimeout(to);return null}
+}
+function fmtBot(t){
+  let h=esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  PRODUCTS.forEach(p=>{h=h.split(esc(p.name)).join(`<button type="button" class="chat-link" data-go="product" data-pid="${p.id}">${esc(p.name)}</button>`)});
+  let out='',inList=false;
+  for(const ln of h.split('\n')){
+    const m=/^\s*(?:-|•)\s+(.*)$/.exec(ln);
+    if(m){if(!inList){out+='<ul>';inList=true}out+='<li>'+m[1]+'</li>'}
+    else{if(inList){out+='</ul>';inList=false}if(ln.trim())out+='<p>'+ln+'</p>'}
+  }
+  return out+(inList?'</ul>':'');
+}
+function chatDraw(){
+  const log=$('#chat-log');if(!log)return;
+  log.innerHTML=CH.msgs.map(m=>m.role==='user'?`<div class="msg-b me">${esc(m.text)}</div>`:`<div class="msg-b">${fmtBot(m.text)}</div>`).join('')+(CH.busy?'<div class="msg-b typing" aria-label="Der Assistent schreibt"><i></i><i></i><i></i></div>':'');
+  log.scrollTop=log.scrollHeight;
+}
+function chatSuggest(){
+  const el=$('#chat-sug');if(!el)return;
+  const v=S.view.name;
+  const list=v==='product'?['Welche Größe passt mir?','Welche Farben gibt es?','Wie pflege ich das Teil?','Was kostet der Versand?']:(v==='cart'||v==='checkout')?['Wird der Versand kostenlos?','Welche Zahlungsarten gibt es?','Wie funktioniert der Gutschein?']:['Welches Teil passt zu mir?','Was kostet das Schlüsselband?','Welche Farben hat der Hoodie?','Wie läuft die Rückgabe?'];
+  el.innerHTML=list.map(x=>`<button type="button" data-sug="${esc(x)}">${esc(x)}</button>`).join('');
+}
+function chatMode(ai){const m=$('#chat-mode');if(m)m.textContent=ai?'KI-Antworten · kennt alle Produkte':'Katalog-Modus · ohne KI-Server'}
+async function chatSend(text){
+  text=String(text||'').trim().slice(0,500);
+  if(!text||CH.busy)return;
+  CH.msgs.push({role:'user',text});CH.busy=true;chatDraw();
+  let res=CH.off?null:await askServer();
+  if(!res){CH.off=true;await new Promise(r=>setTimeout(r,350));res={reply:localAnswer(text,chatCtx()),ai:false}}
+  CH.msgs.push({role:'assistant',text:res.reply});CH.busy=false;chatMode(res.ai);chatDraw();
+  const inp=$('#chat-in');if(inp&&CH.open)inp.focus();
+}
+function chatOpen(open){
+  CH.open=open;
+  const panel=$('#chat-panel'),fab=$('#chat-fab');
+  panel.hidden=!open;fab.hidden=open;fab.setAttribute('aria-expanded',String(open));
+  if(open){
+    if(!CH.msgs.length){CH.msgs.push({role:'assistant',text:GREET_A});}
+    chatSuggest();chatDraw();
+    setTimeout(()=>{const i=$('#chat-in');if(i)i.focus()},30);
+  }else{try{fab.focus()}catch(e){}}
+}
+function chatBuild(){
+  if(CH.built)return;CH.built=true;
+  const w=document.createElement('div');w.id='chat';
+  w.innerHTML=`<button class="chat-fab" id="chat-fab" type="button" aria-expanded="false" aria-controls="chat-panel" aria-label="Fragen zu den Produkten? Assistent öffnen"><img src="${WAPPEN}" alt=""><span>Fragen?</span></button>
+  <section class="chat-panel" id="chat-panel" role="dialog" aria-label="JWG-Assistent" hidden>
+    <header class="chat-head"><img src="${WAPPEN}" alt=""><div><b>JWG-Assistent</b><small id="chat-mode">Fragen zu allen Produkten</small></div><button type="button" class="chat-x" data-chat="reset" aria-label="Neues Gespräch" title="Neues Gespräch">↺</button><button type="button" class="chat-x" data-chat="close" aria-label="Chat schließen" title="Schließen">✕</button></header>
+    <div class="chat-log" id="chat-log" role="log" aria-live="polite"></div>
+    <div class="chat-sug" id="chat-sug"></div>
+    <form class="chat-form" id="chat-form" autocomplete="off"><label class="sr" for="chat-in">Deine Frage</label><input id="chat-in" type="text" maxlength="500" placeholder="Frag mich zu den Produkten …"><button class="btn" type="submit">Senden</button></form>
+  </section>`;
+  document.body.appendChild(w);
+  $('#chat-fab').addEventListener('click',()=>chatOpen(true));
+  $('#chat-form').addEventListener('submit',ev=>{ev.preventDefault();const i=$('#chat-in'),v=i.value;i.value='';chatSend(v)});
+  $('#chat-panel').addEventListener('click',ev=>{
+    const b=ev.target.closest('[data-chat],[data-sug]');if(!b)return;
+    if(b.dataset.sug){chatSend(b.dataset.sug);return}
+    if(b.dataset.chat==='close')chatOpen(false);
+    if(b.dataset.chat==='reset'){CH.msgs=[{role:'assistant',text:GREET_A}];CH.busy=false;chatDraw();chatSuggest()}
+  });
+  document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&CH.open)chatOpen(false)});
+}
+
 /* ---------- Start ---------- */
 updCount();
 fromHash();
+chatBuild();
 intro();
 })();
 </script>

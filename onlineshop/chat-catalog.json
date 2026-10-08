@@ -1,0 +1,636 @@
+{
+  "shop": "JWG.onlineshop",
+  "currency": "EUR",
+  "shipping": {
+    "standardEur": 4.9,
+    "expressEur": 9.9,
+    "freeFromEur": 60,
+    "couponCode": "WILLKOMMEN10",
+    "couponPercent": 10
+  },
+  "colors": {
+    "anthrazit": {
+      "name": "Anthrazit",
+      "code": "JWG-01"
+    },
+    "marine": {
+      "name": "Marine",
+      "code": "JWG-02"
+    },
+    "tanne": {
+      "name": "Tanne",
+      "code": "JWG-03"
+    },
+    "mohn": {
+      "name": "Mohn",
+      "code": "JWG-04"
+    },
+    "senf": {
+      "name": "Senf",
+      "code": "JWG-05"
+    },
+    "beere": {
+      "name": "Beere",
+      "code": "JWG-06"
+    },
+    "natur": {
+      "name": "Natur",
+      "code": "JWG-07"
+    },
+    "himmel": {
+      "name": "Himmel",
+      "code": "JWG-08"
+    },
+    "salbei": {
+      "name": "Salbei",
+      "code": "JWG-09"
+    },
+    "rose": {
+      "name": "Rosé",
+      "code": "JWG-10"
+    }
+  },
+  "products": [
+    {
+      "id": "hoodie",
+      "name": "Hoodie Core",
+      "short": "Hoodie",
+      "category": "Oberteile",
+      "priceEur": 89,
+      "weightGsm": 420,
+      "isNew": false,
+      "colors": [
+        "anthrazit",
+        "marine",
+        "tanne",
+        "mohn",
+        "senf",
+        "beere"
+      ],
+      "originalColor": "anthrazit",
+      "realPhoto": true,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "sizeTable": {
+        "head": [
+          "Größe",
+          "Brustumfang",
+          "Länge",
+          "Ärmel"
+        ],
+        "unit": "cm",
+        "rows": [
+          [
+            "XS",
+            104,
+            66,
+            60
+          ],
+          [
+            "S",
+            108,
+            68,
+            61
+          ],
+          [
+            "M",
+            112,
+            70,
+            62
+          ],
+          [
+            "L",
+            116,
+            72,
+            63
+          ],
+          [
+            "XL",
+            120,
+            74,
+            64
+          ],
+          [
+            "XXL",
+            124,
+            76,
+            65
+          ]
+        ]
+      },
+      "tagline": "Schwer, innen angeraut, mit Kängurutasche",
+      "description": "Der schwere Hoodie für jeden Tag: 420 g/m² Bio-Baumwolle, innen angeraut, mit doppellagiger Kapuze und Kängurutasche.",
+      "features": [
+        "Doppellagige Kapuze mit flacher Baumwollkordel",
+        "Kängurutasche mit verstärkten Ecken",
+        "Bündchen aus 2×2 Rippe, bleibt in Form",
+        "Großes gesticktes Schulwappen auf der Brust"
+      ],
+      "note": null,
+      "material": "Hauptstoff 100 % Bio-Baumwolle, 420 g/m², außen glatt, innen angeraut. Bündchen 97 % Bio-Baumwolle, 3 % Elastan.",
+      "fit": "Relaxed Fit mit leicht überschnittener Schulter. Der Hoodie fasst weit. Wenn du zwischen zwei Größen liegst, nimm die kleinere.",
+      "care": "Bei 40 °C auf links waschen. Nicht in den Trockner. Auf niedriger Stufe bügeln, nicht auf der Stickerei.",
+      "washTempC": 40,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "pullover",
+      "name": "Pullover Crew",
+      "short": "Pullover",
+      "category": "Oberteile",
+      "priceEur": 79,
+      "weightGsm": 380,
+      "isNew": false,
+      "colors": [
+        "marine",
+        "anthrazit",
+        "tanne",
+        "mohn",
+        "senf",
+        "beere"
+      ],
+      "originalColor": "marine",
+      "realPhoto": true,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "sizeTable": {
+        "head": [
+          "Größe",
+          "Brustumfang",
+          "Länge",
+          "Ärmel"
+        ],
+        "unit": "cm",
+        "rows": [
+          [
+            "XS",
+            102,
+            65,
+            60
+          ],
+          [
+            "S",
+            106,
+            67,
+            61
+          ],
+          [
+            "M",
+            110,
+            69,
+            62
+          ],
+          [
+            "L",
+            114,
+            71,
+            63
+          ],
+          [
+            "XL",
+            118,
+            73,
+            64
+          ],
+          [
+            "XXL",
+            122,
+            75,
+            65
+          ]
+        ]
+      },
+      "tagline": "Rundhals mit Wappen auf der Brust",
+      "description": "Der Rundhals-Pullover: 380 g/m² Bio-Baumwolle mit Rippbündchen und gesticktem Schulwappen.",
+      "features": [
+        "Breites Halsbündchen, das nicht ausleiert",
+        "Rippbündchen an Ärmeln und Saum",
+        "Doppelnadelnaht an Saum und Ärmeln",
+        "Gesticktes Schulwappen auf der Brust"
+      ],
+      "note": null,
+      "material": "100 % Bio-Baumwolle, 380 g/m². Bündchen 97 % Bio-Baumwolle, 3 % Elastan.",
+      "fit": "Regular Fit. Der Pullover fällt normal aus.",
+      "care": "Bei 40 °C auf links waschen. Liegend trocknen. Auf niedriger Stufe bügeln.",
+      "washTempC": 40,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "tshirt",
+      "name": "T-Shirt Basic",
+      "short": "T-Shirt",
+      "category": "Oberteile",
+      "priceEur": 29,
+      "weightGsm": 190,
+      "isNew": false,
+      "colors": [
+        "anthrazit",
+        "marine",
+        "tanne",
+        "mohn",
+        "beere"
+      ],
+      "originalColor": "anthrazit",
+      "realPhoto": true,
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "sizeTable": {
+        "head": [
+          "Größe",
+          "Brustumfang",
+          "Länge",
+          "Ärmel"
+        ],
+        "unit": "cm",
+        "rows": [
+          [
+            "XS",
+            98,
+            68,
+            20
+          ],
+          [
+            "S",
+            102,
+            70,
+            21
+          ],
+          [
+            "M",
+            106,
+            72,
+            22
+          ],
+          [
+            "L",
+            110,
+            74,
+            23
+          ],
+          [
+            "XL",
+            114,
+            76,
+            24
+          ],
+          [
+            "XXL",
+            118,
+            78,
+            25
+          ]
+        ]
+      },
+      "tagline": "Dichter Jersey, gerader Schnitt",
+      "description": "Dichter Jersey mit 190 g/m². Das T-Shirt fällt gerade, trägt nicht auf und verzieht sich nicht.",
+      "features": [
+        "Doppelt genähtes Halsbündchen",
+        "Verstärktes Nackenband",
+        "Seitennähte, die nicht verdrehen",
+        "Gesticktes Schullogo links auf der Brust"
+      ],
+      "note": null,
+      "material": "100 % Bio-Baumwolle, 190 g/m², Single Jersey.",
+      "fit": "Regular Fit, gerade geschnitten. Das T-Shirt fällt normal aus.",
+      "care": "Bei 40 °C waschen. Auf links trocknen. Auf niedriger Stufe bügeln.",
+      "washTempC": 40,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "hose",
+      "name": "Chino Campus",
+      "short": "Hose",
+      "category": "Hosen & Gürtel",
+      "priceEur": 59,
+      "weightGsm": 260,
+      "isNew": true,
+      "colors": [
+        "marine",
+        "anthrazit",
+        "tanne",
+        "mohn",
+        "beere"
+      ],
+      "originalColor": "marine",
+      "realPhoto": true,
+      "sizes": [
+        "W28",
+        "W30",
+        "W32",
+        "W34",
+        "W36",
+        "W38"
+      ],
+      "sizeTable": {
+        "head": [
+          "Größe",
+          "Bund",
+          "Hüfte",
+          "Innenbein"
+        ],
+        "unit": "cm",
+        "rows": [
+          [
+            "W28",
+            71,
+            94,
+            81
+          ],
+          [
+            "W30",
+            76,
+            98,
+            81
+          ],
+          [
+            "W32",
+            81,
+            103,
+            81
+          ],
+          [
+            "W34",
+            86,
+            108,
+            81
+          ],
+          [
+            "W36",
+            91,
+            113,
+            81
+          ],
+          [
+            "W38",
+            97,
+            118,
+            81
+          ]
+        ]
+      },
+      "tagline": "Chino mit gesticktem Buch-und-Feder-Emblem",
+      "description": "Die Chino für Schule und Alltag: 260 g/m² Bio-Baumwoll-Twill mit etwas Stretch, gerader Schnitt, mit gesticktem Emblem am Oberschenkel.",
+      "features": [
+        "Gesticktes Emblem mit Buch und Feder am Oberschenkel",
+        "Schräge Eingrifftaschen und Gürtelschlaufen",
+        "Metallknopf in Messingfarbe",
+        "Bequemer Stretch-Anteil von 3 %"
+      ],
+      "note": null,
+      "material": "97 % Bio-Baumwolle, 3 % Elastan, Twill, 260 g/m².",
+      "fit": "Slim Fit mit geradem Bein. Die Chino fällt normal aus. Die Größen entsprechen der Bundweite in Zoll (W28 = 71 cm). Die Beinlänge ist bei allen Größen gleich (Innenbein 81 cm).",
+      "care": "Bei 40 °C auf links waschen. Nicht in den Trockner. Das Emblem nicht bügeln.",
+      "washTempC": 40,
+      "composition": "97 % BIO-BAUMWOLLE, 3 % ELASTAN"
+    },
+    {
+      "id": "guertel",
+      "name": "Gürtel Webband",
+      "short": "Gürtel",
+      "category": "Hosen & Gürtel",
+      "priceEur": 19,
+      "weightGsm": null,
+      "isNew": true,
+      "colors": [
+        "mohn",
+        "marine",
+        "anthrazit",
+        "tanne",
+        "senf",
+        "beere"
+      ],
+      "originalColor": "mohn",
+      "realPhoto": false,
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "sizeTable": {
+        "head": [
+          "Größe",
+          "Länge",
+          "Taille bis"
+        ],
+        "rows": [
+          [
+            "S",
+            "100 cm",
+            "86 cm"
+          ],
+          [
+            "M",
+            "110 cm",
+            "96 cm"
+          ],
+          [
+            "L",
+            "120 cm",
+            "106 cm"
+          ]
+        ]
+      },
+      "tagline": "Webgürtel mit Wappen auf der Schnalle",
+      "description": "Der Gürtel aus robustem Webband: 38 mm breit, mit eingewebtem JWG-Schriftzug und einer Metallschnalle, in die das Schulwappen geprägt ist.",
+      "features": [
+        "Webband aus Bio-Baumwolle, 38 mm breit",
+        "Dornschnalle aus Metall, Wappen geprägt",
+        "Eingewebter Schriftzug JWG und Goethe Schule",
+        "Mit Löchern im 3-cm-Abstand"
+      ],
+      "note": null,
+      "material": "Webband 100 % Bio-Baumwolle, 38 mm breit. Schnalle aus Zinklegierung.",
+      "fit": "Wähle die Länge nach deiner Taillenweite plus etwa 10 cm. Die Tabelle zeigt, bis zu welcher Taille jede Größe passt.",
+      "care": "Bei 30 °C von Hand waschen. Die Schnalle nicht ins Wasser tauchen. Liegend trocknen.",
+      "washTempC": 30,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "cap",
+      "name": "Cap Sixpanel",
+      "short": "Cap",
+      "category": "Zubehör",
+      "priceEur": 24,
+      "weightGsm": 240,
+      "isNew": false,
+      "colors": [
+        "marine",
+        "anthrazit",
+        "tanne",
+        "mohn",
+        "beere"
+      ],
+      "originalColor": "marine",
+      "realPhoto": true,
+      "sizes": [
+        "Einheitsgröße"
+      ],
+      "sizeTable": {
+        "head": [
+          "Maß",
+          "Wert"
+        ],
+        "rows": [
+          [
+            "Kopfumfang",
+            "54 bis 62 cm"
+          ],
+          [
+            "Schirmlänge",
+            "7 cm"
+          ],
+          [
+            "Verschluss",
+            "Metallschnalle"
+          ]
+        ]
+      },
+      "tagline": "Sechs Segmente, Metallschnalle",
+      "description": "Sechs Segmente, vorgeformter Schirm und eine Metallschnalle hinten. Passt von 54 bis 62 cm Kopfumfang.",
+      "features": [
+        "Baumwoll-Twill, 240 g/m²",
+        "Sechs vernähte Segmente, Ösen aus Metall",
+        "Gesticktes Wappen mit Goethe-Porträt vorne",
+        "Schnalle aus Metall, stufenlos verstellbar"
+      ],
+      "note": null,
+      "material": "100 % Bio-Baumwoll-Twill, 240 g/m². Schnalle aus Metall.",
+      "fit": "Einheitsgröße, verstellbar von 54 bis 62 cm Kopfumfang.",
+      "care": "Bei 30 °C von Hand waschen. Den Schirm nicht knicken. An der Luft trocknen.",
+      "washTempC": 30,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "stoffbeutel",
+      "name": "Stoffbeutel Canvas",
+      "short": "Stoffbeutel",
+      "category": "Zubehör",
+      "priceEur": 14,
+      "weightGsm": 280,
+      "isNew": false,
+      "colors": [
+        "natur",
+        "himmel",
+        "salbei",
+        "rose",
+        "senf"
+      ],
+      "originalColor": "natur",
+      "realPhoto": true,
+      "sizes": [
+        "Einheitsgröße"
+      ],
+      "sizeTable": {
+        "head": [
+          "Maß",
+          "Wert"
+        ],
+        "rows": [
+          [
+            "Breite",
+            "38 cm"
+          ],
+          [
+            "Höhe",
+            "42 cm"
+          ],
+          [
+            "Henkellänge",
+            "70 cm"
+          ],
+          [
+            "Belastbarkeit",
+            "10 kg"
+          ]
+        ]
+      },
+      "tagline": "Canvas, lange Henkel, belastbar",
+      "description": "Der Beutel für Einkauf und Laptop: Canvas mit 280 g/m², Henkel in 70 cm Länge, Maße 38 × 42 cm.",
+      "features": [
+        "Henkel mit Kreuzstich an den Ansätzen",
+        "Innennähte versäubert",
+        "Rand doppelt umgenäht",
+        "Großer Druck mit Goethe-Porträt und Lorbeerkranz"
+      ],
+      "note": null,
+      "material": "100 % Bio-Baumwoll-Canvas, 280 g/m².",
+      "fit": "Maße 38 × 42 cm, Henkellänge 70 cm, belastbar bis 10 kg.",
+      "care": "Bei 40 °C waschen, Druck auf links. Auf links bügeln.",
+      "washTempC": 40,
+      "composition": "100 % BIO-BAUMWOLLE"
+    },
+    {
+      "id": "schluesselband",
+      "name": "Schlüsselband Campus",
+      "short": "Schlüsselband",
+      "category": "Zubehör",
+      "priceEur": 7,
+      "weightGsm": null,
+      "isNew": true,
+      "colors": [
+        "marine",
+        "anthrazit",
+        "tanne",
+        "mohn",
+        "beere"
+      ],
+      "originalColor": "marine",
+      "realPhoto": true,
+      "sizes": [
+        "Einheitsgröße"
+      ],
+      "sizeTable": {
+        "head": [
+          "Maß",
+          "Wert"
+        ],
+        "rows": [
+          [
+            "Länge",
+            "90 cm"
+          ],
+          [
+            "Breite",
+            "25 mm"
+          ],
+          [
+            "Verschluss",
+            "Drehkarabiner mit Schlüsselring"
+          ]
+        ]
+      },
+      "tagline": "Gold bedruckt, mit Karabiner und Schlüsselring",
+      "description": "Das Schlüsselband für Spind, Ausweis und Schlüssel: 25 mm breites Gurtband mit goldenem Wappen, mehrfach über die Länge wiederholt, mit Drehkarabiner und Schlüsselring.",
+      "features": [
+        "25 mm breit, 90 cm lang, als Schlaufe genäht",
+        "Goldener Wappen-Druck, mehrfach wiederholt",
+        "Drehkarabiner mit Schlüsselring aus Metall",
+        "Weiches, flach gewebtes Gurtband"
+      ],
+      "note": "Auf dem Foto sind Ausweishülle und Schlüssel nur Deko. Sie gehören nicht zum Lieferumfang.",
+      "material": "Gurtband 100 % recyceltes Polyester, 25 mm breit. Karabiner und Ring aus vernickeltem Metall.",
+      "fit": "Einheitsgröße, 90 cm lang. Als Schlaufe getragen hängt es auf etwa 45 cm.",
+      "care": "Bei 30 °C von Hand waschen. Nicht bügeln, nicht in den Trockner.",
+      "washTempC": 30,
+      "composition": "100 % RECYC. POLYESTER"
+    }
+  ]
+}
