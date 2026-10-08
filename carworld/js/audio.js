@@ -75,6 +75,7 @@ export class AudioEngine {
     // Fremdfahrzeuge (Verkehr): gemeinsamer Bus
     this.trafficBus = ctx.createGain(); this.trafficBus.gain.value = 0.55; this.trafficBus.connect(this.master);
     this.voices = [];
+    this.sirenV = [];
     this.ready = true;
   }
 
@@ -160,6 +161,32 @@ export class AudioEngine {
     set(this.seaGain.gain, clamp(1 - dSea / 900, 0, 1) * 0.17 * (1 - this._inside * 0.5));
     const zoneCity = clamp(1 - Math.hypot(s.world.x + 240, s.world.z) / 1100, 0, 1);
     set(this.cityGain.gain, (0.025 + zoneCity * 0.1) * (1 - this._inside * 0.6));
+  }
+
+  /** Sirenen der Einsatzfahrzeuge (bis zu 2 Stimmen): Heulton (langsam) oder Jaulton (schnell), Doppler aus der Annäherung, räumlich. */
+  sirenVoices(list) {
+    if (!this.ready) return;
+    const c = this.ctx, now = c.currentTime;
+    while (this.sirenV.length < 2) {
+      const o = c.createOscillator(); o.type = 'sawtooth';
+      const o2 = c.createOscillator(); o2.type = 'square';
+      const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1200; bp.Q.value = 0.7;
+      const g = c.createGain(); g.gain.value = 0;
+      const pan = c.createPanner(); pan.panningModel = 'equalpower'; pan.distanceModel = 'inverse'; pan.refDistance = 30; pan.rolloffFactor = 1.1; pan.maxDistance = 800;
+      o.connect(bp); o2.connect(bp); bp.connect(g); g.connect(pan); pan.connect(this.trafficBus); o.start(); o2.start();
+      this.sirenV.push({ o, o2, g, pan });
+    }
+    for (let k = 0; k < this.sirenV.length; k++) {
+      const v = this.sirenV[k], s = list?.[k];
+      if (!s) { v.g.gain.setTargetAtTime(0, now, 0.15); continue; }
+      const per = s.id % 2 ? 3.4 : 0.55;                       // Heulen / Jaulen
+      const ph = ((now + s.id * 0.71) / per) % 1;
+      const f = 640 + 820 * (0.5 - 0.5 * Math.cos(ph * Math.PI * 2));
+      const dop = clamp(343 / (343 - clamp(s.closing || 0, -45, 45)), 0.85, 1.2);
+      v.o.frequency.setTargetAtTime(f * dop, now, 0.03); v.o2.frequency.setTargetAtTime(f * dop * 1.004, now, 0.03);
+      v.g.gain.setTargetAtTime(0.075 * (1 - this._inside * 0.55), now, 0.1);
+      if (v.pan.positionX) { v.pan.positionX.value = s.x; v.pan.positionY.value = 1.6; v.pan.positionZ.value = s.z; } else v.pan.setPosition(s.x, 1.6, s.z);
+    }
   }
 
   /** Lautstärke je Fremdfahrzeug (nur nahe, wenige Stimmen) – wird vom Verkehrssystem befüllt. */

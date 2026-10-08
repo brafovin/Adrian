@@ -506,6 +506,7 @@ class Game {
       this.audio.update(dt, { info: player.info, speed: focus.u, carPos: { x: focus.x, y: player.y, z: focus.z }, camPos: this.camera.position, camDir: dir, camMode: this.mode === 'play' ? (this.cameraRig.free ? 'free' : this.cameraRig.mode) : 'free', world: { x: focus.x, z: focus.z } });
       void f;
       this.audio.trafficVoices(this.traffic.sound, this.camera.position, dir);
+      this.audio.sirenVoices(this.mode === 'play' ? this.traffic.sirens : []);
     }
     this.pipe.resize();
     this.pipe.render(dt, this.time);

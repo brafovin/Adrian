@@ -66,6 +66,19 @@ test('Fahrzeugmix: auch Lkw und Busse, mehrere Farben', () => {
   assert.ok(new Set(traffic.cars.map((c) => c.color)).size >= 6);
 });
 
+test('Streifenwagen: kommen im Verkehr vor, Einsatzfahrten melden Sirenen mit Position und Annäherung', () => {
+  const world = makeWorld(), traffic = new Traffic(scene, world, { count: 150 });
+  const pl = player(-60, 60);
+  let seenSiren = false;
+  for (let k = 0; k < 60 * 120; k++) {
+    world.time += 1 / 60; traffic.update(1 / 60, pl, { lights: 0 });
+    if (traffic.sirens.length) { seenSiren = true; const s = traffic.sirens[0]; assert.ok(Number.isFinite(s.x + s.z + s.dist + s.closing)); assert.ok(s.dist < 300); }
+  }
+  assert.ok(traffic.cars.some((c) => c.type === 'police'), 'kein Streifenwagen');
+  assert.ok(seenSiren, 'nie eine Sirene in Hörweite');
+  assert.ok(traffic.cars.filter((c) => c.siren).every((c) => c.type === 'police'));
+});
+
 test('Autobahn und Küstenstraße: Fahrzeuge folgen der Polylinie auf Fahrbahnhöhe', () => {
   for (const [name, x, z, kind] of [['Autobahn', 1290, 0, 'freeway'], ['Küstenstraße', -1240, 100, 'highway']]) {
     const world = makeWorld(), traffic = new Traffic(scene, world, { count: 80 });

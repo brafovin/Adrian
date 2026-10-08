@@ -60,6 +60,7 @@ function buildCarType(kind) {
     sport: { L: 4.5, W: 1.9, H: 0.55, cabL: 2.0, cabH: 0.5, cabX: -0.1, wb: 2.6, r: 0.32 },
     truck: { L: 7.6, W: 2.4, H: 2.9, wb: 4.6, r: 0.5 },
     bus: { L: 11.8, W: 2.55, H: 3.0, wb: 6.2, r: 0.52 },
+    police: { L: 4.95, W: 1.92, H: 0.78, cabL: 2.6, cabH: 0.58, cabX: -0.2, wb: 2.9, r: 0.35 },
   }[kind];
   const y0 = 0.28;
   const glass = 0x0a0f14;
@@ -74,8 +75,15 @@ function buildCarType(kind) {
     parts.push(boxGeo(P.L - 2.5, 2.7, P.W * 0.98, -1.25, y0 + 0.3 + 1.35, 0, 0xe4e6e8));           // Koffer
     parts.push(boxGeo(P.L, 0.35, P.W * 0.9, 0, y0 + 0.28, 0, 0x101012));                          // Rahmen
   } else {
-    parts.push(boxGeo(P.L, P.H - 0.2, P.W, 0, y0 + (P.H - 0.2) / 2, 0, 0xffffff));
-    parts.push(cabinGeo(P.cabL, P.W * 0.9, 0, P.cabH, P.cabX, y0 + P.H - 0.2, 0xffffff));
+    // Streifenwagen: schwarz mit weißen Türen (Lack ist hier fest, Instanzfarbe bleibt weiß)
+    const base = kind === 'police' ? 0x101114 : 0xffffff;
+    parts.push(boxGeo(P.L, P.H - 0.2, P.W, 0, y0 + (P.H - 0.2) / 2, 0, base));
+    parts.push(cabinGeo(P.cabL, P.W * 0.9, 0, P.cabH, P.cabX, y0 + P.H - 0.2, base));
+    if (kind === 'police') {
+      parts.push(boxGeo(2.35, 0.4, P.W * 1.004, -0.15, y0 + 0.36, 0, 0xeeeeee));      // weiße Türen
+      parts.push(boxGeo(0.12, 0.3, P.W * 0.7, P.L / 2 + 0.02, y0 + 0.2, 0, 0x08090a)); // Rammschutz vorn
+      parts.push(boxGeo(1.0, 0.07, 0.95, P.cabX, y0 + P.H - 0.2 + P.cabH + 0.01, 0, 0x16171a)); // Sockel der Lichtleiste
+    }
     // Glasbänder
     parts.push(boxGeo(P.cabL * 0.62, P.cabH * 0.5, P.W * 0.93, P.cabX, y0 + P.H - 0.2 + P.cabH * 0.35, 0, glass));
   }
@@ -98,13 +106,13 @@ const roadLen = (r) => Math.hypot(r.pts[1][0] - r.pts[0][0], r.pts[1][1] - r.pts
 
 /** Fahrzeugmix je Straßentyp: [Typ, Gewicht]. */
 const MIX = {
-  street: [['sedan', 0.52], ['suv', 0.22], ['van', 0.12], ['sport', 0.08], ['truck', 0.06]],
-  avenue: [['sedan', 0.42], ['suv', 0.2], ['van', 0.08], ['sport', 0.1], ['truck', 0.08], ['bus', 0.12]],
-  highway: [['sedan', 0.42], ['suv', 0.22], ['van', 0.08], ['sport', 0.12], ['truck', 0.12], ['bus', 0.04]],
-  freeway: [['sedan', 0.36], ['suv', 0.2], ['van', 0.06], ['sport', 0.12], ['truck', 0.26]],
-  hill: [['sedan', 0.45], ['suv', 0.3], ['van', 0.05], ['sport', 0.2]],
+  street: [['sedan', 0.5], ['suv', 0.2], ['van', 0.12], ['sport', 0.08], ['truck', 0.06], ['police', 0.04]],
+  avenue: [['sedan', 0.4], ['suv', 0.2], ['van', 0.08], ['sport', 0.1], ['truck', 0.08], ['bus', 0.1], ['police', 0.05]],
+  highway: [['sedan', 0.4], ['suv', 0.2], ['van', 0.08], ['sport', 0.12], ['truck', 0.12], ['bus', 0.04], ['police', 0.07]],
+  freeway: [['sedan', 0.34], ['suv', 0.2], ['van', 0.06], ['sport', 0.12], ['truck', 0.22], ['police', 0.06]],
+  hill: [['sedan', 0.45], ['suv', 0.3], ['van', 0.05], ['sport', 0.17], ['police', 0.03]],
 };
-const MASS = { sedan: 1500, suv: 2100, van: 2400, sport: 1600, truck: 7500, bus: 12500 };
+const MASS = { sedan: 1500, suv: 2100, van: 2400, sport: 1600, truck: 7500, bus: 12500, police: 1900 };
 const BUS_COLORS = [0xe8e8e4, 0x2d6aa8, 0xb02a2a, 0x2f7d55];
 const TRUCK_COLORS = [0xf2f2ef, 0xd9dbdf, 0x2b4a78, 0x8b8f96, 0xb02a2a];
 
@@ -118,7 +126,7 @@ export class Traffic {
     this.segMap = new Map();
     for (const r of this.layout.roads) if (r.axis) this.segMap.set(`${r.axis}|${r.gi}|${r.gj}`, r);
     this.initPaths();
-    this.types = ['sedan', 'suv', 'van', 'sport', 'truck', 'bus'];
+    this.types = ['sedan', 'suv', 'van', 'sport', 'truck', 'bus', 'police'];
     this.meshes = {};
     const bodyMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.38, metalness: 0.5, envMapIntensity: 1.3 });
     this.lightMat = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(0.3, 0.3, 0.3) });
@@ -131,6 +139,19 @@ export class Traffic {
       body.setColorAt(0, new THREE.Color(1, 1, 1));
       this.meshes[t] = { body, lights, dims: g.dims };
     }
+    // Blaulicht der Streifenwagen: zwei Hälften der Lichtleiste (rot / blau), Farbe je Instanz wird im Takt umgeschaltet
+    this.bars = [];
+    const barMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
+    for (const side of [1, -1]) {
+      const g = new THREE.BoxGeometry(0.34, 0.1, 0.46);
+      g.translate(this.meshes.police.dims.cabX, 0.28 + this.meshes.police.dims.H - 0.2 + this.meshes.police.dims.cabH + 0.1, side * 0.25);
+      const m = new THREE.InstancedMesh(g, barMat, 60);
+      m.frustumCulled = false; m.count = 0; m.castShadow = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      m.setColorAt(0, new THREE.Color(1, 1, 1));
+      scene.add(m); this.bars.push({ mesh: m, side });
+    }
+    this.clock = 0;
+    this.sirens = [];
     this.tmpM = new THREE.Matrix4(); this.tmpQ = new THREE.Quaternion(); this.tmpV = new THREE.Vector3(); this.tmpS = new THREE.Vector3(1, 1, 1);
     this.tmpC = new THREE.Color(); this.axisY = new THREE.Vector3(0, 1, 0);
     this.sound = [];
@@ -271,13 +292,21 @@ export class Traffic {
       if (Math.abs(o.y - py) > 3) continue;
       if (Math.hypot(o.x - pt.x, o.z - pt.z) < o.hull.hl + hl + 6) return null;
     }
+    // Nicht in eine Schlange/vor einen schnellen Hintermann setzen: Abstand zu den Nachbarn in derselben Spur prüfen
+    let startSpeedCap = Infinity;
+    for (const o of this.cars) {
+      if (o.road !== road || o.dir !== dir || o.lane !== lane || (o.mode !== 'lane' && o.mode !== 'path')) continue;
+      if (o.s > s) startSpeedCap = Math.min(startSpeedCap, o.speed + Math.sqrt(8 * Math.max(0, o.s - s - o.hull.hl - hl - 2)));  // Vordermann: Anhalteweg
+      else if (s - o.s - hl - o.hull.hl < 6 + o.speed * 1.6) return null;                                                       // Hintermann zu dicht/schnell
+    }
     const big = type === 'bus' || type === 'truck';
-    const speedLimit = (ROAD[road.kind]?.speed ?? 14) * this.rnd.range(0.82, 1.05) * (big ? 0.88 : 1);
-    const pal = type === 'bus' ? BUS_COLORS : type === 'truck' ? TRUCK_COLORS : COLORS;
+    const siren = type === 'police' && this.rnd() < 0.45;      // Einsatzfahrt: Blaulicht, Sirene, schneller
+    const speedLimit = (ROAD[road.kind]?.speed ?? 14) * this.rnd.range(0.82, 1.05) * (big ? 0.88 : siren ? 1.25 : 1);
+    const pal = type === 'bus' ? BUS_COLORS : type === 'truck' ? TRUCK_COLORS : type === 'police' ? [0xffffff] : COLORS;
     const car = {
       id: this.nextId++, type, color: pal[Math.floor(this.rnd() * pal.length)], mode, road, dir, lane, s,
-      x: pt.x, z: pt.z, y: py, yaw: Math.atan2(-pt.uz, pt.ux), speed: speedLimit * 0.8, vmax: speedLimit,
-      vx: 0, vz: 0, w: 0, hull: { hl, hw: dims.W / 2, off: 0 }, m: MASS[type], hitT: 0, conn: null, plan: null, pi: pt.i ?? 0, blockT: 0,
+      x: pt.x, z: pt.z, y: py, yaw: Math.atan2(-pt.uz, pt.ux), speed: Math.min(speedLimit * 0.8, startSpeedCap), vmax: speedLimit,
+      vx: 0, vz: 0, w: 0, hull: { hl, hw: dims.W / 2, off: 0 }, m: MASS[type], hitT: 0, conn: null, plan: null, pi: pt.i ?? 0, blockT: 0, siren,
     };
     if (mode === 'lane') car.plan = this.pickNext(road, dir, lane);
     this.cars.push(car);
@@ -315,7 +344,7 @@ export class Traffic {
     for (let tries = 0; tries < 14; tries++) {
       const ang = rnd() * Math.PI * 2, dist = (force ? 35 : 80) + rnd() * (force ? 300 : 280);
       const x = px + Math.cos(ang) * dist, z = pz + Math.sin(ang) * dist;
-      if (this.paths.length && rnd() < 0.4) { const c = this.spawnPath(x, z, view); if (c) return c; }
+      if (this.paths.length && rnd() < (this.onPath ? 0.75 : 0.4)) { const c = this.spawnPath(x, z, view); if (c) return c; }
       // Raster: zufällig N–S oder O–W; Position entlang der Straße am Zufallspunkt
       const axis = rnd() < 0.5 ? 'v' : 'h';
       const road = axis === 'v'
@@ -339,6 +368,17 @@ export class Traffic {
     const px = player.vehicle.x, pz = player.vehicle.z;
     const pf = player.vehicle.fwd;
     // Auffüllen: anfangs/bei großer Lücke mehrere pro Bild, sonst gleichmäßig nachrücken
+    // Fährt der Spieler auf Küstenstraße/Autobahn/Bergstraße (oder nahe daran), dort bevorzugt Verkehr erzeugen
+    if (((this.frame || 0) & 15) === 0) {
+      let near = false;
+      for (const P of this.paths) {
+        const b = P.bbox;
+        if (px < b[0] - 90 || px > b[1] + 90 || pz < b[2] - 90 || pz > b[3] + 90) continue;
+        for (let k = 0; k < P.n && !near; k += 2) near = Math.hypot(P.road.pts[k][0] - px, P.road.pts[k][1] - pz) < 90;
+        if (near) break;
+      }
+      this.onPath = near;
+    }
     const fill = this.cars.length < this.max * 0.6;
     this.spawnTimer -= dt;
     let n = fill ? 8 : this.spawnTimer <= 0 ? 1 : 0;
@@ -379,10 +419,18 @@ export class Traffic {
       else if (c.mode === 'path') this.stepPath(c, dt, buckets, player);
       else this.stepTurn(c, dt, st, buckets);
     }
+    this.clock += dt;
     this.syncMeshes(tod);
     // Klangquellen: nächste Fahrzeuge
     const near = this.cars.filter((c) => Math.hypot(c.x - px, c.z - pz) < 90).sort((a, b) => Math.hypot(a.x - px, a.z - pz) - Math.hypot(b.x - px, b.z - pz)).slice(0, 5);
     const pv = player.vehicle.worldVelocity();
+    this.sirens = this.cars.filter((c) => c.siren && c.mode !== 'free' && Math.hypot(c.x - px, c.z - pz) < 300)
+      .sort((a, b) => Math.hypot(a.x - px, a.z - pz) - Math.hypot(b.x - px, b.z - pz)).slice(0, 2)
+      .map((c) => {
+        const dx = c.x - px, dz = c.z - pz, d = Math.hypot(dx, dz) || 1;
+        const cvx = Math.cos(c.yaw) * c.speed, cvz = -Math.sin(c.yaw) * c.speed;
+        return { id: c.id, x: c.x, z: c.z, dist: d, closing: -(((cvx - pv[0]) * dx + (cvz - pv[1]) * dz) / d) };
+      });
     this.sound = near.map((c) => {
       const dx = c.x - px, dz = c.z - pz, d = Math.hypot(dx, dz) || 1;
       const cvx = Math.cos(c.yaw) * c.speed, cvz = -Math.sin(c.yaw) * c.speed;
@@ -601,6 +649,21 @@ export class Traffic {
       M.body.setMatrixAt(i, this.tmpM); M.lights.setMatrixAt(i, this.tmpM);
       this.tmpC.setHex(c.color); M.body.setColorAt(i, this.tmpC);
     }
+    // Blaulicht: Einsatzfahrzeuge blitzen abwechselnd rot/blau (Doppelblitz), Streifenwagen im Streifendienst bleiben dunkel
+    const lit = [new THREE.Color(7, 0.35, 0.3), new THREE.Color(0.5, 1.2, 8)], dark = new THREE.Color(0.04, 0.04, 0.05);
+    let nb = 0;
+    for (const c of this.cars) {
+      if (c.type !== 'police' || nb >= 60) continue;
+      this.tmpQ.setFromAxisAngle(this.axisY, c.yaw); this.tmpV.set(c.x, c.y, c.z); this.tmpM.compose(this.tmpV, this.tmpQ, this.tmpS);
+      const k = Math.floor((this.clock + c.id * 0.13) * 8) % 8;
+      for (const b of this.bars) {
+        b.mesh.setMatrixAt(nb, this.tmpM);
+        const on = c.siren && (b.side > 0 ? k === 0 || k === 2 : k === 4 || k === 6);
+        b.mesh.setColorAt(nb, on ? lit[b.side > 0 ? 0 : 1] : dark);
+      }
+      nb++;
+    }
+    for (const b of this.bars) { b.mesh.count = nb; b.mesh.instanceMatrix.needsUpdate = true; if (b.mesh.instanceColor) b.mesh.instanceColor.needsUpdate = true; }
     for (const t of this.types) {
       const M = this.meshes[t];
       M.body.count = M.lights.count = Math.min(idx[t], MAXI);
@@ -626,6 +689,7 @@ export class Traffic {
 
   dispose() {
     for (const t of this.types) { const M = this.meshes[t]; this.scene.remove(M.body, M.lights); M.body.dispose(); M.lights.dispose(); }
+    for (const b of this.bars) { this.scene.remove(b.mesh); b.mesh.dispose(); }
   }
 }
 
