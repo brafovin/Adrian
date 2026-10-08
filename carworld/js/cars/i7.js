@@ -370,32 +370,32 @@ function i7Extras(ctx) {
     const dx = [0.05, 0.1, 0.13, 0.13, 0.1, 0.05];
     const front = zs.map((z, i) => [xf[i] + dx[i], z]);
     const back = zs.map((z, i) => [xf[i] - 0.05, z * 0.97]).reverse();
-    ctx.add(plank([...front, ...back], 0.012, yL, carbon));
+    ctx.add(plank([...front, ...back], 0.012, yL, carbon), { kit: 'lip' });
     // dünne Kante vorn (dunkles Chrom)
     const e1 = zs.map((z, i) => [xf[i] + dx[i], z]);
     const e2 = zs.map((z, i) => [xf[i] + dx[i] - 0.012, z * 0.995]).reverse();
-    ctx.add(plank([...e1, ...e2], 0.004, yL + 0.012, darkChrome, { bevel: 0.001 }));
+    ctx.add(plank([...e1, ...e2], 0.004, yL + 0.012, darkChrome, { bevel: 0.001 }), { kit: 'lip' });
     // hochgezogene Enden (Canards)
     for (const sg of [1, -1]) {
       const x0 = xf[sg > 0 ? 5 : 0];
       const fin = roundedBox(0.34, 0.16, 0.01, 0.003, carbon);
       fin.position.set(x0 - 0.06, 0.17, sg * 0.97);
       fin.rotation.set(sg * 0.2, sg * 0.32, 0);
-      ctx.add(fin);
+      ctx.add(fin, { kit: 'lip' });
     }
   }
 
   // ---- Seitenschweller (mehrlagig, kantig) + Radlauf-Verbreiterungen + Spiegel
   for (const s of [1, -1]) {
     const sk = skirt(loft, s, -1.05, 1.1, 0.2, { out: 0.06, h: 0.115 }, gloss);
-    if (sk) ctx.add(sk);
+    if (sk) ctx.add(sk, { kit: 'skirt' });
     const sk2 = skirt(loft, s, -1.0, 1.05, 0.118, { out: 0.085, h: 0.022 }, carbon);
-    if (sk2) ctx.add(sk2);
+    if (sk2) ctx.add(sk2, { kit: 'skirt' });
     const sk3 = skirt(loft, s, -0.95, 1.0, 0.27, { out: 0.035, h: 0.03 }, paint);
-    if (sk3) ctx.add(sk3);
+    if (sk3) ctx.add(sk3, { kit: 'skirt' });
     for (const [cx, cy, R] of [[AX, 0.365, 0.425], [-AX, 0.37, 0.425]]) {
       const l = archLip(loft, cx, cy, R, s, { out: 0.032, rad: 0.055, a0: -0.12, a1: Math.PI + 0.12 }, paint);
-      if (l) ctx.add(l);
+      if (l) ctx.add(l, { kit: 'flares' });
     }
     const m = mirror(paint, { x: 0.58, y: 0.93, z: 0.95, w: 0.22, h: 0.115, d: 0.15 });
     if (s < 0) m.scale.z = -1;
@@ -505,17 +505,17 @@ function i7Extras(ctx) {
     if (path.length > 4) {
       const prof = [[-0.07, -0.012], [0.0, -0.006], [0.03, -0.004], [0.05, 0.012], [0.028, 0.022], [-0.05, 0.012]];
       const lip = new THREE.Mesh(sweep(path, outs, ups, prof, { closedProfile: true }), carbon);
-      ctx.add(lip);
+      ctx.add(lip, { kit: 'spoiler' });
     }
   }
 
   // Diffusor: Wanne, Finnen, Endrohr-Gehäuse + 2x2 Attrappen
-  ctx.add(plank([[-2.05, -0.9], [-2.74, -0.84], [-2.74, 0.84], [-2.05, 0.9]], 0.012, 0.115, carbon));
-  const trim = roundedBox(0.014, 0.012, 1.74, 0.004, darkChrome); trim.position.set(-2.742, 0.32, 0); ctx.add(trim);
+  ctx.add(plank([[-2.05, -0.9], [-2.74, -0.84], [-2.74, 0.84], [-2.05, 0.9]], 0.012, 0.115, carbon), { kit: 'diffuser' });
+  const trim = roundedBox(0.014, 0.012, 1.74, 0.004, darkChrome); trim.position.set(-2.742, 0.32, 0); ctx.add(trim, { kit: 'diffuser' });
   for (let i = -3; i <= 3; i++) {
     const f = roundedBox(0.2, 0.16, 0.012, 0.003, carbon);
     f.position.set(-2.69, 0.215, i * 0.1); f.rotation.set(0, -i * 0.06, 0);
-    ctx.add(f);
+    ctx.add(f, { kit: 'diffuser' });
   }
   for (const sg of [1, -1]) {
     const cage = roundedBox(0.14, 0.18, 0.44, 0.02, gloss); cage.position.set(-2.69, 0.26, sg * 0.6); ctx.add(cage);

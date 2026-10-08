@@ -295,6 +295,15 @@ export function makeLayout(seed = 7) {
 
   const layout = {
     seed, roads, crossings, crossAt, index, tunnels, summit, viewpoint,
+    /** Liegt (x,z) im Korridor eines Tunnels (inkl. Portalbereich)? Dort zählt nur die Fahrbahn, nicht der Berg darüber. */
+    inTunnel: (x, z) => {
+      for (const T of tunnels) {
+        const dx = T.b[0] - T.a[0], dz = T.b[1] - T.a[1], rx = x - T.a[0], rz = z - T.a[1];
+        const al = (rx * dx + rz * dz) / T.len, la = (-rx * dz + rz * dx) / T.len;
+        if (al > -14 && al < T.len + 14 && Math.abs(la) < 9) return true;
+      }
+      return false;
+    },
     roadsInChunk: (cx, cz) => index.get(key(cx, cz)) || [],
     terrain,
     zone: (x, z) => zoneOfBlock(Math.floor(x / PITCH), Math.floor(z / PITCH), seed),

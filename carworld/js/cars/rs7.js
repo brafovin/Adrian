@@ -300,6 +300,8 @@ function rs7Extras(ctx) {
   const wingMat = new THREE.MeshPhysicalMaterial({ color: 0x0a0a0c, metalness: 0.5, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.6, side: THREE.DoubleSide });
   // Sammler: gleiche Materialien werden am Ende zu je einem Mesh zusammengefasst (wenige Draw-Calls)
   const G = { carbon: [], paint: [], gloss: [], chrome: [], line: [], wing: [] };
+  // Bodykit-Teile (in der Garage einzeln schaltbar), je Material eigener Stapel
+  const K = { lip: [], skirtG: [], skirtC: [], flares: [], flareBolts: [], spoW: [], spoC: [], dif: [] };
   const line = (P, pts, w = 0.0035, off = 0.0006, to = G.line) => { const g = surfaceLine(P, pts, w, off); if (g) bake(new THREE.Mesh(g), to); };
 
   // ---- Front: sechseckiger Singleframe-Grill mit Wabengitter
@@ -354,12 +356,12 @@ function rs7Extras(ctx) {
   const protrude = (z, a, b) => a - (a - b) * smoothstep(0.5, 1.0, Math.abs(z)) - 0.02;
   const outer = zs.map((z, i) => [xf[i] + protrude(z, 0.11, 0.02), z]);
   const inner = zs.map((z, i) => [xf[i] - 0.03, z]).reverse();
-  bake(plank([...outer, ...inner], 0.016, 0.118, carbon), G.carbon);
+  bake(plank([...outer, ...inner], 0.016, 0.118, carbon), K.lip);
   const zs2 = zs.filter((z) => Math.abs(z) <= 0.84);
   const xf2 = zs2.map((z) => loft.endX(z, 0.18, +1) ?? 2.1);
   const outer2 = zs2.map((z, i) => [xf2[i] + protrude(z, 0.07, 0.015), z]);
   const inner2 = zs2.map((z, i) => [xf2[i] - 0.03, z]).reverse();
-  bake(plank([...outer2, ...inner2], 0.012, 0.168, carbon), G.carbon);
+  bake(plank([...outer2, ...inner2], 0.012, 0.168, carbon), K.lip);
   for (const s of [1, -1]) {
     const P = (z, y, dx) => { const x = (loft.endX(z, y, +1) ?? 2.15) + dx; return [x, y, s * z]; };
     const tri = [P(0.46, 0.13, 0.085), P(0.99, 0.13, 0.03), P(0.8, 0.255, 0.012)];
@@ -384,12 +386,12 @@ function rs7Extras(ctx) {
   for (const s of [1, -1]) {
     const P = s > 0 ? PSr : PSl;
     const sk = skirt(loft, s, -1.0, 1.0, 0.2, { out: 0.05, h: 0.1 }, gloss);
-    if (sk) bake(sk, G.gloss);
+    if (sk) bake(sk, K.skirtG);
     const sk2 = skirt(loft, s, -1.04, 1.04, 0.118, { out: 0.07, h: 0.026 }, carbon);
-    if (sk2) bake(sk2, G.carbon);
+    if (sk2) bake(sk2, K.skirtC);
     for (const cx of [1.465, -1.465]) {
       const l = archLip(loft, cx, 0.355, 0.4, s, { out: 0.026, rad: 0.05, a0: -0.12, a1: Math.PI + 0.12 }, paint);
-      if (l) bake(l, G.paint);
+      if (l) bake(l, K.flares);
       // Widebody-Schrauben entlang des Randes
       for (let a = 0.16; a < Math.PI - 0.1; a += 0.2) {
         const r = P(cx + Math.cos(a) * 0.424, 0.355 + Math.sin(a) * 0.424);
@@ -397,7 +399,7 @@ function rs7Extras(ctx) {
         const b = new THREE.Mesh(boltG);
         b.position.copy(r.p).addScaledVector(r.n, 0.027);
         b.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), r.n);
-        bake(b, G.chrome);
+        bake(b, K.flareBolts);
       }
     }
     // Außenspiegel: schwarze Kappen (Gruppe, daher einzeln)
@@ -463,19 +465,19 @@ function rs7Extras(ctx) {
       pathP.push([x0, y, z]); outs.push([-taper, 0, 0]); ups.push([0, 1, 0]);
     }
     const prof = [[-0.02, -0.03], [0.1, -0.014], [0.21, 0.006], [0.27, 0.022], [0.275, 0.038], [0.2, 0.04], [0.1, 0.028], [-0.02, 0.0]];
-    bake(new THREE.Mesh(sweep(pathP, outs, ups, prof, { closedProfile: true })), G.wing);
+    bake(new THREE.Mesh(sweep(pathP, outs, ups, prof, { closedProfile: true })), K.spoW);
     const prof2 = [[-0.02, -0.03], [0.08, -0.024], [0.2, -0.004], [0.225, 0.0], [0.225, 0.012], [0.08, -0.01], [-0.02, -0.005]];
-    bake(new THREE.Mesh(sweep(pathP.slice(4, 25), outs.slice(4, 25), ups.slice(4, 25), prof2, { closedProfile: true })), G.carbon);
+    bake(new THREE.Mesh(sweep(pathP.slice(4, 25), outs.slice(4, 25), ups.slice(4, 25), prof2, { closedProfile: true })), K.spoC);
   }
 
   // Diffusor: Bodenplatte + fünf schräg stehende Finnen
-  bake(plank([[-2.36, -0.8], [-2.5, -0.76], [-2.5, 0.76], [-2.36, 0.8]], 0.014, 0.15, carbon), G.carbon);
+  bake(plank([[-2.36, -0.8], [-2.5, -0.76], [-2.5, 0.76], [-2.36, 0.8]], 0.014, 0.15, carbon), K.dif);
   for (let i = 0; i < 5; i++) {
     const z = (i - 2) * 0.16;
     const fin = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.27, 0.014));
     fin.position.set(-2.46, 0.29, z);
     fin.rotation.x = -z * 0.12;
-    bake(fin, G.carbon);
+    bake(fin, K.dif);
   }
   // vier runde, schwarze Endrohre (je zwei links/rechts)
   const tipMat = new THREE.MeshStandardMaterial({ color: 0x24252a, metalness: 1, roughness: 0.16, envMapIntensity: 1.8 });
@@ -489,9 +491,12 @@ function rs7Extras(ctx) {
   }
 
   // ---- zusammenfassen: je Material ein Mesh
-  const flush = (geos, mat, shadow = true) => { if (geos.length) ctx.add(new THREE.Mesh(mergeGeometries(geos), mat), { shadow }); };
+  const flush = (geos, mat, shadow = true, kit = undefined) => { if (geos.length) ctx.add(new THREE.Mesh(mergeGeometries(geos), mat), { shadow, kit }); };
   flush(G.carbon, carbon); flush(G.paint, paint); flush(G.gloss, gloss); flush(G.chrome, darkChrome, false);
   flush(G.line, lm, false); flush(G.wing, wingMat); flush(tipM, tipMat); flush(tipD, tipDark, false);
+  flush(K.lip, carbon, true, 'lip'); flush(K.skirtG, gloss, true, 'skirt'); flush(K.skirtC, carbon, true, 'skirt');
+  flush(K.flares, paint, true, 'flares'); flush(K.flareBolts, darkChrome, false, 'flares');
+  flush(K.spoW, wingMat, true, 'spoiler'); flush(K.spoC, carbon, true, 'spoiler'); flush(K.dif, carbon, true, 'diffuser');
 }
 
 export function buildRS7() { return assembleCar(RS7_DEF); }
