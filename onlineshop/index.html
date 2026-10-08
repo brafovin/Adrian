@@ -107,11 +107,6 @@ section{padding-block:clamp(52px,8vw,108px)}
 .vis{position:absolute;inset:0;display:block}
 .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .ph.zoom{transform:translate(calc(50% - var(--ox)),calc(50% - var(--oy))) scale(var(--s));transform-origin:var(--ox) var(--oy)}
-.ill{background:radial-gradient(circle at 50% 42%,rgb(255 255 255 / .55) 0 28%,transparent 70%),var(--bgc)}
-.ill svg{position:absolute;left:6%;top:4%;width:88%;height:92%}
-.ill.det svg{left:0;top:0;width:100%;height:100%}
-.stage .ill::before{content:'JWG';position:absolute;inset:0;display:grid;place-items:center;font:900 clamp(8rem,26vw,19rem)/1 var(--font-display);letter-spacing:.06em;color:transparent;-webkit-text-stroke:3px rgb(255 255 255 / .6)}
-.stage .ill.det::before{display:none}
 .garment{display:block;overflow:visible;filter:drop-shadow(0 14px 12px rgb(13 18 51 / .22))}
 .tile .art{position:absolute;inset:6% 8% 4%}
 
@@ -253,13 +248,13 @@ footer .brand{color:#fff}
 .pdp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.8fr);gap:clamp(24px,5vw,72px);align-items:start;padding-bottom:clamp(40px,6vw,80px)}
 .stage{aspect-ratio:11/6;background:var(--tile);position:relative;overflow:hidden;border:4px solid var(--navy);box-shadow:9px 9px 0 var(--navy)}
 .stage .art{position:absolute;inset:3% 6% 2%}
-.stage .art.lab-bg{background:#fff;inset:0;display:grid;place-items:center}
-.stage .art.lab-bg svg{height:100%;width:auto;max-width:100%}
+.stage .art.lab-bg{background:#fff;inset:0}
+.stage .art.lab-bg svg{position:absolute;inset:0;width:100%;height:100%}
 .thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
 .thumb{display:flex;flex-direction:column;gap:6px;padding:0;background:none;border:0;text-align:left}
 .thumb .tile{aspect-ratio:11/6;border:3px solid var(--line)}
-.thumb .tile .art{inset:0;background:#fff;display:grid;place-items:center}
-.thumb .tile .art svg{height:100%;width:auto;max-width:100%}
+.thumb .tile .art{inset:0;background:#fff}
+.thumb .tile .art svg{position:absolute;inset:0;width:100%;height:100%}
 .thumb[aria-pressed="true"] .tile{border-color:var(--navy);box-shadow:4px 4px 0 var(--navy)}
 .thumb span.mono{color:var(--muted)}
 .thumb[aria-pressed="true"] span.mono{color:var(--ink);font-weight:500}
@@ -371,6 +366,8 @@ input:focus,select:focus{outline:3px solid var(--accent);outline-offset:1px}
 /* Chat-Assistent */
 .chat-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;display:flex;align-items:center;gap:10px;padding:8px 18px 8px 8px;background:var(--sun);color:var(--navy);border:3px solid var(--navy);border-radius:999px;box-shadow:5px 5px 0 var(--navy);font:700 .9rem/1 var(--font-body);letter-spacing:.04em;text-transform:uppercase}
 .chat-fab[hidden]{display:none}
+.chat-fab.mini span{display:none}
+.chat-fab.mini{padding:8px}
 .chat-fab:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--navy)}
 .chat-fab img{width:36px;height:36px;border-radius:50%;background:#fff;border:2px solid var(--navy)}
 .chat-panel{padding:0;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:56;width:min(410px,calc(100vw - 24px));height:min(620px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:3px solid var(--navy);box-shadow:8px 8px 0 var(--navy)}
@@ -493,14 +490,15 @@ const PRODUCTS=[
   fit:'Slim Fit mit geradem Bein. Die Chino fällt normal aus. Die Größen entsprechen der Bundweite in Zoll (W28 = 71 cm). Die Beinlänge ist bei allen Größen gleich (Innenbein 81 cm).',
   care:'Bei 40 °C auf links waschen. Nicht in den Trockner. Das Emblem nicht bügeln.',
   table:{head:['Größe','Bund','Hüfte','Innenbein'],unit:'cm',rows:[['W28',71,94,81],['W30',76,98,81],['W32',81,103,81],['W34',86,108,81],['W36',91,113,81],['W38',97,118,81]]}},
- {id:'guertel',cat:'unten',photo:false,type:'belt',isNew:true,bg:'#9EEBD3',name:'Gürtel Webband',short:'Gürtel',price:19,orig:'mohn',colors:['mohn','marine','anthrazit','tanne','senf','beere'],sizes:['S','M','L'],temp:30,compo:'100 % BIO-BAUMWOLLE',
-  alt:'Webgürtel mit eingewebtem JWG-Schriftzug und Metallschnalle mit Wappen',
-  tag:'Webgürtel mit Wappen auf der Schnalle',
-  lead:'Der Gürtel aus robustem Webband: 38 mm breit, mit eingewebtem JWG-Schriftzug und einer Metallschnalle, in die das Schulwappen geprägt ist.',
-  points:['Webband aus Bio-Baumwolle, 38 mm breit','Dornschnalle aus Metall, Wappen geprägt','Eingewebter Schriftzug JWG und Goethe Schule','Mit Löchern im 3-cm-Abstand'],
-  material:'Webband 100 % Bio-Baumwolle, 38 mm breit. Schnalle aus Zinklegierung.',
+ {id:'guertel',cat:'unten',photo:true,isNew:true,allRecolored:true,name:'Ledergürtel Campus',short:'Gürtel',price:39,orig:'tanne',colors:['tanne','anthrazit','marine','mohn','senf','beere'],sizes:['S','M','L'],temp:null,compo:'100 % RINDLEDER',
+  pos:'46% 50%',zoom:{x:54.2,y:64,s:2.4},alt:'Ledergürtel mit Metallschnalle, auf der das Goethe-Porträt geprägt ist',
+  tag:'Leder mit geprägter Wappenschnalle',
+  lead:'Der Ledergürtel mit der Schulschnalle: 38 mm breites Rindleder mit Ziernaht und eine Dornschließe aus Metall, in die Goethe-Porträt und Schriftzug geprägt sind.',
+  points:['38 mm breites Rindleder mit Ziernaht','Metallschnalle mit geprägtem Goethe-Porträt','Dornschließe, 5 Löcher im Abstand von 3 cm','Gürtelschlaufe aus Leder'],
+  note:'Das Original-Foto zeigt den Gürtel in Braun. Alle Farben sind digital umgefärbt und können vom echten Leder abweichen.',
+  material:'Rindleder, durchgefärbt, 38 mm breit. Schnalle aus Zinklegierung, matt vernickelt.',
   fit:'Wähle die Länge nach deiner Taillenweite plus etwa 10 cm. Die Tabelle zeigt, bis zu welcher Taille jede Größe passt.',
-  care:'Bei 30 °C von Hand waschen. Die Schnalle nicht ins Wasser tauchen. Liegend trocknen.',
+  care:'Nicht waschen. Mit einem feuchten Tuch abwischen und an der Luft trocknen lassen, nicht an der Heizung. Gelegentlich mit Lederpflege behandeln.',
   table:{head:['Größe','Länge','Taille bis'],rows:[['S','100 cm','86 cm'],['M','110 cm','96 cm'],['L','120 cm','106 cm']]}},
  {id:'cap',cat:'zubehoer',photo:true,name:'Cap Sixpanel',short:'Cap',price:24,weight:240,orig:'marine',colors:['marine','anthrazit','tanne','mohn','beere'],sizes:ONE,temp:30,compo:'100 % BIO-BAUMWOLLE',
   pos:'52% 50%',zoom:{x:51,y:45,s:2.6},alt:'Cap mit gesticktem Wappen auf einem Schultisch',
@@ -533,7 +531,7 @@ const PRODUCTS=[
 ];
 const BY=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
 const FREE_FROM=60, SHIP_STD=4.9, SHIP_EXP=9.9, COUPON='WILLKOMMEN10';
-const VIEWS=p=>[['front',p.photo?'Foto':'Ansicht'],['detail','Detail'],['label','Etikett']];
+const VIEWS=p=>[['front','Foto'],['detail','Detail'],['label','Etikett']];
 /* CATALOG:END */
 
 /* ---------- Helfer ---------- */
@@ -548,43 +546,12 @@ const lum=h=>{const [r,g,b]=h2r(h).map(v=>v/255);return .2126*r+.7152*g+.0722*b}
 const onColor=h=>lum(h)>.55?'#0D1233':'#FFFFFF';
 const reduce=()=>{try{return window.matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 
-/* ---------- Illustration (Gürtel) ---------- */
-let UID=0;
-const seal=(x,y,sz)=>`<image href="${WAPPEN}" x="${x}" y="${y}" width="${sz}" height="${sz}" preserveAspectRatio="xMidYMid meet"/>`;
-function drawBelt(P){
-  const cx=200,cy=238,R=126,W=34,pol=(d,r)=>[cx+r*Math.cos(d*Math.PI/180),cy+r*Math.sin(d*Math.PI/180)];
-  const arc=(a0,a1,r)=>{const [x0,y0]=pol(a0,r),[x1,y1]=pol(a1,r);return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`};
-  const tp=`M${cx-(R-5)},${cy} a${R-5},${R-5} 0 1,1 ${2*(R-5)},0 a${R-5},${R-5} 0 1,1 ${-2*(R-5)},0`;
-  const txt=('JWG · GOETHE SCHULE · ').repeat(8);
-  const ring=`<circle cx="${cx+3}" cy="${cy+5}" r="${R}" fill="none" stroke="#000" stroke-opacity=".16" stroke-width="${W+2}"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${P.hex}" stroke-width="${W}"/><circle cx="${cx}" cy="${cy}" r="${R+W/2-3}" fill="none" stroke="${P.acc}" stroke-width="2.4"/><circle cx="${cx}" cy="${cy}" r="${R-W/2+3}" fill="none" stroke="${P.acc}" stroke-width="2.4"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="url(#${P.id}r)" stroke-width="${W}"/><path id="${P.id}tp" d="${tp}" fill="none"/><text class="fd" font-size="14" font-weight="800" fill="${P.acc}" letter-spacing="2.2"><textPath href="#${P.id}tp" startOffset="14">${txt}</textPath></text>`;
-  const tail=`<path d="${arc(-82,-8,R)}" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="${W+2}" transform="translate(3,4)"/><path d="${arc(-82,-8,R)}" fill="none" stroke="${P.hi}" stroke-width="${W-2}" stroke-linecap="round"/><path d="${arc(-82,-8,R)}" fill="none" stroke="${P.deep}" stroke-opacity=".25" stroke-width="2" stroke-dasharray="4 4"/>`+[-62,-50,-38,-26].map(a=>{const [x,y]=pol(a,R);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.8" fill="${P.deep}"/>`}).join('');
-  const [bx,by]=pol(-90,R);
-  const buckle=`<rect x="${bx-40}" y="${by-34}" width="80" height="68" rx="12" fill="url(#${P.id}m)" stroke="#6B7075" stroke-width="2.4"/><rect x="${bx-30}" y="${by-24}" width="60" height="48" rx="8" fill="none" stroke="#6B7075" stroke-opacity=".6" stroke-width="1.6"/><circle cx="${bx}" cy="${by}" r="23" fill="#fff" fill-opacity=".35"/>`+seal(bx-22,by-22,44)+`<path d="M${bx+40},${by-6} h16 v12 h-16" fill="none" stroke="#6B7075" stroke-width="2.4"/>`;
-  return ring+tail+buckle;
-}
-const VB={belt:{front:'0 -24 400 464',detail:'125 71 150 82'}};
-function illu(type,ck,view,label){
-  const C=COLORS[ck],hex=C.hex,light=lum(hex)>.5,id='g'+(++UID);
-  const P={id,hex,acc:C.acc,light,shade:mix(hex,'#000000',.2),deep:mix(hex,'#000000',.42),hi:mix(hex,'#ffffff',.16),edge:light?mix(hex,'#000000',.34):mix(hex,'#ffffff',.3),cord:light?mix(hex,'#000000',.6):'#EEE9D9'};
-  const defs=`<linearGradient id="${id}v" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".3" stop-color="#fff" stop-opacity=".12"/><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>`
-   +`<linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EEF0F2"/><stop offset=".5" stop-color="#B9BEC3"/><stop offset="1" stop-color="#8E949A"/></linearGradient>`
-   +`<linearGradient id="${id}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>`
-   +`<linearGradient id="${id}r2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>`;
-  const art={belt:drawBelt}[type](P);
-  return `<svg class="garment" viewBox="${VB[type][view]}" role="img" aria-label="${esc(label||'')}" focusable="false"><defs>${defs}</defs>${art}</svg>`;
-}
-
 /* ---------- Bilder ---------- */
 /* mode: card = Ausschnitt um das Produkt, full = ganzes Bild, detail = Nahaufnahme des Wappens */
 function visual(p,c,mode,alt){
-  const a=alt?esc(alt):'';
-  if(p.photo){
-    const src=IMG(p.imgid||p.id,c);
-    if(mode==='detail'){const z=p.zoom;return `<span class="vis"><img class="ph zoom" src="${src}" alt="${a}" style="--ox:${z.x}%;--oy:${z.y}%;--s:${z.s}" draggable="false"></span>`}
-    return `<span class="vis"><img class="ph" src="${src}" alt="${a}" style="object-position:${mode==='full'?'50% 50%':p.pos}" draggable="false"></span>`;
-  }
-  const det=mode==='detail';
-  return `<span class="vis ill${det?' det':''}" style="--bgc:${p.bg}">${illu(p.type,c,det?'detail':'front',alt||p.alt)}</span>`;
+  const a=alt?esc(alt):'',src=IMG(p.imgid||p.id,c);
+  if(mode==='detail'){const z=p.zoom;return `<span class="vis"><img class="ph zoom" src="${src}" alt="${a}" style="--ox:${z.x}%;--oy:${z.y}%;--s:${z.s}" draggable="false"></span>`}
+  return `<span class="vis"><img class="ph" src="${src}" alt="${a}" style="object-position:${mode==='full'?'50% 50%':p.pos}" draggable="false"></span>`;
 }
 /* Pflegeetikett mit gewaehlter Groesse und Farbe */
 function label(p,size,ck){
@@ -593,7 +560,7 @@ function label(p,size,ck){
   const big=one?`<text class="fd" x="200" y="238" text-anchor="middle" font-size="50" font-weight="800" fill="${ink}">ONE SIZE</text>`:`<text class="fd" x="200" y="248" text-anchor="middle" font-size="108" font-weight="800" fill="${ink}">${esc(size)}</text>`;
   const ic=(x,body)=>`<g transform="translate(${x},322)" fill="none" stroke="${ink}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${body}</g>`;
   const X='<path d="M3,3 L27,27 M27,3 L3,27"/>';
-  const wash=`<path d="M3,8 H27 L24,25 H6 Z"/><path d="M8,15 q3.5,-3 7,0 t7,0"/><text x="15" y="23" text-anchor="middle" font-size="7.5" stroke="none" fill="${ink}" class="fm">${p.temp}</text>`;
+  const wash=`<path d="M3,8 H27 L24,25 H6 Z"/><path d="M8,15 q3.5,-3 7,0 t7,0"/>`+(p.temp==null?X:`<text x="15" y="23" text-anchor="middle" font-size="7.5" stroke="none" fill="${ink}" class="fm">${p.temp}</text>`);
   const icons=ic(90,wash)+ic(136,`<path d="M15,4 L27,26 H3 Z"/>${X}`)+ic(182,`<rect x="4" y="4" width="22" height="22"/><circle cx="15" cy="15" r="7"/>${X}`)+ic(228,`<path d="M4,24 H26 C26,15 21,9 13,9 H4 Z"/><circle cx="14" cy="20" r="1.5" fill="${ink}"/>`)+ic(274,`<circle cx="15" cy="15" r="11"/>${X}`);
   return `<svg class="garment" viewBox="0 -24 400 464" role="img" aria-label="Pflegeetikett, Größe ${esc(size)}, Farbe ${c.name}" focusable="false"><g transform="rotate(-2 200 216)">
    <rect x="64" y="64" width="272" height="318" rx="3" fill="${paper}" stroke="#0000002e"/>
@@ -607,7 +574,7 @@ function label(p,size,ck){
    <text class="fm" x="200" y="290" text-anchor="middle" font-size="9.5" fill="${ink}" letter-spacing="1">${p.compo}</text>
    <path d="M88,304 H312" stroke="${ink}" stroke-opacity=".5"/>
    ${icons}
-   <text class="fm" x="200" y="368" text-anchor="middle" font-size="8.5" fill="${ink}" opacity=".85" letter-spacing=".8">${p.temp} °C · AUF LINKS WASCHEN</text>
+   <text class="fm" x="200" y="368" text-anchor="middle" font-size="8.5" fill="${ink}" opacity=".85" letter-spacing=".8">${p.temp==null?'NICHT WASCHEN · FEUCHT ABWISCHEN':p.temp+' °C · AUF LINKS WASCHEN'}</text>
   </g></svg>`;
 }
 
@@ -782,7 +749,7 @@ function viewProduct(p){
       <div>
         <div class="stage" role="group" aria-label="Ansicht ${vlabel[s.view]}">${stage}</div>
         <div class="thumbs" role="group" aria-label="Ansichten">${views}</div>
-        ${p.photo&&s.color!==p.orig?'<p class="mono muted" style="margin-top:14px">Hinweis: Die Fotos in dieser Farbe sind digital umgefärbt.</p>':''}
+        ${s.color!==p.orig||p.allRecolored?'<p class="mono muted" style="margin-top:14px">Hinweis: Die Fotos in dieser Farbe sind digital umgefärbt.</p>':''}
       </div>
       <div class="buy">
         <div class="title">
@@ -956,7 +923,7 @@ function render(keep){
   updCount();
   if(v.name==='checkout')updShipStd();
   if(v.name==='home'){revealSetup();heroStart()}
-  if(typeof chatSuggest==='function'&&CH.built&&CH.open)chatSuggest();
+  if(CH.built){const f=$('#chat-fab');if(f)f.classList.toggle('mini',v.name!=='home');if(CH.open)chatSuggest()}
   if(!keep){window.scrollTo(0,0);try{app.focus({preventScroll:true})}catch(e){}}
 }
 function go(name,pid,scrollTo,color){
@@ -1146,19 +1113,26 @@ function priceAns(cur,n){
   if(cur.length)return cur.map(p=>`${p.name} kostet ${eur(p.price)} inklusive 19 % MwSt.`).join('\n');
   return 'Alle Preise:\n'+bullets(PRODUCTS.map(p=>`${p.name}: ${eur(p.price)}`))+`\nAlle Preise inklusive MwSt. Ab ${eur(FREE_FROM)} Warenwert ist der Versand kostenlos.`;
 }
+function imgNote(cur){
+  const part=cur.filter(p=>!p.allRecolored),all=cur.filter(p=>p.allRecolored);
+  const out=[];
+  if(part.length)out.push('Bei den Fotos ist nur die Originalfarbe ('+part.map(p=>COLORS[p.orig].name).join(', ')+') echt fotografiert, die anderen Farben sind digital umgefärbt.');
+  if(all.length)out.push('Beim Ledergürtel sind alle Farben digital umgefärbt, das Original-Foto zeigt ihn in Braun.');
+  return out.length?'\n'+out.join(' '):'';
+}
 function colorAns(cur,cols){
   if(cur.length){
     return cur.map(p=>{
       const miss=cols.filter(k=>!p.colors.includes(k));
       const asked=cols.length?(miss.length===0?`Ja, ${p.name} gibt es in ${cols.map(k=>COLORS[k].name).join(' und ')}. `:`In ${miss.map(k=>COLORS[k].name).join(' und ')} gibt es ${p.name} nicht. `):'';
       return `${asked}${p.name} gibt es in diesen Farben: ${cn(p)}.`;
-    }).join('\n')+(cur.some(p=>p.photo)?'\nBei den Fotos ist nur die Originalfarbe (' +cur.filter(p=>p.photo).map(p=>COLORS[p.orig].name).join(', ')+') echt fotografiert, die anderen Farben sind digital umgefärbt.':'');
+    }).join('\n')+imgNote(cur)
   }
   if(cols.length){return cols.map(k=>{const ps=PRODUCTS.filter(p=>p.colors.includes(k));return `In ${COLORS[k].name} gibt es: ${ps.map(p=>p.name).join(', ')}.`}).join('\n')}
   return 'Die Farben je Produkt:\n'+bullets(PRODUCTS.map(p=>`${p.name}: ${cn(p)}`))+'\nIm Abschnitt „Farbwelt“ auf der Startseite siehst du alle Teile in einer gewählten Farbe.';
 }
-function careAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.care}`).join('\n'):'Die Pflege steht auf jeder Produktseite und auf dem eingenähten Etikett. Die meisten Teile werden bei 40 °C auf links gewaschen und nicht in den Trockner gegeben. Cap, Gürtel und Schlüsselband wäschst du bei 30 °C von Hand. Zu welchem Teil möchtest du es genau wissen?'}
-function matAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.material}${p.weight?` Stoffgewicht ${p.weight} g/m².`:''}`).join('\n'):'Fast alle Teile sind aus Bio-Baumwolle. Das Schlüsselband besteht aus recyceltem Polyester. Das Stoffgewicht reicht von 190 g/m² (T-Shirt) bis 420 g/m² (Hoodie). Zu welchem Teil möchtest du Details?'}
+function careAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.care}`).join('\n'):'Die Pflege steht auf jeder Produktseite und auf dem eingenähten Etikett. Die meisten Teile werden bei 40 °C auf links gewaschen und nicht in den Trockner gegeben. Cap und Schlüsselband wäschst du bei 30 °C von Hand, der Ledergürtel wird nur feucht abgewischt. Zu welchem Teil möchtest du es genau wissen?'}
+function matAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.material}${p.weight?` Stoffgewicht ${p.weight} g/m².`:''}`).join('\n'):'Fast alle Teile sind aus Bio-Baumwolle. Das Schlüsselband besteht aus recyceltem Polyester, der Gürtel aus Rindleder. Das Stoffgewicht reicht von 190 g/m² (T-Shirt) bis 420 g/m² (Hoodie). Zu welchem Teil möchtest du Details?'}
 function motifAns(cur){return cur.length?cur.map(p=>`${p.name}: ${p.points.find(x=>/Wappen|Emblem|Druck|Logo|Schriftzug/i.test(x))||p.tag}.`).join('\n'):'Das Schulwappen mit Goethe-Porträt ist auf Hoodie, Pullover, Cap, Stoffbeutel, Gürtel und Schlüsselband zu sehen, das T-Shirt trägt das Schullogo, die Chino ein Emblem mit Buch und Feder. Gestickt ist es auf Hoodie, Pullover, T-Shirt, Cap und Chino, gedruckt auf Beutel und Schlüsselband, geprägt auf der Gürtelschnalle.'}
 function recoAns(n){return 'Meine Tipps:\n'+bullets([`Für jeden Tag: ${BY.hoodie.name} (${eur(BY.hoodie.price)}), schwer und innen angeraut`,`Leichter: ${BY.pullover.name} (${eur(BY.pullover.price)}) oder ${BY.tshirt.name} (${eur(BY.tshirt.price)})`,`Zum Anziehen für die Schule: ${BY.hose.name} (${eur(BY.hose.price)})`,`Kleine Geschenke: ${BY.schluesselband.name} (${eur(BY.schluesselband.price)}) oder ${BY.stoffbeutel.name} (${eur(BY.stoffbeutel.price)})`])+'\nSag mir dein Budget oder wofür du es brauchst, dann grenze ich es ein.'}
 function listAns(){return 'Das gibt es im Shop:\n'+bullets(PRODUCTS.map(p=>`${p.name} (${eur(p.price)}): ${p.tag}`))}
@@ -1176,9 +1150,9 @@ function localAnswer(q,ctx){
   if(t(/gutschein|rabatt|\bcode\b|\bsale\b|aktion|coupon/))return COUP_A;
   if(!ps.length&&t(/bestell|kaufen|warenkorb|checkout|kasse|wie funktioniert/))return HOW_A;
   if(t(/etikett|waschsymbol|pflegesymbol|farbcode/))return 'In jedem Teil ist ein Pflegeetikett eingenäht. Darauf stehen Größe, Farbe mit Farbcode (z. B. JWG-04 für Mohn), die Zusammensetzung und fünf Pflegesymbole mit der Waschtemperatur. Auf jeder Produktseite siehst du das Etikett in der Ansicht „Etikett“.';
-  if(t(/nachhaltig|\bbio\b|oeko|fair\b|zertifik|gots|umwelt/))return 'Alle Stoffe sind Bio-Baumwolle, nur das Schlüsselband besteht aus recyceltem Polyester. Zu Zertifikaten habe ich im Katalog keine Angaben.';
+  if(t(/nachhaltig|\bbio\b|oeko|fair\b|zertifik|gots|umwelt/))return 'Die Stoffe sind Bio-Baumwolle, nur das Schlüsselband besteht aus recyceltem Polyester und der Gürtel aus Rindleder. Zu Zertifikaten habe ich im Katalog keine Angaben.';
   if(t(/lager|verfuegbar|vorraetig|lieferbar|ausverkauft/))return 'Zum Lagerbestand habe ich keine Angaben, da dies ein Demo-Shop ist. Die Produktseite zeigt dir alle Farben und Größen, die es gibt.';
-  if(t(/umgefaerbt|echte fotos|echt aus|fotos? (echt|gestellt)|farbabweich/))return 'Bei Hoodie, Pullover, T-Shirt, Cap, Stoffbeutel, Chino und Schlüsselband ist nur die Originalfarbe echt fotografiert. Die anderen Farben sind digital umgefärbt, das steht auch auf der Produktseite. Der Gürtel ist gezeichnet. Die echte Farbe kann etwas abweichen.';
+  if(t(/umgefaerbt|echte fotos|echt aus|fotos? (echt|gestellt)|farbabweich/))return 'Bei Hoodie, Pullover, T-Shirt, Cap, Stoffbeutel, Chino und Schlüsselband ist nur die Originalfarbe echt fotografiert. Die anderen Farben sind digital umgefärbt, das steht auch auf der Produktseite. Beim Ledergürtel sind alle Farben umgefärbt, das Foto zeigt ihn original in Braun. Die echte Farbe kann etwas abweichen.';
   if(ps.length>=2&&t(/unterschied|vergleich|besser|\boder\b|versus|\bvs\b/))return compareAns(ps[0],ps[1]);
   if(t(/groesse|passt|passen|fallen|\beng\b|\bweit\b|massen|tabelle|\bxs\b|\bxxl\b|\bxl\b|brust|taille|\bbund\b|hueft|kopfumfang|\bw\d\d\b/))return sizeAns(cur,n);
   if(t(/pflege|wasch|trockner|buegel|einlauf|schrump|reinigung|maschine/))return careAns(cur);
