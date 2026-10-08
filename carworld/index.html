@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Sunset Drive – Luxury Open World</title>
+<meta name="description" content="Open-World-Fahrspiel mit vier getunten Luxus- und Sportwagen in einer sonnigen Küstenstadt bei Sonnenuntergang.">
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- Ladebildschirm -->
+<div id="loading" class="screen ui">
+  <div class="brand">SUNSET <b>DRIVE</b></div>
+  <div class="bar"><i id="loadbar"></i></div>
+  <div id="loadtext">Stadt wird aufgebaut …</div>
+</div>
+
+<!-- Hauptmenü -->
+<div id="menu" class="screen ui hidden">
+  <div class="menu-col">
+    <div class="brand">SUNSET <b>DRIVE</b><small>Luxury Open World</small></div>
+    <nav>
+      <button data-act="start">Spiel starten</button>
+      <button data-act="select">Fahrzeug auswählen</button>
+      <button data-act="garage">Garage</button>
+      <button data-act="settings">Einstellungen</button>
+    </nav>
+    <div class="menu-car"><span id="menuCarName">–</span><span id="menuCarSub"></span></div>
+  </div>
+  <div class="menu-foot">Tastatur &amp; Controller · <span id="gpName">kein Controller erkannt</span></div>
+</div>
+
+<!-- Fahrzeugauswahl -->
+<div id="select" class="screen ui hidden">
+  <div class="sel-top"><button class="back" data-act="back">‹ Zurück</button><div class="title">Fahrzeug auswählen</div></div>
+  <button class="arrow left" data-act="prevCar">‹</button>
+  <button class="arrow right" data-act="nextCar">›</button>
+  <div class="sel-info">
+    <div id="selName" class="car-name">–</div>
+    <div id="selTag" class="car-tag"></div>
+    <div class="stats" id="selStats"></div>
+    <div class="sel-btns"><button class="primary" data-act="pick">Auswählen &amp; fahren</button><button data-act="toGarage">In der Garage ansehen</button></div>
+  </div>
+  <div class="dots" id="selDots"></div>
+</div>
+
+<!-- Garage -->
+<div id="garage" class="screen ui hidden">
+  <div class="gar-top"><button class="back" data-act="back">‹ Zurück</button><div class="title" id="garName">Garage</div></div>
+  <button class="arrow left" data-act="prevCar">‹</button>
+  <button class="arrow right" data-act="nextCar">›</button>
+  <div class="gar-panel">
+    <div class="tabs" id="garTabs"></div>
+    <div class="opts" id="garOpts"></div>
+    <div class="note" id="garNote"></div>
+  </div>
+  <div class="gar-cams" id="garCams"></div>
+  <div class="gar-bottom"><button class="primary" data-act="drive">Fahren</button></div>
+</div>
+
+<!-- Einstellungen -->
+<div id="settings" class="screen ui hidden">
+  <div class="panel">
+    <div class="title">Einstellungen</div>
+    <div id="setList"></div>
+    <div class="keys">
+      <div class="k-title">Steuerung</div>
+      <div class="k-grid">
+        <span>W / ↑</span><span>Gas</span><span>S / ↓</span><span>Bremse / Rückwärts</span>
+        <span>A D / ← →</span><span>Lenken</span><span>Leertaste</span><span>Handbremse</span>
+        <span>C</span><span>Kamera wechseln</span><span>V</span><span>Freie Kamera (Foto)</span>
+        <span>L</span><span>Licht</span><span>G</span><span>Getriebe Auto / Manuell</span>
+        <span>E / Q</span><span>Hoch- / Runterschalten</span><span>R</span><span>Rückwärtsgang (manuell)</span>
+        <span>Backspace</span><span>Auf die Straße zurücksetzen</span><span>H</span><span>Hupe</span>
+        <span>N</span><span>Navigationsziel wechseln</span><span>P / Esc</span><span>Pause</span>
+        <span>Maus ziehen / Rad</span><span>Kamera drehen / zoomen</span><span>Controller</span><span>Stick lenken, RT/LT Gas/Bremse, B Handbremse, Y Kamera, RB/LB Schalten</span>
+      </div>
+    </div>
+    <div class="row-btns"><button class="primary" data-act="back">Fertig</button></div>
+  </div>
+</div>
+
+<!-- Pause -->
+<div id="pause" class="screen ui hidden">
+  <div class="panel small">
+    <div class="title">Pause</div>
+    <button class="primary" data-act="resume">Weiterfahren</button>
+    <button data-act="settings">Einstellungen</button>
+    <button data-act="garage">Garage</button>
+    <button data-act="toMenu">Hauptmenü</button>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="speedo">
+    <div class="spd"><span id="speed">0</span><small>km/h</small></div>
+    <div class="gearrow"><span id="gear">D</span><div class="rpm"><i id="rpmbar"></i><b id="rpmlim"></b></div></div>
+    <div class="flags"><span id="fABS">ABS</span><span id="fESC">ESC</span><span id="fMAN">MAN</span><span id="fLIGHT">◐</span></div>
+  </div>
+  <div id="mapwrap"><canvas id="minimap" width="240" height="240"></canvas><div id="mapNorth">N</div></div>
+  <div id="navhud"><svg viewBox="-20 -20 40 40" id="navArrow"><path d="M0 -14 L10 10 L0 5 L-10 10 Z"/></svg><div><div id="navName">–</div><div id="navDist">–</div></div></div>
+  <div id="toast"></div>
+  <div id="clock"></div>
+  <div id="hints">C Kamera · V Freie Kamera · L Licht · G Getriebe · N Ziel · R-Taste: Backspace Reset</div>
+  <div id="photoHint" class="hidden">Freie Kamera: Maus ziehen = drehen, Rad = Zoom · V = zurück</div>
+</div>
+<div id="vignette"></div>
+
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
