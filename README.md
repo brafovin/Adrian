@@ -70,10 +70,10 @@ Ohne `STRIPE_SECRET_KEY` läuft die Kasse im **Demo-Modus** (es wird nichts best
 **Lokal testen:** `npx http-server . -p 8080` → `http://localhost:8080/shop/` (Demo-Modus). Echte Zahlung lokal: `npx vercel dev` mit `STRIPE_SECRET_KEY`.
 **Tests:** `node --test shop/tests/checkout.test.js`
 
-## Stoffwechsel Shop (`onlineshop/`)
-Eigenständiger Demo-Onlineshop für **Pullover, Hoodie, T-Shirt, Cap und Stoffbeutel** (eine Datei, keine Abhängigkeiten): `onlineshop/index.html` öffnen oder `npx http-server . -p 8080` → `http://localhost:8080/onlineshop/`.
+## JWG.onlineshop (`onlineshop/`)
+Demo-Onlineshop der Johann Wolfgang von Goethe Schule für **Pullover, Hoodie, T-Shirt, Cap und Stoffbeutel** (eine Datei plus Fotos, keine Abhängigkeiten): `onlineshop/index.html` über einen Webserver öffnen, z. B. `npx http-server . -p 8080` → `http://localhost:8080/onlineshop/`. Der ältere JWG Shop mit Stripe liegt weiter unter `shop/`.
 
-- **Seiten:** Startseite (Hero, Kollektion, Stoffgewichte, Farbkarte, Etikett, FAQ), Produktseite (Farb- und Größenwahl, Ansichten Vorne / Rückseite / Etikett, Maßtabelle, Pflege), **Kasse** (Warenkorb mit Mengen, Gutschein `WILLKOMMEN10`, Versandfortschritt), **Checkout** (Adresse mit Prüfung, Versandart, Zahlungsart, AGB) und Bestellbestätigung.
-- **Produkte** stehen oben im Skript (`PRODUCTS`, `COLORS`). Die Produktbilder sind als SVG gezeichnet (`garment()`), keine Fotos.
-- Der Warenkorb bleibt im Browser (`localStorage`). Es ist ein **Demo-Modus**: Eingaben werden nicht gesendet, Preise und Texte sind Beispieldaten. Für echte Zahlungen den Checkout wie beim JWG Shop an Stripe anbinden (`api/checkout.js`).
-- **PRD** für den Hoodie Core: Dokument „PRD Hoodie Core“ (Claude Docs), Farben, Größen und Preise sind mit dem Shop abgestimmt.
+- **Seiten:** Startseite (Hero, Kollektion, Stoffgewichte, Farbkarte, Etikett, FAQ), Produktseite (Foto, Detail des Wappens, Pflegeetikett, Größenwahl, Maßtabelle, Pflege), **Kasse** (Warenkorb mit Mengen, Gutschein `WILLKOMMEN10`, Versandfortschritt), **Checkout** (Adresse mit Prüfung, Versandart, Zahlungsart, AGB) und Bestellbestätigung.
+- **Fotos:** `onlineshop/img/` (`hoodie`, `pullover`, `tshirt`, `cap`, `tote`). Pro Produkt gibt es ein Foto, daher hat jedes Teil nur eine Farbe. Ausschnitt und Detail stehen je Produkt im Skript (`PRODUCTS`: `pos`, `zoom`). Auf den Bildern stehen unterschiedliche Gründungsjahre (1956, 1923, 1958), das sollte vor dem Livegang vereinheitlicht werden.
+- Der Warenkorb bleibt im Browser (`localStorage`). Es ist ein **Demo-Modus**: Eingaben werden nicht gesendet, Preise und Texte sind Beispieldaten. Für echte Zahlungen den Checkout wie beim JWG Shop an Stripe anbinden (`api/checkout.js`). Für Name und Wappen der Schule am besten die Erlaubnis der Schule einholen.
+- **PRD** für den Hoodie Core: Dokument „PRD Hoodie Core“ (Claude Docs).
