@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { SpatialGrid } from '../physics/collision.js';
 import { makeLayout, CHUNK, SEA_Y, baseTerrain } from './layout.js';
 import { ChunkBuilder } from './chunk.js';
+import { buildStructures } from './structures.js';
 import * as TX from './textures.js';
 import { clamp, smoothstep, lerp } from '../util.js';
 
@@ -32,6 +33,12 @@ function roadSet() {
     { u: lineAt(26, -8.4), color: Wt, w: 0.14, dash: [3, 9] }, { u: lineAt(26, 8.4), color: Wt, w: 0.14, dash: [3, 9] },
     { u: lineAt(26, -11.7), color: Wt, w: 0.2 }, { u: lineAt(26, 11.7), color: Wt, w: 0.2 },
   ], 13, 24);
+  out.freeway = mk(24, [
+    { u: lineAt(24, -0.4), color: Y, w: 0.14 }, { u: lineAt(24, 0.4), color: Y, w: 0.14 },
+    { u: lineAt(24, -4.1), color: Wt, w: 0.14, dash: [3, 9] }, { u: lineAt(24, 4.1), color: Wt, w: 0.14, dash: [3, 9] },
+    { u: lineAt(24, -7.7), color: Wt, w: 0.14, dash: [3, 9] }, { u: lineAt(24, 7.7), color: Wt, w: 0.14, dash: [3, 9] },
+    { u: lineAt(24, -11.2), color: Wt, w: 0.22 }, { u: lineAt(24, 11.2), color: Wt, w: 0.22 },
+  ], 16, 24);
   out.hill = mk(10, [
     { u: lineAt(10, -0.12), color: Y, w: 0.12 }, { u: lineAt(10, 0.12), color: Y, w: 0.12 },
     { u: lineAt(10, -4.5), color: Wt, w: 0.14 }, { u: lineAt(10, 4.5), color: Wt, w: 0.14 },
@@ -44,9 +51,10 @@ export function makeMaterials(opts = {}) {
   const roads = roadSet();
   const M = {};
   M.rStreet = TX.roadMaterial(roads.street); M.rAvenue = TX.roadMaterial(roads.avenue); M.rHighway = TX.roadMaterial(roads.highway);
-  M.rHill = TX.roadMaterial(roads.hill); M.rPlain = TX.roadMaterial(roads.plain);
+  M.rHill = TX.roadMaterial(roads.hill); M.rPlain = TX.roadMaterial(roads.plain); M.rFreeway = TX.roadMaterial(roads.freeway);
+  M.tunLamp = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(2.6, 2.3, 1.8) });
   M.roadLen = { street: 18, avenue: 18, highway: 24, hill: 18, freeway: 24, ramp: 18 };
-  for (const k of ['rStreet', 'rAvenue', 'rHighway', 'rHill', 'rPlain']) { M[k].polygonOffset = true; M[k].polygonOffsetFactor = -1; M[k].polygonOffsetUnits = -1; }
+  for (const k of ['rStreet', 'rAvenue', 'rHighway', 'rFreeway', 'rHill', 'rPlain']) { M[k].polygonOffset = true; M[k].polygonOffsetFactor = -1; M[k].polygonOffsetUnits = -1; }
   const det = TX.terrainDetail();
   M.terrain = new THREE.MeshStandardMaterial({ vertexColors: true, map: det.map, normalMap: det.normal, normalScale: new THREE.Vector2(0.5, 0.5), roughness: 0.95, metalness: 0, envMapIntensity: 0.6 });
   M.walk = new THREE.MeshStandardMaterial({ vertexColors: true, map: TX.concreteTexture({ tile: 4 }), roughness: 0.82, envMapIntensity: 0.7 });
@@ -82,7 +90,7 @@ export class World {
     this.lamps = []; // Positionen der aktuell geladenen Laternen
     this.time = 0;
     this.lightsLevel = 0;
-    this.extras = null;
+    this.extras = buildStructures;
     this._scratch = [];
     this._buildStat = { n: 0, ms: 0 };
 
@@ -102,7 +110,7 @@ export class World {
   setQuality(q) { this.radius = { low: 5, medium: 7, high: 9, ultra: 11 }[q] || 8; }
 
   // ------------------------------------------------------------------ Höhen
-  terrainHeight(x, z) { return baseTerrain(x, z); }
+  terrainHeight(x, z) { return this.layout.terrain(x, z); }
 
   addStrip(s) {
     // Achsenparallel (x0,z0,x1,z1,y) oder gedreht/geneigt (cx,cz,hx,hz,yaw,y0,y1)

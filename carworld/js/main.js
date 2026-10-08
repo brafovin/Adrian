@@ -14,6 +14,7 @@ import { Input } from './input.js';
 import { Hud } from './hud.js';
 import { AudioEngine } from './audio.js';
 import { Garage } from './garage.js';
+import { Traffic, Pedestrians } from './world/traffic.js';
 import { DEFAULTS, loadSettings, saveSettings, SETTING_DEFS, TOD_PRESETS } from './settings.js';
 import { clamp, lerp } from './util.js';
 
@@ -57,6 +58,9 @@ class Game {
     this.audio = new AudioEngine();
     this.cameraRig = new CameraRig(this.camera, this.world);
     this.garage = new Garage(this.pipe.renderer, this.env);
+    const Q = { low: [14, 30], medium: [26, 60], high: [40, 90], ultra: [56, 130] }[this.settings.quality] || [40, 90];
+    this.traffic = new Traffic(this.scene, this.world, { count: Q[0] });
+    this.peds = new Pedestrians(this.scene, this.world, { count: Q[1] });
     this.models = {};
     this.stats = {};
     this.pending = { shiftUp: false, shiftDown: false };
@@ -98,15 +102,7 @@ class Game {
 
   setProgress(p, text) { $('loadbar').style.width = (p * 100).toFixed(0) + '%'; if (text) $('loadtext').textContent = text; }
 
-  makePois() {
-    return [
-      { name: 'Pazifik-Strand', x: -1262, z: 160 },
-      { name: 'Downtown', x: -240, z: 0 },
-      { name: 'Sunset Plaza', x: 180, z: -150 },
-      { name: 'Marina-Brücken', x: -600, z: 660 },
-      { name: 'Industriehafen', x: 780, z: 780 },
-    ];
-  }
+  makePois() { return this.world.layout.pois; }
 
   async getModel(id) {
     if (!this.models[id]) {
@@ -127,6 +123,8 @@ class Game {
     const s = this.settings;
     this.pipe.setQuality(s.quality);
     this.pipe.auto = s.dynres;
+    const Q = { low: [14, 30], medium: [26, 60], high: [40, 90], ultra: [56, 130] }[s.quality] || [40, 90];
+    this.traffic?.setCount(Q[0]); this.peds?.setCount(Q[1]);
     applyShadowQuality(this.env, QUALITY[s.quality]);
     this.world.setQuality(s.quality);
     this.applyTod();
@@ -442,6 +440,7 @@ class Game {
     world.update(focus.x, focus.z, playing ? 3 : 6);
     env.update(dt, this.camera, { x: focus.x, y: player.y, z: focus.z });
     world.setTimeOfDay(env.params, dt, this.camera.position);
+    if (this.mode !== 'pause' && this.mode !== 'garage') { this.traffic.update(dt, player, env.params); this.peds.update(dt, player, env.params.lights); }
     player.updateLights(env.params.lights);
     this.updateNightLights();
 
@@ -455,6 +454,7 @@ class Game {
       const f = focus.fwd;
       this.audio.update(dt, { info: player.info, speed: focus.u, carPos: { x: focus.x, y: player.y, z: focus.z }, camPos: this.camera.position, camDir: dir, camMode: this.mode === 'play' ? (this.cameraRig.free ? 'free' : this.cameraRig.mode) : 'free', world: { x: focus.x, z: focus.z } });
       void f;
+      this.audio.trafficVoices(this.traffic.sound, this.camera.position, dir);
     }
     this.pipe.resize();
     this.pipe.render(dt, this.time);
@@ -480,11 +480,10 @@ class Game {
       for (let i = 0; i < 8; i++) { const p = new THREE.PointLight(0xffc27a, 0, 38, 1.6); p.castShadow = false; this.scene.add(p); this.lampLights.push(p); }
     }
     const f = this.player.vehicle;
-    if (L < 0.12) { for (const p of this.lampLights) p.intensity = 0; return; }
     const near = this.world.nearestLamps(f.x, f.z, 8, []);
     for (let i = 0; i < this.lampLights.length; i++) {
-      const p = this.lampLights[i];
-      if (near[i]) { p.position.set(near[i][1][0], near[i][1][1], near[i][1][2]); p.intensity = L * 70; } else p.intensity = 0;
+      const p = this.lampLights[i], lamp = near[i] && near[i][1];
+      if (lamp && (L >= 0.12 || lamp[3])) { p.position.set(lamp[0], lamp[1], lamp[2]); p.intensity = (lamp[3] ? Math.max(L, 0.7) : L) * 70; } else p.intensity = 0;
     }
   }
 }

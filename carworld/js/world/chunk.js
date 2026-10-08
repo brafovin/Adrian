@@ -4,9 +4,11 @@ import * as THREE from 'three';
 import { Bucket, col, mixCol, mulCol } from './geo.js';
 import { CHUNK, PITCH, WALK, ROAD, GX0, GX1, GZ0, GZ1, vRoadW, hRoadW, zoneOfBlock, blockRect, coastX, highwayX, CENTER, SEA_Y } from './layout.js';
 import * as P from './props.js';
+import { roadwork } from './roadwork.js';
+import { garageBlock, plazaBlock } from './structures.js';
 import { rng, hash2, smoothstep, clamp, lerp } from '../util.js';
 
-const BUCKETS = ['terrain', 'rStreet', 'rAvenue', 'rHighway', 'rHill', 'rPlain', 'walk', 'solid', 'palm', 'lamp', 'glass', 'office', 'apartment', 'villa', 'industrial', 'win', 'pool', 'marks',
+const BUCKETS = ['terrain', 'rStreet', 'rAvenue', 'rHighway', 'rFreeway', 'tunLamp', 'rHill', 'rPlain', 'walk', 'solid', 'palm', 'lamp', 'glass', 'office', 'apartment', 'villa', 'industrial', 'win', 'pool', 'marks',
   'tlNr', 'tlNy', 'tlNg', 'tlEr', 'tlEy', 'tlEg', 'grass'];
 
 const C = { sidewalk: col(0xb9b5ad), curb: col(0xa09c94), median: col(0x8c8a84), grass: col(0x6d8f3f), asphalt: col(0x3c3c3f), roadDark: col(0x1d1d20) };
@@ -84,15 +86,16 @@ export class ChunkBuilder {
     const N = mx - mn < 0.6 ? 8 : mx - mn < 8 ? 20 : 32;
     const cell = CHUNK / N;
     const H = [], NR = [], CL = [];
+    const M = N + 3; // ein Rand von je einer Zelle zusätzlich, damit die Normalen an Chunk-Grenzen nahtlos sind
+    const raw = new Float32Array(M * M);
+    for (let a = 0; a < M; a++) for (let c = 0; c < M; c++) raw[a * M + c] = this.world.terrainHeight(x0 + (a - 1) * cell, z0 + (c - 1) * cell);
+    const rh = (a, c) => raw[(a + 1) * M + (c + 1)];
     for (let a = 0; a <= N; a++) {
       for (let c = 0; c <= N; c++) {
-        const x = x0 + a * cell, z = z0 + c * cell;
-        const h = this.world.terrainHeight(x, z);
-        const e = 1.5;
-        const hx = this.world.terrainHeight(x + e, z) - this.world.terrainHeight(x - e, z);
-        const hz = this.world.terrainHeight(x, z + e) - this.world.terrainHeight(x, z - e);
-        const nl = Math.hypot(hx, 2 * e, hz);
-        const n = [-hx / nl, (2 * e) / nl, -hz / nl];
+        const x = x0 + a * cell, z = z0 + c * cell, h = rh(a, c);
+        const hx = rh(a + 1, c) - rh(a - 1, c), hz = rh(a, c + 1) - rh(a, c - 1);
+        const nl = Math.hypot(hx, 2 * cell, hz);
+        const n = [-hx / nl, (2 * cell) / nl, -hz / nl];
         H.push(h); NR.push(n); CL.push(groundColor(x, z, h, n[1]));
       }
     }
@@ -112,16 +115,20 @@ export class ChunkBuilder {
   // ------------------------------------------------------------------------------------------
   roadSegment(ctx, road, k) {
     const { b } = ctx;
-    const bucket = { street: b.rStreet, avenue: b.rAvenue, highway: b.rHighway, hill: b.rHill, freeway: b.rHighway, ramp: b.rHill }[road.kind];
+    const bucket = { street: b.rStreet, avenue: b.rAvenue, highway: b.rHighway, hill: b.rHill, freeway: b.rFreeway, ramp: b.rHill }[road.kind];
     const w = road.w;
     const pts = road.pts;
     const n = pts.length;
+    // Seitenrichtung am Punkt i, gemittelt über die Nachbarabschnitte; Faktor gleicht die Eckverkürzung aus
+    const segN = (i, j) => { const dx = pts[j][0] - pts[i][0], dz = pts[j][1] - pts[i][1]; const l = Math.hypot(dx, dz) || 1; return [-dz / l, dx / l]; };
     const norm = (i) => {
-      // gemittelte Seitenrichtung am Punkt i (für Polylinien)
-      const a = pts[Math.max(0, i - 1)], c = pts[Math.min(n - 1, i + 1)];
-      let dx = c[0] - a[0], dz = c[1] - a[1];
-      const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
-      return [-dz, dx];
+      const s0 = i > 0 ? segN(i - 1, i) : null, s1 = i < n - 1 ? segN(i, i + 1) : null;
+      if (!s0) return [...s1, 1];
+      if (!s1) return [...s0, 1];
+      let mx = s0[0] + s1[0], mz = s0[1] + s1[1];
+      const l = Math.hypot(mx, mz) || 1; mx /= l; mz /= l;
+      const cosHalf = Math.max(0.55, mx * s0[0] + mz * s0[1]);
+      return [mx, mz, 1 / cosHalf];
     };
     const y = road.y;
     const tex = this.mats.roadLen[road.kind] || 18;
@@ -130,13 +137,7 @@ export class ChunkBuilder {
     const len = Math.hypot(pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]);
     // Anfang des Segmentes in Welt-Streckenlänge (Straßen-Start für Raster-Straßen = Kreuzungsrand)
     const n0 = norm(k), n1 = norm(k + 1);
-    const miter = (nn, i) => {
-      // bei Polylinien Ecken weiten
-      if (n === 2) return 1;
-      const a = pts[Math.max(0, i - 1)], c = pts[Math.min(n - 1, i + 1)];
-      void a; void c; return 1;
-    };
-    const m0 = miter(n0, k), m1 = miter(n1, k + 1);
+    const m0 = n0[2], m1 = n1[2];
     const y0 = (y[k] ?? 0) + 0.02, y1 = (y[k + 1] ?? 0) + 0.02;
     const hw = w / 2;
     const a = pts[k], c = pts[k + 1];
@@ -147,6 +148,7 @@ export class ChunkBuilder {
     // u: von A (links) nach B (rechts); v entlang der Fahrtrichtung
     const v0 = s0 / tex, v1 = (s0 + len) / tex;
     bucket.quad(A, B, Cc, D, [1, 1, 1], [[0, v0], [1, v0], [1, v1], [0, v1]], true);
+    roadwork(ctx, road, k, (x, z) => this.world.terrainHeight(x, z));
 
     // Mittelstreifen bei Alleen: erhöhtes Beet mit Palmen
     if (road.kind === 'avenue') {
@@ -233,7 +235,9 @@ export class ChunkBuilder {
 
     // Inhalt je Bezirk
     const h = hash2(i, j, L.seed + 3);
-    if (zone === 'core') this.coreBlock(ctx, r, i, j);
+    if (i === -2 && j === 1) garageBlock(ctx, r);
+    else if (i === 1 && j === -2) plazaBlock(ctx, r);
+    else if (zone === 'core') this.coreBlock(ctx, r, i, j);
     else if (zone === 'mid') this.midBlock(ctx, r, i, j);
     else if (zone === 'resi' || zone === 'hills') {
       if (h < 0.07 && zone === 'resi') P.gasStation(ctx, r.cx - 18, r.cz, 0), b.solid.floor(r.x0, r.z0, r.x1, r.z1, 0.05, col(0x4b4b4e));
@@ -363,7 +367,8 @@ export class ChunkBuilder {
       chunk.group.add(m); chunk.meshes.push(m);
     };
     add(b.terrain, M.terrain);
-    add(b.rStreet, M.rStreet); add(b.rAvenue, M.rAvenue); add(b.rHighway, M.rHighway); add(b.rHill, M.rHill); add(b.rPlain, M.rPlain);
+    add(b.rStreet, M.rStreet); add(b.rAvenue, M.rAvenue); add(b.rHighway, M.rHighway); add(b.rFreeway, M.rFreeway); add(b.rHill, M.rHill); add(b.rPlain, M.rPlain);
+    add(b.tunLamp, M.tunLamp, { receive: false });
     add(b.walk, M.walk); add(b.grass, M.grass);
     add(b.marks, M.marks, { receive: false, order: 1 });
     add(b.solid, M.solid, { cast: true });

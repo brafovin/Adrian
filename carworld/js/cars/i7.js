@@ -46,7 +46,7 @@ function sideWindow(xFront, xRear, y0, xs) {
 export const I7_DEF = {
   id: 'i7',
   name: 'BMW i7',
-  dims: { wheelbase: WB, trackF: 1.72, trackR: 1.74, length: 5.14, width: 2.1, height: 1.4, cgX: WB / 2 - WB * (1 - 0.5) },
+  dims: { wheelbase: WB, trackF: 1.72, trackR: 1.74, length: 5.2, width: 2.1, height: 1.4, cgX: WB / 2 - WB * (1 - 0.5) },
   loft: {
     x0: -2.74, x1: 2.4, stations: 190,
     pts: [
@@ -107,7 +107,7 @@ function drawPlate(g, w, h) {
   g.strokeStyle = '#6a6b72'; g.lineWidth = 5; g.strokeRect(4, 4, w - 8, h - 8);
   g.strokeStyle = '#2a2a2e'; g.lineWidth = 2; g.strokeRect(11, 11, w - 22, h - 22);
   g.fillStyle = '#f2f2f4'; g.font = 'bold 66px "Arial Narrow", Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillText('THE i7', w / 2, h * 0.38);
+  g.fillText('THE i7', w / 2, h * 0.37);
   drawMLogo(g, w / 2 - 52, h * 0.77, 30);
 }
 
@@ -155,62 +155,61 @@ function badge(ctx, type, size, p, n) {
 // ---------------------------------------------------------------------------------------------
 // Frontgrafiken
 
-/** Doppelniere: zwei große Nieren mit senkrechten Stäben, Rand leuchtet. Breite 1.06 m, Höhe 0.42 m. */
+/** Doppelniere: zwei große, hohe Nieren (Sechseck-Form) mit dicken senkrechten Stäben, Rand leuchtet. 0.90 m x 0.42 m. */
 function kidneyMaterial() {
-  const W = 1024, H = 420;
+  const W = 1024, H = 478;
   const [c, g] = mkCanvas(W, H);
   const [hc, hg] = mkCanvas(W, H);
   const [ec, eg] = mkCanvas(W, H);
   g.clearRect(0, 0, W, H);
   eg.fillStyle = '#000'; eg.fillRect(0, 0, W, H);
   hg.fillStyle = '#101010'; hg.fillRect(0, 0, W, H);
-  const cx = W / 2, hw = W / 2 - 14, top = 8, bot = H - 8, hh = bot - top;
+  const cx = W / 2, hw = W / 2 - 8, bot = H - 6, hh = H - 12;
   // normierte Nierenform (nx 0 = Mitte, 1 = außen; ny 0 = unten, 1 = oben)
   const shape = (gg, side, inset = 0) => {
-    const X = (nx) => cx + side * (nx * (hw - inset) + 7 + inset * 0.2);
+    const X = (nx) => cx + side * (6 + inset * 0.7 + nx * (hw - 6 - inset * 1.4));
     const Y = (ny) => bot - inset - ny * (hh - 2 * inset);
     gg.beginPath();
-    gg.moveTo(X(0.0), Y(0.99));
-    gg.lineTo(X(0.8), Y(1.0));
-    gg.quadraticCurveTo(X(1.0), Y(1.0), X(1.0), Y(0.82));
-    gg.lineTo(X(0.975), Y(0.14));
-    gg.quadraticCurveTo(X(0.965), Y(0.0), X(0.8), Y(0.0));
-    gg.lineTo(X(0.0), Y(0.03));
+    gg.moveTo(X(0.0), Y(0.9));
+    gg.quadraticCurveTo(X(0.0), Y(1.0), X(0.14), Y(1.0));
+    gg.lineTo(X(0.78), Y(0.99));
+    gg.quadraticCurveTo(X(1.0), Y(0.99), X(1.0), Y(0.8));
+    gg.lineTo(X(1.0), Y(0.4));
+    gg.lineTo(X(0.9), Y(0.0));
+    gg.lineTo(X(0.17), Y(0.0));
+    gg.lineTo(X(0.0), Y(0.17));
     gg.closePath();
   };
   for (const side of [1, -1]) {
-    // Rahmen (dunkles Chrom)
     shape(g, side, 0);
-    g.fillStyle = '#17181b'; g.fill();
-    // Innenfläche mit Stäben
-    g.save(); shape(g, side, 11); g.clip();
-    g.fillStyle = '#030304'; g.fillRect(0, 0, W, H);
-    hg.save(); shape(hg, side, 11); hg.clip();
-    hg.fillStyle = '#181818'; hg.fillRect(0, 0, W, H);
-    const nb = 17, pitch = (hw - 18) / nb;
+    g.fillStyle = '#0d0e10'; g.fill();               // Rahmen (schwarz glänzend)
+    g.save(); shape(g, side, 16); g.clip();
+    g.fillStyle = '#020203'; g.fillRect(0, 0, W, H);
+    hg.save(); shape(hg, side, 16); hg.clip();
+    hg.fillStyle = '#121212'; hg.fillRect(0, 0, W, H);
+    const nb = 9, x0 = 22, pitch = (hw - 6 - x0 - 8) / nb;
     for (let i = 0; i < nb; i++) {
-      const x = cx + side * (12 + (i + 0.5) * pitch);
-      const gr = g.createLinearGradient(x - pitch * 0.34, 0, x + pitch * 0.34, 0);
-      gr.addColorStop(0, '#0a0a0c'); gr.addColorStop(0.42, '#8a8e98'); gr.addColorStop(0.58, '#555861'); gr.addColorStop(1, '#0a0a0c');
-      g.fillStyle = gr; g.fillRect(x - pitch * 0.34, 0, pitch * 0.68, H);
-      const hgr = hg.createLinearGradient(x - pitch * 0.34, 0, x + pitch * 0.34, 0);
+      const x = cx + side * (x0 + i * pitch);
+      const bw = pitch * 0.62;
+      const xa = side > 0 ? x + pitch * 0.12 : x - pitch * 0.12 - bw;
+      const gr = g.createLinearGradient(xa, 0, xa + bw, 0);
+      const flip = side > 0;
+      gr.addColorStop(0, flip ? '#06060a' : '#06060a'); gr.addColorStop(flip ? 0.12 : 0.7, '#a9adb8'); gr.addColorStop(flip ? 0.35 : 0.88, '#24262c'); gr.addColorStop(1, '#050507');
+      g.fillStyle = gr; g.fillRect(xa, 0, bw, H);
+      const hgr = hg.createLinearGradient(xa, 0, xa + bw, 0);
       hgr.addColorStop(0, '#303030'); hgr.addColorStop(0.5, '#ffffff'); hgr.addColorStop(1, '#303030');
-      hg.fillStyle = hgr; hg.fillRect(x - pitch * 0.34, 0, pitch * 0.68, H);
+      hg.fillStyle = hgr; hg.fillRect(xa, 0, bw, H);
     }
-    // waagerechter Querholm (Radar-Träger)
-    g.fillStyle = '#0b0b0d'; g.fillRect(0, H * 0.46, W, 7);
     g.restore(); hg.restore();
-    // leuchtender Rand
-    shape(eg, side, 4);
+    shape(eg, side, 8);
     eg.strokeStyle = '#ffffff'; eg.lineWidth = 3; eg.shadowColor = '#cfe0ff'; eg.shadowBlur = 6; eg.stroke();
-    shape(g, side, 3);
-    g.strokeStyle = '#9fa3ad'; g.lineWidth = 3; g.stroke();
+    shape(g, side, 2);
+    g.strokeStyle = '#8f939d'; g.lineWidth = 3; g.stroke();   // feine Chromkante
   }
-  // Mittelsteg
-  g.fillStyle = '#16171a'; g.fillRect(cx - 7, 0, 14, H);
+  g.fillStyle = '#0c0d0f'; g.fillRect(cx - 6, 0, 12, H);      // Mittelsteg
   const map = canvasTexture(c);
   const normalMap = canvasTexture(heightToNormal(hc, 3.2), { srgb: false });
-  const mat = new THREE.MeshStandardMaterial({ map, normalMap, normalScale: new THREE.Vector2(1, 1), metalness: 0.9, roughness: 0.34, envMapIntensity: 1.5,
+  const mat = new THREE.MeshStandardMaterial({ map, normalMap, normalScale: new THREE.Vector2(1, 1), metalness: 0.9, roughness: 0.3, envMapIntensity: 1.5,
     emissive: new THREE.Color(0xdbe6ff), emissiveMap: canvasTexture(ec), emissiveIntensity: 0.25,
     transparent: false, alphaTest: 0.35, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   mat.userData.setLevel = (v) => { mat.emissiveIntensity = 0.12 + v * 0.1; };
@@ -315,7 +314,7 @@ function i7Extras(ctx) {
   // ---- Front: Doppelniere
   const kid = kidneyMaterial();
   lights.head.push(kid);
-  decal(ctx, PF, [0.47, -0.47, 0.33, 0.715], kid, { nu: 36, nv: 14, off: 0.006, order: 1 });
+  decal(ctx, PF, [0.45, -0.45, 0.285, 0.705], kid, { nu: 36, nv: 14, off: 0.006, order: 1 });
 
   // Roundel auf der Haubenkante
   const hp = PT(2.2, 0);
@@ -356,12 +355,12 @@ function i7Extras(ctx) {
   // glänzende Mittelpartie der Schürze (Trapez um das Kennzeichen), Kanten hell abgesetzt
   logoDecal(ctx, PF, [0.97, -0.97, 0.08, 0.52], 1024, 232, (g, w, h) => {
     const X = (z) => ((0.97 - z) / 1.94) * w, Y = (y) => ((0.52 - y) / 0.44) * h;
-    const poly = [[0.56, 0.36], [0.5, 0.325], [-0.5, 0.325], [-0.56, 0.36], [-0.66, 0.24], [-0.74, 0.17], [-0.74, 0.09], [0.74, 0.09], [0.74, 0.17], [0.66, 0.24]];
+    const poly = [[0.56, 0.36], [0.5, 0.285], [-0.5, 0.285], [-0.56, 0.36], [-0.66, 0.24], [-0.74, 0.17], [-0.74, 0.09], [0.74, 0.09], [0.74, 0.17], [0.66, 0.24]];
     g.beginPath(); poly.forEach(([z, y], i) => (i ? g.lineTo(X(z), Y(y)) : g.moveTo(X(z), Y(y)))); g.closePath();
     const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#0b0c0e'); gr.addColorStop(1, '#020203');
     g.fillStyle = gr; g.fill();
   }, { nu: 40, nv: 12, order: 1, off: 0.003 }, { metalness: 0.15, roughness: 0.14, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.6 });
-  platePanel(ctx, PF, 0, 0.25, 0.54, 0.125);
+  platePanel(ctx, PF, 0, 0.19, 0.52, 0.15);
 
   // ---- Frontlippe (Carbon, kantig mit hochgezogenen Enden)
   {
@@ -379,9 +378,9 @@ function i7Extras(ctx) {
     // hochgezogene Enden (Canards)
     for (const sg of [1, -1]) {
       const x0 = xf[sg > 0 ? 5 : 0];
-      const fin = roundedBox(0.22, 0.09, 0.01, 0.003, carbon);
-      fin.position.set(x0 + 0.01, 0.125, sg * 0.97);
-      fin.rotation.set(sg * 0.22, sg * 0.28, 0);
+      const fin = roundedBox(0.34, 0.16, 0.01, 0.003, carbon);
+      fin.position.set(x0 - 0.06, 0.17, sg * 0.97);
+      fin.rotation.set(sg * 0.2, sg * 0.32, 0);
       ctx.add(fin);
     }
   }
@@ -472,6 +471,17 @@ function i7Extras(ctx) {
     g.fillStyle = '#e4e6ea'; g.font = 'italic 300 58px Arial, Helvetica, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('i7', w / 2, h * 0.55);
   });
   logoDecal(ctx, PR, [0.47, 0.67, 0.63, 0.69], 256, 64, (g, w, h) => drawMLogo(g, 70, h / 2, 54));
+  // Rückfahrlicht (klein, in den unteren Ecken der Heckschürze)
+  const rev = (mirrorX) => lightDecal((g, w, h, emis) => {
+    g.save(); if (mirrorX) { g.translate(w, 0); g.scale(-1, 1); }
+    if (!emis) { g.fillStyle = '#6b6f78'; g.beginPath(); g.roundRect(4, 4, w - 8, h - 8, 8); g.fill(); g.strokeStyle = '#3a3c42'; g.lineWidth = 3; g.stroke(); }
+    else { g.fillStyle = '#ffffff'; g.beginPath(); g.roundRect(8, 8, w - 16, h - 16, 6); g.fill(); }
+    g.restore();
+  }, 128, 32, { emissiveColor: 0xffffff });
+  const rvR = rev(false), rvL = rev(true);
+  lights.reverse.push(rvR, rvL);
+  decal(ctx, PR, [0.78, 0.93, 0.255, 0.285], rvR, { nu: 6, nv: 2, off: 0.004, order: 2 });
+  decal(ctx, PR, [-0.78, -0.93, 0.255, 0.285], rvL, { nu: 6, nv: 2, off: 0.004, order: 2 });
   // Zierlinie und seitliche Lufteinlässe der Heckschürze
   addLine(PR, [[-0.97, 0.575], [0.97, 0.575]], 0.006, 0.004, edge);
   addLine(PR, [[-0.97, 0.665], [-0.5, 0.665], [-0.3, 0.6]], 0.004, 0.004, edge);

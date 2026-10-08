@@ -25,14 +25,14 @@ const C = {
 export function palm(ctx, x, z, rnd, h = rnd.range(7.5, 12.5)) {
   const lean = rnd.range(0.2, 1.4), ang = rnd() * Math.PI * 2;
   const bx = Math.cos(ang) * lean, bz = Math.sin(ang) * lean;
-  ctx.b.solid.cyl(x, 0, z, 0.3, 0.17, h, 7, mixCol(C.trunk, C.trunkDark, rnd() * 0.5), { rows: 7, bendX: bx, bendZ: bz, ring: true, ringColor: C.trunkDark });
+  ctx.b.solid.cyl(x, 0, z, 0.3, 0.17, h, 6, mixCol(C.trunk, C.trunkDark, rnd() * 0.5), { rows: 4, bendX: bx, bendZ: bz, ring: true, ringColor: C.trunkDark });
   const tx = x + bx, tz = z + bz, ty = h;
-  const n = 9 + Math.floor(rnd() * 3);
+  const n = 7 + Math.floor(rnd() * 2);
   for (let k = 0; k < n; k++) {
     const a = (k / n) * Math.PI * 2 + rnd() * 0.3;
     const len = rnd.range(3.6, 5.0), wid = rnd.range(1.5, 2.0), rise = rnd.range(0.2, 1.0), droop = rnd.range(1.4, 2.6);
     const dx = Math.cos(a), dz = Math.sin(a);
-    const rows = 4;
+    const rows = 3;
     const pts = [];
     for (let r = 0; r <= rows; r++) {
       const t = r / rows;
@@ -44,9 +44,7 @@ export function palm(ctx, x, z, rnd, h = rnd.range(7.5, 12.5)) {
       const nx = -dz, nz = dx; // seitlich
       const q = (p, s) => [p[0] + nx * p[3] * s, p[1], p[2] + nz * p[3] * s];
       const v0 = r / rows, v1 = (r + 1) / rows;
-      // doppelseitig über zwei Dreiecks-Paare (Vorder-/Rückseite)
-      ctx.b.palm.quad(q(p0, -1), q(p0, 1), q(p1, 1), q(p1, -1), g, [[0, v0], [1, v0], [1, v1], [0, v1]]);
-      ctx.b.palm.quad(q(p0, -1), q(p0, 1), q(p1, 1), q(p1, -1), g, [[0, v0], [1, v0], [1, v1], [0, v1]], true);
+      ctx.b.palm.quad(q(p0, -1), q(p0, 1), q(p1, 1), q(p1, -1), g, [[0, v0], [1, v0], [1, v1], [0, v1]]); // Material ist doppelseitig
     }
   }
   ctx.circle(x + bx * 0.1, z + bz * 0.1, 0.32, 0, 4);

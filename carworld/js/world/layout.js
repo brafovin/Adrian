@@ -74,6 +74,52 @@ export function baseTerrain(x, z) {
   return h;
 }
 
+
+// ------------------------------------------------------------------------------------------
+// Hilfsfunktionen für kurvige Straßen
+
+/** Catmull-Rom-Kurve durch Stützpunkte, auf ca. `spacing` Meter abgetastet. */
+export function catmull(P, spacing = 12) {
+  const out = [];
+  const g = (i) => P[Math.max(0, Math.min(P.length - 1, i))];
+  for (let i = 0; i < P.length - 1; i++) {
+    const p0 = g(i - 1), p1 = g(i), p2 = g(i + 1), p3 = g(i + 2);
+    const len = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+    const n = Math.max(2, Math.round(len / spacing));
+    for (let k = 0; k < n; k++) {
+      const t = k / n, t2 = t * t, t3 = t2 * t;
+      const f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]);
+    }
+  }
+  out.push(P[P.length - 1].slice());
+  return out;
+}
+
+/** Höhenprofil entlang einer Straße: folgt dem Gelände, Steigung begrenzt, geglättet. */
+export function gradeProfile(pts, y0, maxGrade = 0.08, base = baseTerrain, yEnd = null) {
+  const n = pts.length;
+  const d = [0];
+  for (let i = 1; i < n; i++) d.push(Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const y = pts.map((p) => base(p[0], p[1]));
+  y[0] = y0;
+  const limit = () => {
+    for (let it = 0; it < 3; it++) {
+      for (let i = 1; i < n; i++) y[i] = clamp(y[i], y[i - 1] - maxGrade * d[i], y[i - 1] + maxGrade * d[i]);
+      for (let i = n - 2; i >= 0; i--) y[i] = clamp(y[i], y[i + 1] - maxGrade * d[i + 1], y[i + 1] + maxGrade * d[i + 1]);
+      y[0] = y0;
+    }
+  };
+  limit();
+  for (let round = 0; round < 5; round++) {
+    for (let it = 0; it < 8; it++) for (let i = 1; i < n - 1; i++) y[i] = (y[i - 1] + 2 * y[i] + y[i + 1]) / 4;
+    y[0] = y0;
+    limit();
+  }
+  if (yEnd !== null) { y[n - 1] = yEnd; limit(); }
+  return y;
+}
+
 // ------------------------------------------------------------------------------------------
 // Straßen
 
@@ -128,6 +174,64 @@ export function makeLayout(seed = 7) {
     add({ kind: 'highway', w: ROAD.highway.w, pts, y, coast: true });
   }
 
+
+
+  // ---------------------------------------------------------------- Autobahn (erhöht) mit Auffahrten
+  const FW_X = 1290, FW_Y = 9.0;
+  {
+    const pts = [], y = [];
+    for (let z = -1500; z <= 1500; z += 40) { pts.push([FW_X, z]); y.push(FW_Y); }
+    add({ kind: 'freeway', w: ROAD.freeway.w, pts, y, elevated: true });
+    // Auffahrten/Abfahrten an den Alleen j = -4 (z = -480) und j = 4 (z = 480)
+    const ramp = (poly, up) => {
+      const P = catmull(poly, 24);
+      const n = P.length;
+      const yy = P.map((_, i) => {
+        const t = i / (n - 1);
+        const s = up ? t : 1 - t;
+        return FW_Y * (s * s * (3 - 2 * s) * 0.6 + s * 0.4);
+      });
+      add({ kind: 'ramp', w: ROAD.ramp.w, pts: P, y: yy, elevated: true, ramp: true });
+    };
+    for (const sg of [-1, 1]) {
+      const z0 = sg * 480;
+      // Auffahrt: von der Allee nach außen und auf die Autobahn (fährt Richtung Außenende)
+      ramp([[1226, z0 + sg * 16], [1238, z0 + sg * 70], [1258, z0 + sg * 140], [1276, z0 + sg * 220], [1282, z0 + sg * 300]], true);
+      // Abfahrt: von der Autobahn herunter zur Allee
+      ramp([[1282, z0 - sg * 300 + sg * 0], [1264, z0 - sg * 230 + 0], [1244, z0 - sg * 150], [1230, z0 - sg * 70], [1226, z0 - sg * 16]], false);
+    }
+  }
+
+  // ---------------------------------------------------------------- Hügelstraßen
+  const tunnels = [];
+  let viewpoint = null, summit = null;
+  {
+    // Hillcrest Drive: Serpentinen zum Gipfel
+    const W1 = [[240, -1208], [240, -1380], [330, -1480], [500, -1520], [590, -1610], [520, -1700], [300, -1730], [80, -1750], [-60, -1820], [-40, -1910], [130, -1960], [330, -1990], [440, -2070], [380, -2160], [200, -2200], [20, -2230]];
+    const P1 = catmull(W1, 12);
+    const y1 = gradeProfile(P1, 0.0, 0.075);
+    add({ kind: 'hill', w: ROAD.hill.w, pts: P1, y: y1, hillRoad: true, name: 'Hillcrest Drive' });
+    summit = { x: P1[P1.length - 1][0], z: P1[P1.length - 1][1], y: y1[y1.length - 1] };
+    // Cliff Road: Küstenpass mit Tunnel zum Aussichtspunkt
+    const sx = highwayX(-1500);
+    const W2 = [[sx, -1500], [sx + 90, -1600], [sx + 210, -1690], [sx + 360, -1760], [sx + 470, -1840]];
+    const T0 = [sx + 520, -1895], T1 = [sx + 640, -1970];
+    const W3 = [[sx + 700, -2020], [sx + 820, -2090], [sx + 940, -2130], [sx + 1040, -2165]];
+    const Pa = catmull(W2, 12), Pb = [T0, [(T0[0] + T1[0]) / 2, (T0[1] + T1[1]) / 2], T1], Pc = catmull([T1, ...W3], 12);
+    const pts2 = [...Pa, ...Pb.slice(0, -1).map((p) => p), ...Pc];
+    // Tunnelabschnitt als eigene dichte Punktfolge (12 m), damit Profil/Gelände stimmen
+    const tl = Math.hypot(T1[0] - T0[0], T1[1] - T0[1]);
+    const tn = Math.round(tl / 12);
+    const tp = []; for (let i = 0; i <= tn; i++) tp.push([lerp(T0[0], T1[0], i / tn), lerp(T0[1], T1[1], i / tn)]);
+    const full = [...Pa.slice(0, -1), ...tp.slice(0, -1), ...Pc];
+    void pts2;
+    const y2 = gradeProfile(full, 0.0, 0.08);
+    const tStart = Pa.length - 1, tEnd = tStart + tn;
+    const r = add({ kind: 'hill', w: ROAD.hill.w, pts: full, y: y2, hillRoad: true, name: 'Cliff Road', tunnel: [tStart, tEnd] });
+    tunnels.push({ road: r, a: full[tStart], b: full[tEnd], ya: y2[tStart], yb: y2[tEnd], len: Math.hypot(full[tEnd][0] - full[tStart][0], full[tEnd][1] - full[tStart][1]) });
+    viewpoint = { x: full[full.length - 1][0], z: full[full.length - 1][1], y: y2[y2.length - 1] };
+  }
+
   const index = new Map(); // Chunk-Schlüssel -> [{road, seg}] (Besitzer-Chunk = Chunk des Segment-Mittelpunkts)
   const key = (cx, cz) => cx * 100003 + cz;
   for (const r of roads) {
@@ -140,13 +244,72 @@ export function makeLayout(seed = 7) {
     }
   }
 
+  // ---------------------------------------------------------------- Gelände: an Hügelstraßen einebnen, Tunnel-Rücken
+  const GC = 40;
+  const gradeMap = new Map();
+  const gkey = (a, b) => a * 100003 + b;
+  const gsegs = [];
+  for (const r of roads) {
+    if (!r.hillRoad) continue;
+    for (let k = 0; k < r.pts.length - 1; k++) {
+      const seg = { ax: r.pts[k][0], az: r.pts[k][1], bx: r.pts[k + 1][0], bz: r.pts[k + 1][1], ya: r.y[k], yb: r.y[k + 1], w: r.w };
+      seg.dx = seg.bx - seg.ax; seg.dz = seg.bz - seg.az; seg.l2 = seg.dx * seg.dx + seg.dz * seg.dz || 1;
+      gsegs.push(seg);
+      const m = r.w / 2 + 30;
+      for (let cx = Math.floor((Math.min(seg.ax, seg.bx) - m) / GC); cx <= Math.floor((Math.max(seg.ax, seg.bx) + m) / GC); cx++)
+        for (let cz = Math.floor((Math.min(seg.az, seg.bz) - m) / GC); cz <= Math.floor((Math.max(seg.az, seg.bz) + m) / GC); cz++) {
+          const kk = gkey(cx, cz); let arr = gradeMap.get(kk); if (!arr) gradeMap.set(kk, (arr = [])); arr.push(seg);
+        }
+    }
+  }
+  const terrain = (x, z) => {
+    let h = baseTerrain(x, z);
+    const arr = gradeMap.get(gkey(Math.floor(x / GC), Math.floor(z / GC)));
+    if (arr) {
+      let bd = 1e9, by = 0, bw = 10;
+      for (let i = 0; i < arr.length; i++) {
+        const sg = arr[i];
+        const t = clamp(((x - sg.ax) * sg.dx + (z - sg.az) * sg.dz) / sg.l2, 0, 1);
+        const px = sg.ax + sg.dx * t - x, pz = sg.az + sg.dz * t - z;
+        const d = Math.hypot(px, pz);
+        if (d < bd) { bd = d; by = lerp(sg.ya, sg.yb, t); bw = sg.w; }
+      }
+      const wgt = 1 - smoothstep(bw / 2 + 1.5, bw / 2 + 28, bd);
+      if (wgt > 0) h = lerp(h, by, wgt);
+    }
+    for (const T of tunnels) {
+      const dx = T.b[0] - T.a[0], dz = T.b[1] - T.a[1], L = T.len;
+      const rx = x - T.a[0], rz = z - T.a[1];
+      const al = (rx * dx + rz * dz) / L, la = (-rx * dz + rz * dx) / L;
+      if (al < -14 || al > L + 14 || Math.abs(la) > 62) continue;
+      const wlat = 1 - smoothstep(14, 58, Math.abs(la));
+      const wa = smoothstep(-3, 11, al) * (1 - smoothstep(L - 11, L + 3, al));
+      const wgt = wlat * wa;
+      if (wgt <= 0) continue;
+      const yr = lerp(T.ya, T.yb, clamp(al / L, 0, 1));
+      const ridge = yr + 12.5 + 3.5 * fbm(x / 45, z / 45, 3, 21);
+      h = Math.max(h, lerp(h, ridge, wgt));
+    }
+    return h;
+  };
+
   const layout = {
-    seed, roads, crossings, crossAt, index,
+    seed, roads, crossings, crossAt, index, tunnels, summit, viewpoint,
     roadsInChunk: (cx, cz) => index.get(key(cx, cz)) || [],
-    terrain: (x, z) => baseTerrain(x, z),
+    terrain,
     zone: (x, z) => zoneOfBlock(Math.floor(x / PITCH), Math.floor(z / PITCH), seed),
     // Orte für Navigation und Start
-    pois: [],
+    pois: [
+      { name: 'Pazifik-Strand', x: -1262, z: 160 },
+      { name: 'Downtown', x: -240, z: 0 },
+      { name: 'Sunset Plaza', x: 180, z: -180 },
+      { name: 'Skyline Deck (Parkhaus)', x: -180, z: 180 },
+      { name: 'Marina-Brücken', x: -600, z: 660 },
+      { name: 'Autobahn-Auffahrt', x: 1226, z: -470 },
+      { name: 'Industriehafen', x: 780, z: 780 },
+      { name: 'Küsten-Aussicht', x: viewpoint.x, z: viewpoint.z },
+      { name: 'Hillcrest-Gipfel', x: summit.x, z: summit.z },
+    ],
   };
   return layout;
 }
