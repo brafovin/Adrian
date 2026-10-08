@@ -60,8 +60,13 @@ Getestet heißt: headless Chromium (Software‑GL) + `node --test`, **nicht** au
   Vororte mit Villen/Palmen, Industrie, Küstenstraße mit Meerblick, Strand und Pier, Hügelstraßen mit Serpentinen
   und Aussichtspunkt, Brücken/Hochstraßen, Autobahn mit Auf‑/Abfahrten, Tunnel, Parkhaus („Skyline Deck“),
   Autotreff‑Platz („Sunset Plaza“), Tankstellen, Ampeln, Fahrbahnmarkierungen, Schilder, Bürgersteige.
-- **Verkehr & Fußgänger:** KI‑Autos folgen Spuren, halten an Ampeln und biegen ab; Fußgänger laufen Blockränder
-  ab. Dichte und Reichweite hängen von der Qualitätsstufe ab.
+- **Verkehr & Fußgänger:**
+  - Je nach Qualitätsstufe 30 / 60 / 100 / 150 KI‑Fahrzeuge (Pkw, SUV, Transporter, Sportwagen, Lkw, Busse, auch gelbe Taxis) in der Umgebung des Spielers.
+  - Auf dem Straßenraster fahren sie in Spuren, halten Abstand und Haltelinien, beachten Ampeln und Vorfahrt (Linksabbieger geben dem Gegenverkehr nach, Kreuzungen werden nicht blockiert) und biegen mit Spurdisziplin ab.
+  - Auf Küstenstraße, Autobahn (über der Unterführung auf eigener Ebene) und den Bergstraßen fahren sie Polylinien‑Spuren, in Kurven langsamer.
+  - Nach einem Zusammenstoß rutschen sie als freie Körper weiter.
+  - Fußgänger laufen die Blockränder ab.
+  - Die Verkehrslogik hat Regressionstests (`tests/traffic.test.js`: keine Überlappungen, keine Verklemmungen, Fahrzeugmix, Pfadstraßen).
 - **Licht:** Nachmittag → Sonnenuntergang → Dämmerung → Nacht (oder Übergang); goldenes Gegenlicht, lange
   Schatten, Bloom, Reflexions‑IBL; nachts schalten Straßenlaternen, Fahrzeuglicht und Fensterlicht.
 - **Reifenspuren und Reifenqualm** (`js/effects.js`): schwarze Bremsspuren/Driftspuren (Ringpuffer) und weißer Qualm
@@ -79,7 +84,7 @@ Getestet heißt: headless Chromium (Software‑GL) + `node --test`, **nicht** au
   ungetestet und braucht deine Ohren.
 - **Anzeigen:** Tacho, Gang, Drehzahl, ABS/ESC/MAN/Licht, Minimap (kopfhoch), dezenter Navigationspfeil mit
   Entfernung, Uhrzeit.
-- **Tests:** `node --test tests/*.test.js` (Physik, Kollision, Audio‑Spektren, Straßennetz/Layout).
+- **Tests:** `node --test tests/*.test.js` (Physik, Kollision, Audio‑Spektren, Straßennetz/Layout, Verkehr).
 
 ## Fahrzeuge: was stimmt, was nicht
 

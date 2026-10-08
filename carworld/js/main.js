@@ -66,7 +66,7 @@ class Game {
     this.audio = new AudioEngine();
     this.cameraRig = new CameraRig(this.camera, this.world);
     this.garage = new Garage(this.pipe.renderer, this.env);
-    const Q = { low: [14, 30], medium: [26, 60], high: [40, 90], ultra: [56, 130] }[this.settings.quality] || [40, 90];
+    const Q = { low: [30, 30], medium: [60, 60], high: [100, 90], ultra: [150, 130] }[this.settings.quality] || [100, 90];
     this.traffic = new Traffic(this.scene, this.world, { count: Q[0] });
     this.peds = new Pedestrians(this.scene, this.world, { count: Q[1] });
     this.fx = new TireFX(this.scene, this.world, { marks: { low: 500, medium: 900, high: 1400, ultra: 2200 }[this.settings.quality] || 1400, smoke: { low: 30, medium: 50, high: 70, ultra: 100 }[this.settings.quality] || 70 });
@@ -134,7 +134,7 @@ class Game {
     const s = this.settings;
     this.pipe.setQuality(s.quality);
     this.pipe.auto = s.dynres;
-    const Q = { low: [14, 30], medium: [26, 60], high: [40, 90], ultra: [56, 130] }[s.quality] || [40, 90];
+    const Q = { low: [30, 30], medium: [60, 60], high: [100, 90], ultra: [150, 130] }[s.quality] || [100, 90];
     this.traffic?.setCount(Q[0]); this.peds?.setCount(Q[1]);
     applyShadowQuality(this.env, QUALITY[s.quality]);
     this.world.setQuality(s.quality);
@@ -516,8 +516,10 @@ class Game {
     const dt = 1 / 60;
     const inp = { throttle: 0, brake: 0, steer: 0, handbrake: 0, lookX: 0, lookY: 0, zoom: 0, drag: false, ...input };
     for (let t = 0; t < seconds; t += dt) {
-      const imp = this.player.step(dt, inp, { shiftUp: false, shiftDown: false });
+      const imp = this.player.step(dt, inp, { shiftUp: false, shiftDown: false, traffic: this.traffic });
       this.fx.update(dt, this.player, this.env.params);
+      this.world.time += dt;   // Ampelphasen laufen auch im Testlauf weiter
+      this.traffic.update(dt, this.player, this.env.params);
       this.world.update(this.player.vehicle.x, this.player.vehicle.z, 4);
       this.cameraRig.update(dt, this.player, inp);
       if (onStep) onStep(t, imp);
