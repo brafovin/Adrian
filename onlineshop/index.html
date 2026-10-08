@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stoffwechsel Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: Seite wie ein Etikett gebaut. Grosse Kondensschrift als einzige laute Stelle, Produkte auf ruhigen Kacheln, Angaben in Mono wie auf einem Pflegeetikett. */
+:root{
+  --bg:#ECEFEC; --surface:#F8F9F7; --tile:#DCE2DD; --ink:#101715; --muted:#566360; --line:#C8D0CB;
+  --accent:#2340E6; --accent-ink:#FFFFFF; --ok:#1B7A4B; --bad:#B3261E;
+  --font-display:'Big Shoulders Display','Arial Narrow','Roboto Condensed',Impact,sans-serif;
+  --font-body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'DM Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --gutter:clamp(16px,4vw,48px); --maxw:1240px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1312; --surface:#151B1A; --tile:#1E2827; --ink:#EAF0EC; --muted:#93A19B; --line:#2B3633;
+    --accent:#8FA3FF; --accent-ink:#0A0F2E; --ok:#5FD39A; --bad:#FF8C84; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1312; --surface:#151B1A; --tile:#1E2827; --ink:#EAF0EC; --muted:#93A19B; --line:#2B3633;
+  --accent:#8FA3FF; --accent-ink:#0A0F2E; --ok:#5FD39A; --bad:#FF8C84; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main:focus{outline:none}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
+.fd{font-family:var(--font-display)}
+.fm{font-family:var(--font-mono)}
+.mono{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Kopf */
+.strip{background:var(--ink);color:var(--bg);text-align:center;padding:7px var(--gutter);font:500 .72rem/1.3 var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;font:800 1.55rem/1 var(--font-display);letter-spacing:.07em;text-transform:uppercase}
+.brand i{width:26px;height:26px;border:2.5px solid currentColor;border-radius:50%;display:grid;place-items:center;font:800 .7rem/1 var(--font-display);font-style:normal;letter-spacing:0}
+.nav{display:flex;align-items:center;gap:clamp(12px,3vw,32px)}
+.nav button{background:none;border:0;padding:8px 2px;font-weight:600;font-size:.95rem}
+.nav button:hover{text-decoration:underline;text-underline-offset:5px}
+.cartbtn{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--ink)!important;padding:8px 14px!important;border-radius:3px;font-weight:700!important}
+.cartbtn:hover{background:var(--ink);color:var(--bg)}
+.count{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--accent);color:var(--accent-ink);font:500 .72rem/22px var(--font-mono);text-align:center}
+.count[data-n="0"]{background:var(--line);color:var(--muted)}
+@media (max-width:560px){.nav .hide-s{display:none}.brand{font-size:1.3rem}}
+
+/* Bausteine */
+.kicker{display:block;margin-bottom:14px;color:var(--muted)}
+.h1{font:900 clamp(3.5rem,11.5vw,8.6rem)/.86 var(--font-display);text-transform:uppercase;letter-spacing:-.005em;text-wrap:balance}
+.h2{font:800 clamp(2.3rem,5.4vw,4rem)/.92 var(--font-display);text-transform:uppercase;text-wrap:balance}
+.h3{font:800 1.7rem/1 var(--font-display);text-transform:uppercase}
+.lead{font-size:clamp(1.05rem,1.7vw,1.22rem);max-width:56ch;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 26px;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:3px;font:700 .95rem/1 var(--font-body);letter-spacing:.05em;text-transform:uppercase;text-decoration:none}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn.alt:hover{background:var(--ink);color:var(--bg);filter:none}
+.btn.block{width:100%}
+.link{background:none;border:0;padding:0;font-weight:600;text-decoration:underline;text-underline-offset:4px}
+section{padding-block:clamp(48px,8vw,104px)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px 32px;margin-bottom:clamp(24px,4vw,48px)}
+.sec-head>*{min-width:0}
+
+/* Garment-SVG */
+.garment{display:block;width:100%;height:100%;filter:drop-shadow(0 14px 14px rgb(0 0 0 / .17));overflow:visible}
+.tile{position:relative;background:var(--tile);overflow:hidden}
+.tile .art{position:absolute;inset:6% 8% 4%}
+
+/* Startseite: Hero */
+.hero{padding-block:clamp(28px,5vw,64px) clamp(40px,6vw,80px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,72px);align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:clamp(18px,3vw,28px)}
+.hero .btns{display:flex;flex-wrap:wrap;gap:12px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;padding:0;margin:6px 0 0;list-style:none;color:var(--muted)}
+.hero-tile{position:relative;aspect-ratio:1/1.08;background:var(--tile)}
+.hero-tile .art{position:absolute;inset:12% 7% 3%}
+.hangtag{position:absolute;top:14%;right:7%;z-index:2;width:clamp(124px,17vw,168px);padding:34px 14px 14px;background:#F3EFE2;color:#18211E;border:0;border-radius:3px;text-align:left;transform:rotate(5deg);transform-origin:50% 0;box-shadow:0 10px 22px rgb(0 0 0 / .22);display:flex;flex-direction:column;gap:4px;clip-path:polygon(0 14px,14px 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.hangtag::before{content:'';position:absolute;top:13px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--tile);box-shadow:inset 0 1px 3px rgb(0 0 0 / .35)}
+.hangtag .tb{font:500 .6rem/1 var(--font-mono);letter-spacing:.14em;color:#556360}
+.hangtag .tn{font:800 1.5rem/.95 var(--font-display);text-transform:uppercase;margin-top:4px}
+.hangtag .tp{font:500 .95rem/1 var(--font-mono);margin-top:8px}
+.hangtag .tm{font:400 .62rem/1.2 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:#556360}
+.hang-string{position:absolute;z-index:1;top:0;right:calc(7% + clamp(62px,8.5vw,84px));width:2px;height:15%;background:var(--muted);transform:rotate(-2deg);transform-origin:top}
+@media (max-width:860px){.hero .wrap{grid-template-columns:minmax(0,1fr)}.hero-tile{aspect-ratio:1/1}}
+
+/* Kollektion */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,28px)}
+.card{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card .tile{flex:1 1 auto;aspect-ratio:20/21;border:0;padding:0;width:100%;display:block;text-align:left}
+.card.wide{grid-column:span 2}
+.card.wide .tile{aspect-ratio:auto;min-height:320px}
+.card.wide .tile .art{inset:4% 20% 2%}
+.card .meta{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.card .name{background:none;border:0;padding:0;text-align:left;font:800 1.9rem/1 var(--font-display);text-transform:uppercase}
+.card .name:hover{text-decoration:underline;text-underline-offset:5px}
+.card .price{font:500 1rem/1 var(--font-mono)}
+.card .sub{color:var(--muted);font-size:.95rem}
+.dots{display:flex;gap:8px;margin-top:2px}
+.dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);padding:0;background:var(--c)}
+.dot[aria-pressed="true"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--ink)}
+.tile .flag{position:absolute;left:14px;top:14px;z-index:2;padding:5px 9px;background:var(--bg);font:500 .66rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card.wide .tile{aspect-ratio:2/1;min-height:0}.card.wide .tile .art{inset:4% 25% 2%}}
+@media (max-width:560px){.cards{grid-template-columns:minmax(0,1fr)}.card.wide{grid-column:auto}.card.wide .tile{aspect-ratio:20/21}.card.wide .tile .art{inset:6% 8% 4%}}
+
+/* Material */
+.band{background:var(--surface);border-block:1px solid var(--line)}
+.mat{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(28px,5vw,80px);align-items:start}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar-row{display:grid;grid-template-columns:minmax(96px,150px) minmax(0,1fr) 78px;align-items:center;gap:14px;background:none;border:0;padding:6px 0;text-align:left;width:100%}
+.bar-row .n{font-weight:600}
+.track{position:relative;height:30px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px calc(100%/3));border-right:1px solid var(--line)}
+.fill{position:absolute;left:0;top:4px;bottom:4px;width:calc(var(--w)*100%);background:var(--ink);transform-origin:left;transition:transform .5s ease}
+.bar-row.hot .fill{background:var(--accent)}
+.bar-row:hover .fill{opacity:.85}
+.bar-row .v{font:500 .95rem/1 var(--font-mono);text-align:right}
+.axis{display:grid;grid-template-columns:minmax(96px,150px) minmax(0,1fr) 78px;gap:14px;color:var(--muted);margin-top:4px}
+.axis div{display:flex;justify-content:space-between}
+@media (max-width:860px){.mat{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:420px){.bar-row,.axis{grid-template-columns:84px minmax(0,1fr) 64px;gap:10px}}
+
+/* Farben */
+.swatches{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,2vw,20px)}
+.sw{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column}
+.sw .c{aspect-ratio:1/1.1;background:var(--c)}
+.sw .i{padding:12px 12px 14px;display:flex;flex-direction:column;gap:3px}
+.sw .i b{font:800 1.35rem/1 var(--font-display);text-transform:uppercase}
+@media (max-width:860px){.swatches{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.swatches{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Etikett-Band */
+.lab{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,5vw,80px);align-items:center}
+.lab .tile{aspect-ratio:400/430}
+.lab .tile .art{inset:2% 6% 0}
+.checks{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-direction:column;gap:12px}
+.checks li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;padding-top:12px;border-top:1px solid var(--line)}
+@media (max-width:860px){.lab{grid-template-columns:minmax(0,1fr)}}
+
+/* FAQ */
+.faq{max-width:820px}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;font-weight:600;font-size:1.05rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';font:400 1.6rem/1 var(--font-mono);flex:none}
+details[open]>summary::after{content:'\2212'}
+details>div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+details table{margin-top:4px}
+
+/* Fuss */
+footer{border-top:1px solid var(--line);padding-block:40px calc(40px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+footer p{color:var(--muted);max-width:52ch;font-size:.92rem}
+@media (max-width:700px){footer .wrap{grid-template-columns:minmax(0,1fr)}}
+
+/* Produktseite */
+.crumbs{display:flex;flex-wrap:wrap;gap:8px;padding-block:22px 18px;color:var(--muted)}
+.crumbs button{background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:4px}
+.pdp{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,72px);align-items:start;padding-bottom:clamp(40px,6vw,80px)}
+.stage{aspect-ratio:400/464;background:var(--tile);position:relative}
+.stage .art{position:absolute;inset:3% 6% 2%}
+.thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.thumb{display:flex;flex-direction:column;gap:6px;padding:0;background:none;border:0;text-align:left}
+.thumb .tile{aspect-ratio:1/1;border:2px solid transparent}
+.thumb .tile .art{inset:6%}
+.thumb[aria-pressed="true"] .tile{border-color:var(--ink)}
+.thumb span{color:var(--muted)}
+.thumb[aria-pressed="true"] span{color:var(--ink)}
+.buy{display:flex;flex-direction:column;gap:22px;position:sticky;top:88px}
+.buy .title{display:flex;flex-direction:column;gap:12px}
+.buy .pr{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.buy .pr b{font:500 1.7rem/1 var(--font-mono)}
+.field-l{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}
+.swbtns{display:flex;flex-wrap:wrap;gap:12px}
+.swbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--ink);background:var(--c);padding:0}
+.swbtn[aria-pressed="true"]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.size{min-width:56px;height:48px;padding:0 14px;background:transparent;border:1.5px solid var(--line);border-radius:3px;font:500 .95rem/1 var(--font-mono)}
+.size:hover{border-color:var(--ink)}
+.size[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.size-err{border-radius:3px;outline:2px solid var(--bad);outline-offset:6px}
+.msg{color:var(--bad);font-size:.9rem;min-height:1.3em;margin-top:8px}
+.buyrow{display:flex;gap:12px;flex-wrap:wrap}
+.buyrow .btn{flex:1 1 220px}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:3px;height:50px}
+.qty button{width:44px;height:100%;background:none;border:0;font:500 1.2rem/1 var(--font-mono)}
+.qty button:hover{background:var(--tile)}
+.qty output{min-width:34px;text-align:center;font:500 1rem/1 var(--font-mono)}
+.points{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.points li{padding-left:22px;position:relative}
+.points li::before{content:'';position:absolute;left:0;top:.62em;width:10px;height:2px;background:var(--accent)}
+.tbl-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;font:400 .9rem/1.3 var(--font-mono)}
+th,td{padding:9px 12px 9px 0;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.72rem}
+@media (max-width:860px){.pdp{grid-template-columns:minmax(0,1fr)}.buy{position:static}}
+
+/* Kasse + Checkout */
+.steps{display:flex;flex-wrap:wrap;gap:6px 22px;padding:0;margin:0 0 22px;list-style:none;color:var(--muted)}
+.steps li{display:flex;align-items:center;gap:8px}
+.steps li b{display:grid;place-items:center;width:22px;height:22px;border:1.5px solid currentColor;border-radius:50%;font:500 .7rem/1 var(--font-mono)}
+.steps li[aria-current="step"]{color:var(--ink);font-weight:700}
+.steps li[aria-current="step"] b{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.page{padding-block:clamp(24px,4vw,48px) clamp(56px,8vw,104px)}
+.two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.9fr);gap:clamp(24px,5vw,64px);align-items:start;margin-top:28px}
+.two>*{min-width:0}
+.line{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;padding:18px 0;border-top:1px solid var(--line);align-items:start}
+.line:last-child{border-bottom:1px solid var(--line)}
+.line .tile{aspect-ratio:1/1.05}
+.line .tile .art{inset:6%}
+.line .nm{font:800 1.4rem/1 var(--font-display);text-transform:uppercase;background:none;border:0;padding:0;text-align:left}
+.line .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:12px}
+.line .qty{height:38px}
+.line .qty button{width:36px}
+.line .lt{font:500 1rem/1 var(--font-mono);text-align:right}
+@media (max-width:480px){.line{grid-template-columns:72px minmax(0,1fr)}.line .lt{grid-column:2;text-align:left}}
+.summary{background:var(--surface);border:1px solid var(--line);padding:clamp(18px,3vw,28px);display:flex;flex-direction:column;gap:14px;position:sticky;top:88px}
+#sum{display:flex;flex-direction:column;gap:14px}
+.summary .row{display:flex;justify-content:space-between;gap:16px}
+.summary .row span:last-child{font-family:var(--font-mono)}
+.summary .tot{border-top:1.5px solid var(--ink);padding-top:14px;font-weight:700;font-size:1.15rem}
+.summary .vat{font-size:.82rem;color:var(--muted)}
+.mini{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center}
+.mini .tile{aspect-ratio:1/1.05}
+.mini .tile .art{inset:6%}
+.mini .q{position:absolute;right:-1px;top:-1px;z-index:2;min-width:20px;height:20px;padding:0 5px;background:var(--ink);color:var(--bg);font:500 .68rem/20px var(--font-mono);text-align:center}
+.mini small{display:block;color:var(--muted)}
+.free{margin:0 0 22px;padding:14px 16px;background:var(--surface);border:1px solid var(--line)}
+.free .pb{height:6px;background:var(--line);margin-top:10px}
+.free .pb i{display:block;height:100%;width:calc(var(--p)*100%);background:var(--accent)}
+.coupon{display:flex;gap:8px}
+.coupon input{flex:1;min-width:0}
+.coupon .btn{min-height:46px;padding:0 16px}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}.summary{position:static}}
+.empty{display:flex;flex-direction:column;align-items:flex-start;gap:18px;padding-block:24px 8px}
+
+/* Formular */
+fieldset{border:0;padding:0;margin:0 0 34px;min-width:0}
+legend{padding:0;margin-bottom:16px;font:800 1.55rem/1 var(--font-display);text-transform:uppercase}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label{font-weight:600;font-size:.92rem}
+input[type=text],input[type=email],input[type=search],select{font:inherit;width:100%;min-height:48px;padding:10px 14px;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:3px}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.f.bad input,.f.bad select{border-color:var(--bad)}
+.err{display:none;color:var(--bad);font-size:.86rem}
+.f.bad .err,.chk.bad .err{display:block}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid-plz{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:16px}
+.span2{grid-column:1/-1}
+@media (max-width:520px){.grid2,.grid-plz{grid-template-columns:minmax(0,1fr)}}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;background:var(--surface);cursor:pointer}
+.opt:has(input:checked){border-color:var(--ink)}
+.opt input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--accent)}
+.opt b{display:block}
+.opt small{color:var(--muted)}
+.opt .pp{font:500 .95rem/1.4 var(--font-mono)}
+.note{padding:14px 16px;border-left:3px solid var(--accent);background:var(--surface);font-size:.92rem;color:var(--muted)}
+.chk{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;align-items:start;margin-bottom:22px}
+.chk input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--accent)}
+.chk .err{grid-column:2}
+.chk.bad input{outline:2px solid var(--bad)}
+
+/* Danke */
+.done{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,64px);align-items:start}
+.done .tile{aspect-ratio:1/1}
+.done .tile .art{inset:8%}
+.ordno{display:inline-block;padding:8px 12px;border:1.5px dashed var(--ink);font:500 1.05rem/1 var(--font-mono);letter-spacing:.06em}
+@media (max-width:860px){.done{grid-template-columns:minmax(0,1fr)}}
+
+/* Toast */
+.toast{position:fixed;z-index:60;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,24px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:16px;max-width:min(560px,calc(100vw - 32px));padding:14px 16px;background:var(--ink);color:var(--bg);border-radius:3px;transition:opacity .2s,transform .2s;box-shadow:0 12px 30px rgb(0 0 0 / .3)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:none;border:0;padding:0;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4" result="n"/><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 -.28"/></filter></svg>
+
+<div class="strip">Demo-Shop mit Beispielprodukten. Es wird nichts bestellt oder abgebucht.</div>
+<header class="top">
+  <div class="wrap">
+    <button class="brand" data-go="home" aria-label="Stoffwechsel, zur Startseite"><i>SW</i>Stoffwechsel</button>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="hide-s" data-scroll="kollektion">Kollektion</button>
+      <button class="hide-s" data-scroll="material">Material</button>
+      <button class="cartbtn" data-go="cart" aria-label="Zur Kasse, Warenkorb">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        Kasse <span class="count" id="count" data-n="0">0</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="brand" style="cursor:default"><i>SW</i>Stoffwechsel</div>
+      <p style="margin-top:14px">Basics aus Bio-Baumwolle. Pullover, Hoodie, T-Shirt, Cap und Stoffbeutel.</p>
+    </div>
+    <p>Dies ist ein Demo-Shop. Produkte, Preise und Bewertungen sind Beispieldaten. In der Kasse werden keine Daten gesendet und keine Zahlungen ausgeführt.</p>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Daten ---------- */
+const COLORS={
+  anthrazit:{name:'Anthrazit',hex:'#2E3336',code:'SW-01'},
+  tanne:{name:'Tanne',hex:'#28463B',code:'SW-02'},
+  sand:{name:'Sand',hex:'#D6C9AE',code:'SW-03'},
+  mohn:{name:'Mohn',hex:'#B8372B',code:'SW-04'},
+  natur:{name:'Natur',hex:'#E6DFCB',code:'SW-05'}
+};
+const SIZES=['XS','S','M','L','XL','XXL'];
+const ONE=['Einheitsgröße'];
+const tab=(b,l,a)=>({head:['Größe','Brustumfang','Länge','Ärmel'],unit:'cm',rows:SIZES.map((s,i)=>[s,b+i*4,l+i*2,a+i])});
+const PRODUCTS=[
+ {id:'hoodie',type:'hoodie',name:'Hoodie Core',short:'Hoodie',price:89,weight:420,colors:['anthrazit','tanne','sand','mohn'],sizes:SIZES,temp:40,
+  tag:'Schwer, innen angeraut, mit Kängurutasche',
+  lead:'Der schwere Hoodie für jeden Tag: 420 g/m² Bio-Baumwolle, innen angeraut, mit doppellagiger Kapuze und Kängurutasche.',
+  points:['Doppellagige Kapuze mit flacher Baumwollkordel','Kängurutasche mit verstärkten Ecken','Bündchen aus 2×2 Rippe, bleibt in Form','Kleine gestickte Marke auf der linken Brust'],
+  material:'Hauptstoff 100 % Bio-Baumwolle, 420 g/m², außen glatt, innen angeraut. Bündchen 97 % Bio-Baumwolle, 3 % Elastan.',
+  fit:'Relaxed Fit mit leicht überschnittener Schulter. Der Hoodie fasst weit. Wenn du zwischen zwei Größen liegst, nimm die kleinere.',
+  care:'Bei 40 °C auf links waschen. Nicht in den Trockner. Auf niedriger Stufe bügeln, nicht auf der Stickerei.',
+  table:{head:['Größe','Brustumfang','Länge','Ärmel'],rows:[['XS',104,66,60],['S',108,68,61],['M',112,70,62],['L',116,72,63],['XL',120,74,64],['XXL',124,76,65]]}},
+ {id:'pullover',type:'pullover',name:'Pullover Crew',short:'Pullover',price:79,weight:380,colors:['sand','tanne','anthrazit'],sizes:SIZES,temp:40,
+  tag:'Rundhals ohne Schnickschnack',
+  lead:'Der Rundhals-Pullover ohne Schnickschnack: 380 g/m² Sweat, innen angeraut, mit breitem Halsbündchen.',
+  points:['Breites Halsbündchen, das nicht ausleiert','Rippbündchen an Ärmeln und Saum','Doppelnadelnaht an Saum und Ärmeln','Kleine Marke auf der linken Brust'],
+  material:'100 % Bio-Baumwolle, 380 g/m², innen angeraut. Bündchen 97 % Bio-Baumwolle, 3 % Elastan.',
+  fit:'Regular Fit. Der Pullover fällt normal aus.',
+  care:'Bei 40 °C auf links waschen. Liegend trocknen. Auf niedriger Stufe bügeln.',
+  table:{head:['Größe','Brustumfang','Länge','Ärmel'],rows:SIZES.map((s,i)=>[s,102+i*4,65+i*2,60+i])}},
+ {id:'tshirt',type:'tshirt',name:'T-Shirt Basic',short:'T-Shirt',price:29,weight:190,colors:['natur','sand','tanne','mohn','anthrazit'],sizes:SIZES,temp:40,
+  tag:'Dichter Jersey, gerader Schnitt',
+  lead:'Dichter Jersey mit 190 g/m². Das T-Shirt fällt gerade, trägt nicht auf und verzieht sich nicht.',
+  points:['Doppelt genähtes Halsbündchen','Verstärktes Nackenband','Seitennähte, die nicht verdrehen','Große Marke auf dem Rücken, kleine auf der Brust'],
+  material:'100 % Bio-Baumwolle, 190 g/m², Single Jersey.',
+  fit:'Regular Fit, gerade geschnitten. Das T-Shirt fällt normal aus.',
+  care:'Bei 40 °C waschen. Auf links trocknen. Auf niedriger Stufe bügeln.',
+  table:{head:['Größe','Brustumfang','Länge','Ärmel'],rows:SIZES.map((s,i)=>[s,98+i*4,68+i*2,20+i])}},
+ {id:'cap',type:'cap',name:'Cap Sixpanel',short:'Cap',price:24,weight:240,colors:['anthrazit','sand','tanne','mohn'],sizes:ONE,temp:30,
+  tag:'Sechs Segmente, Metallschnalle',
+  lead:'Sechs Segmente, vorgeformter Schirm und eine Metallschnalle hinten. Passt von 54 bis 62 cm Kopfumfang.',
+  points:['Baumwoll-Twill, 240 g/m²','Sechs vernähte Segmente, Ösen aus Metall','Schirm mit drei Stepplinien','Schnalle aus Metall, stufenlos verstellbar'],
+  material:'100 % Bio-Baumwoll-Twill, 240 g/m². Schnalle aus Metall.',
+  fit:'Einheitsgröße, verstellbar von 54 bis 62 cm Kopfumfang.',
+  care:'Bei 30 °C von Hand waschen. Den Schirm nicht knicken. An der Luft trocknen.',
+  table:{head:['Maß','Wert'],rows:[['Kopfumfang','54 bis 62 cm'],['Schirmlänge','7 cm'],['Verschluss','Metallschnalle']]}},
+ {id:'stoffbeutel',type:'tote',name:'Stoffbeutel Canvas',short:'Stoffbeutel',price:14,weight:280,colors:['natur','anthrazit','tanne'],sizes:ONE,temp:40,
+  tag:'Canvas, lange Henkel, belastbar',
+  lead:'Der Beutel für Einkauf und Laptop: Canvas mit 280 g/m², Henkel in 70 cm Länge, Maße 38 × 42 cm.',
+  points:['Henkel mit Kreuzstich an den Ansätzen','Innennähte versäubert','Rand doppelt umgenäht','Großer Druck auf der Vorderseite'],
+  material:'100 % Bio-Baumwoll-Canvas, 280 g/m².',
+  fit:'Maße 38 × 42 cm, Henkellänge 70 cm, belastbar bis 10 kg.',
+  care:'Bei 40 °C waschen, Druck auf links. Auf links bügeln.',
+  table:{head:['Maß','Wert'],rows:[['Breite','38 cm'],['Höhe','42 cm'],['Henkellänge','70 cm'],['Belastbarkeit','10 kg']]}}
+];
+const BY=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+const FREE_FROM=60, SHIP_STD=4.9, SHIP_EXP=9.9, COUPON='WILLKOMMEN10';
+const VIEWS=[['front','Vorne'],['back','Rückseite'],['label','Etikett']];
+
+/* ---------- Helfer ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur=n=>n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+/* ---------- Farben ---------- */
+const h2r=h=>{h=h.replace('#','');if(h.length===3)h=h.replace(/./g,'$&$&');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
+const r2h=r=>'#'+r.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
+const mix=(a,b,t)=>{const A=h2r(a),B=h2r(b);return r2h(A.map((v,i)=>v+(B[i]-v)*t))};
+const lum=h=>{const [r,g,b]=h2r(h).map(v=>v/255);return .2126*r+.7152*g+.0722*b};
+
+/* ---------- Kleidung als SVG ---------- */
+let UID=0,PC=0;
+const mir=g=>`<g transform="translate(400,0) scale(-1,1)">${g}</g>`;
+const H=P=>({
+  seam:(d,op=.5,dash=0,w=1.2)=>`<path d="${d}" fill="none" stroke="${P.deep}" stroke-opacity="${op}" stroke-width="${w}"${dash?' stroke-dasharray="3 3"':''}/>`,
+  fold:(d,w=10,op=.16)=>`<path d="${d}" fill="none" stroke="#000" stroke-opacity="${op}" stroke-width="${w}" stroke-linecap="round"/>`,
+  mark:(cx,cy,r)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${P.ink}" stroke-width="${(r*.17).toFixed(1)}"/><text class="fd" x="${cx}" y="${(cy+r*.33).toFixed(1)}" text-anchor="middle" font-size="${(r*.95).toFixed(1)}" font-weight="800" fill="${P.ink}">SW</text>`,
+  word:(x,y,w,s,t)=>`<text class="fd" x="${x}" y="${y}" text-anchor="middle" font-size="${s}" font-weight="800" fill="${P.ink}" textLength="${w}" lengthAdjust="spacingAndGlyphs">${t||'STOFFWECHSEL'}</text>`,
+  mono:(x,y,w,s,t)=>`<text class="fm" x="${x}" y="${y}" text-anchor="middle" font-size="${s}" fill="${P.ink}" opacity=".85" textLength="${w}" lengthAdjust="spacing">${t}</text>`
+});
+function piece(P,d,fill,inner){
+  const k=P.id+'p'+(++PC);
+  const g=P.small?'':'<rect x="0" y="-24" width="400" height="464" filter="url(#grain)" opacity=".3"/>';
+  return `<clipPath id="${k}"><path d="${d}"/></clipPath><path d="${d}" fill="${fill}" stroke="${P.edge}" stroke-width="1.4" stroke-linejoin="round"/><g clip-path="url(#${k})"><rect x="0" y="-24" width="400" height="464" fill="url(#${P.id}v)"/>${g}${inner||''}</g>`;
+}
+function cuff(P){
+  let l='';
+  for(let i=1;i<6;i++){const t=i/6;l+=`<line x1="${lerp(31,86,t).toFixed(1)}" y1="${lerp(304,314,t).toFixed(1)}" x2="${lerp(26,78,t).toFixed(1)}" y2="${lerp(332,342,t).toFixed(1)}" stroke="${P.deep}" stroke-opacity=".38"/>`}
+  return `<path d="M26,332 L78,342 L86,314 L31,304 Z" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".5"/>${l}`;
+}
+function band(P){
+  let l='';
+  for(let x=122;x<=278;x+=10){const t=(x-114)/172,k=2*t*(1-t)*10;l+=`<line x1="${x}" y1="${(362+k).toFixed(1)}" x2="${x}" y2="${(388+k).toFixed(1)}" stroke="${P.deep}" stroke-opacity=".38"/>`}
+  return `<path d="M114,362 Q200,372 286,362 L286,388 Q200,398 114,388 Z" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".5"/>${l}`;
+}
+function sweatInner(P,h){
+  const half=h.seam('M98,74 Q126,140 114,196',.55)+cuff(P);
+  return half+mir(half)+band(P)+h.fold('M156,226 Q176,296 166,350',12,.06)+h.fold('M246,212 Q232,288 242,348',12,.05);
+}
+const SWEAT='M148,50 L96,70 Q52,180 26,332 L78,342 Q100,262 114,196 L114,388 Q200,398 286,388 L286,196 Q300,262 322,342 L374,332 Q348,180 304,70 L252,50 Q200,66 148,50 Z';
+
+function tshirt(P,view){
+  const h=H(P),front=view==='front';
+  const S='M148,50 L92,74 L26,166 L82,200 L108,176 L112,396 Q200,406 288,396 L292,176 L318,200 L374,166 L308,74 L252,50 Q200,70 148,50 Z';
+  const half=h.seam('M94,76 Q122,128 108,176',.55)+h.seam('M34,154 L88,188',.5,1);
+  const inner=half+mir(half)+h.seam('M113,384 Q200,394 287,384',.5,1)+h.fold('M150,250 Q170,318 160,392',12,.06)+h.fold('M250,226 Q236,300 246,390',12,.05);
+  const neck=front
+    ?`<path d="M148,50 Q200,70 252,50 Q200,106 148,50 Z" fill="${P.deep}"/><path d="M148,50 Q200,106 252,50" fill="none" stroke="${P.shade}" stroke-width="9" stroke-linecap="round"/><path d="M152,58 Q200,108 248,58" fill="none" stroke="${P.deep}" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 3"/>`
+    :`<path d="M148,50 Q200,70 252,50" fill="none" stroke="${P.shade}" stroke-width="9" stroke-linecap="round"/>`;
+  const print=front?h.mark(262,128,14):h.word(200,150,170,34)+h.mono(200,172,170,8,'BASICS AUS BIO-BAUMWOLLE');
+  return piece(P,S,P.hex,inner)+neck+print;
+}
+function pullover(P,view){
+  const h=H(P),front=view==='front';
+  const neck=front
+    ?`<path d="M148,50 Q200,66 252,50 Q200,100 148,50 Z" fill="${P.deep}"/><path d="M148,50 Q200,100 252,50" fill="none" stroke="${P.shade}" stroke-width="12" stroke-linecap="round"/><path d="M151,57 Q200,103 249,57" fill="none" stroke="${P.deep}" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 3"/>`
+    :`<path d="M148,50 Q200,66 252,50" fill="none" stroke="${P.shade}" stroke-width="11" stroke-linecap="round"/>`;
+  const print=front?h.mark(262,132,13):h.word(200,150,150,26)+h.mono(200,170,150,7,'BASICS AUS BIO-BAUMWOLLE');
+  return piece(P,SWEAT,P.hex,sweatInner(P,h))+neck+print;
+}
+function hoodie(P,view){
+  const h=H(P),front=view==='front';
+  if(front){
+    const pocket=`<path d="M138,284 L262,284 L276,358 L124,358 Z" fill="#000" fill-opacity=".07" stroke="${P.deep}" stroke-opacity=".6" stroke-width="1.3"/>`+h.seam('M145,291 L255,291 L267,351 L133,351 Z',.45,1);
+    const body=piece(P,SWEAT,P.hex,sweatInner(P,h)+pocket);
+    const hoodOuter='M126,86 C108,20 150,-14 200,-14 C250,-14 292,20 274,86 C262,102 232,116 200,116 C168,116 138,102 126,86 Z';
+    const hoodIn='M158,84 C150,40 172,12 200,12 C228,12 250,40 242,84 C232,98 216,104 200,104 C184,104 168,98 158,84 Z';
+    const hood=piece(P,hoodOuter,P.hex,h.seam('M134,84 C118,26 154,-6 200,-6 C246,-6 282,26 266,84',.4,1))
+      +`<path d="${hoodIn}" fill="${P.deep}" stroke="${P.shade}" stroke-width="7" stroke-linejoin="round"/><path d="${hoodIn}" fill="#000" fill-opacity=".25"/><path d="M168,80 C165,52 180,34 200,32" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>`;
+    const cords=`<path d="M176,108 C172,132 178,152 174,182" fill="none" stroke="${P.cord}" stroke-width="4" stroke-linecap="round"/><rect x="171.5" y="182" width="5" height="13" rx="1.6" fill="#A9AEB2" stroke="#0004"/><path d="M224,108 C228,132 222,150 226,176" fill="none" stroke="${P.cord}" stroke-width="4" stroke-linecap="round"/><rect x="223.5" y="176" width="5" height="13" rx="1.6" fill="#A9AEB2" stroke="#0004"/><circle cx="176" cy="107" r="3.7" fill="#A9AEB2" stroke="#0005"/><circle cx="224" cy="107" r="3.7" fill="#A9AEB2" stroke="#0005"/>`;
+    return body+hood+cords+h.mark(262,196,12);
+  }
+  const body=piece(P,SWEAT,P.hex,sweatInner(P,h));
+  const back='M130,50 C120,150 148,222 200,224 C252,222 280,150 270,50 Q200,38 130,50 Z';
+  const hood=piece(P,back,mix(P.hex,P.light?'#000':'#fff',.05),h.seam('M200,44 L200,224',.5,1)+h.seam('M146,62 C140,150 160,206 198,216',.35,1)+h.seam('M254,62 C260,150 240,206 202,216',.35,1)+h.fold('M130,58 Q200,48 270,58',10,.22));
+  return body+hood+h.word(200,296,170,30)+h.mono(200,318,170,8,'BASICS AUS BIO-BAUMWOLLE');
+}
+function cap(P,view){
+  const h=H(P),front=view==='front';
+  const C='M72,258 C66,120 128,62 200,62 C272,62 334,120 328,258 Z';
+  const seams=front
+    ?h.seam('M200,64 C178,120 170,190 172,258')+h.seam('M200,64 C222,120 230,190 228,258')+h.seam('M200,64 C146,96 110,170 106,258')+h.seam('M200,64 C254,96 290,170 294,258')
+    :h.seam('M200,64 L200,258')+h.seam('M200,64 C160,96 134,160 130,258')+h.seam('M200,64 C240,96 266,160 270,258');
+  const eye=[[146,124],[254,124]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.6" fill="#A9AEB2" stroke="#0005"/>`).join('');
+  let out=piece(P,C,P.hex,seams+h.fold('M96,230 C100,160 120,110 160,84',14,.1))+`<circle cx="200" cy="64" r="7" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".7"/>`+eye;
+  if(front){
+    const B='M58,252 C100,238 300,238 342,252 C350,282 290,306 200,308 C110,306 50,282 58,252 Z';
+    const bf=mix(P.hex,'#000',.1);
+    out+=h.mark(200,170,19)+piece(P,B,bf,h.seam('M72,264 C96,284 150,298 200,299 C250,298 304,284 328,264',.55,1)+h.seam('M92,260 C116,274 156,284 200,285 C244,284 284,274 308,260',.55,1))
+      +`<path d="M58,252 C100,238 300,238 342,252" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2"/>`;
+  }else{
+    out+=`<path d="M80,224 C130,240 270,240 320,224 L324,250 C270,266 130,266 76,250 Z" fill="${P.shade}" stroke="${P.deep}" stroke-opacity=".5"/><path d="M84,232 C134,247 266,247 316,232" fill="none" stroke="${P.deep}" stroke-opacity=".5" stroke-dasharray="3 3"/><rect x="172" y="234" width="56" height="30" rx="3" fill="none" stroke="#B8BCC0" stroke-width="4"/><path d="M200,236 V262" stroke="#B8BCC0" stroke-width="4"/>`;
+  }
+  return out;
+}
+function tote(P,view){
+  const h=H(P),front=view==='front';
+  const S='M80,168 L320,168 L328,414 L72,414 Z';
+  const hand=(dx)=>`<path d="M${128+dx},176 C${126+dx},38 ${274-dx},38 ${272-dx},176" fill="none" stroke="${P.deep}" stroke-width="16"/><path d="M${128+dx},176 C${126+dx},38 ${274-dx},38 ${272-dx},176" fill="none" stroke="${P.shade}" stroke-width="12"/>`;
+  const inner=`<path d="M80,168 H320 V182 H80Z" fill="#000" fill-opacity=".22"/>`+h.seam('M82,196 H318',.5,1)+h.seam('M74,400 H326',.5,1)+h.fold('M96,230 Q112,320 104,410',16,.045)+h.fold('M300,226 Q290,320 298,410',16,.04);
+  let out=hand(0)+piece(P,S,P.hex,inner);
+  const hd=`<path d="M142,180 C140,60 260,60 258,180" fill="none" stroke="${P.shade}" stroke-width="18"/><path d="M142,180 C140,60 260,60 258,180" fill="none" stroke="${P.hi}" stroke-width="13"/><path d="M142,180 C140,60 260,60 258,180" fill="none" stroke="${P.deep}" stroke-opacity=".5" stroke-width="1" stroke-dasharray="3 3"/>`;
+  const box=x=>`<rect x="${x}" y="170" width="28" height="40" fill="none" stroke="${P.deep}" stroke-opacity=".6"/><path d="M${x},170 L${x+28},210 M${x+28},170 L${x},210" stroke="${P.deep}" stroke-opacity=".5"/>`;
+  out+=hd+box(128)+box(244);
+  if(front) out+=h.mark(200,248,14)+h.word(200,318,150,66,'STOFF')+h.word(200,384,196,66,'WECHSEL');
+  else out+=`<rect x="92" y="382" width="42" height="20" rx="1.5" fill="#EEE9DA" stroke="#0003"/><text class="fd" x="113" y="397" text-anchor="middle" font-size="15" font-weight="800" fill="#1B221F">SW</text>`;
+  return out;
+}
+
+/* Pflegeetikett */
+function labelArt(type,P,ck,o){
+  const ink='#1B221F',paper='#F2EEE0',p=BY[o.pid]||{};
+  const one=/Einheit/.test(o.size||'');
+  const size=one?`<text class="fd" x="200" y="238" text-anchor="middle" font-size="50" font-weight="800" fill="${ink}">ONE SIZE</text>`:`<text class="fd" x="200" y="248" text-anchor="middle" font-size="108" font-weight="800" fill="${ink}">${o.size||'M'}</text>`;
+  const ic=(x,body)=>`<g transform="translate(${x},322)" fill="none" stroke="${ink}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${body}</g>`;
+  const X='<path d="M3,3 L27,27 M27,3 L3,27"/>';
+  const wash=`<path d="M3,8 H27 L24,25 H6 Z"/><path d="M8,15 q3.5,-3 7,0 t7,0"/><text x="15" y="23" text-anchor="middle" font-size="7.5" stroke="none" fill="${ink}" class="fm">${p.temp||40}</text>`;
+  const icons=ic(90,wash)+ic(136,`<path d="M15,4 L27,26 H3 Z"/>${X}`)+ic(182,`<rect x="4" y="4" width="22" height="22"/><circle cx="15" cy="15" r="7"/>${X}`)+ic(228,`<path d="M4,24 H26 C26,15 21,9 13,9 H4 Z"/><circle cx="14" cy="20" r="1.5" fill="${ink}"/>`)+ic(274,`<circle cx="15" cy="15" r="11"/>${X}`);
+  return `<g transform="rotate(-2 200 216)">
+   <rect x="64" y="64" width="272" height="318" rx="3" fill="${paper}" stroke="#0000002e"/>
+   <rect x="73" y="73" width="254" height="300" rx="1.5" fill="none" stroke="${ink}" stroke-opacity=".35" stroke-dasharray="3 3"/>
+   <circle cx="106" cy="108" r="14" fill="none" stroke="${ink}" stroke-width="2.4"/><text class="fd" x="106" y="113" text-anchor="middle" font-size="13" font-weight="800" fill="${ink}">SW</text>
+   <text class="fd" x="226" y="117" text-anchor="middle" font-size="27" font-weight="800" fill="${ink}" textLength="188" lengthAdjust="spacingAndGlyphs">STOFFWECHSEL</text>
+   <path d="M88,138 H312" stroke="${ink}" stroke-opacity=".5"/>
+   <text class="fm" x="90" y="160" font-size="9" fill="${ink}" opacity=".75" letter-spacing="1.2">GRÖSSE / SIZE</text>
+   ${size}
+   <text class="fm" x="200" y="272" text-anchor="middle" font-size="9.5" fill="${ink}" letter-spacing="1">FARBE ${COLORS[ck].name.toUpperCase()} · ${COLORS[ck].code}</text>
+   <text class="fm" x="200" y="290" text-anchor="middle" font-size="9.5" fill="${ink}" letter-spacing="1">100 % BIO-BAUMWOLLE</text>
+   <path d="M88,304 H312" stroke="${ink}" stroke-opacity=".5"/>
+   ${icons}
+   <text class="fm" x="200" y="368" text-anchor="middle" font-size="8.5" fill="${ink}" opacity=".85" letter-spacing=".8">${p.temp||40} °C · AUF LINKS WASCHEN</text>
+  </g>`;
+}
+
+function garment(type,ck,view,o){
+  o=o||{};
+  const hex=COLORS[ck].hex,light=lum(hex)>.5,id='g'+(++UID);
+  const P={id,hex,light,small:!!o.small,shade:mix(hex,'#000',.2),deep:mix(hex,'#000',.42),hi:mix(hex,'#fff',.16),
+    edge:light?mix(hex,'#000',.34):mix(hex,'#fff',.3),ink:light?'#17201D':'#F2EEDF',cord:light?mix(hex,'#000',.6):'#EEE9D9'};
+  const defs=`<linearGradient id="${id}v" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".3" stop-color="#fff" stop-opacity=".1"/><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>`;
+  const art=view==='label'?labelArt(type,P,ck,o):({tshirt,pullover,hoodie,cap,tote})[type](P,view);
+  const a=o.label?` role="img" aria-label="${esc(o.label)}"`:' aria-hidden="true"';
+  return `<svg class="garment" viewBox="0 -24 400 464"${a} focusable="false"><defs>${defs}</defs>${art}</svg>`;
+}
+const art=(p,ck,view,o)=>garment(p.type,ck,view,Object.assign({pid:p.id},o||{}));
+
+/* ---------- Zustand ---------- */
+const S={
+  cart:store.get('sw-cart',[]),coupon:store.get('sw-coupon',null),
+  ship:'standard',pay:'card',view:{name:'home'},sel:null,
+  form:{email:'',vorname:'',nachname:'',strasse:'',plz:'',ort:'',land:'DE',agb:false},
+  cardColor:{},order:null
+};
+const save=()=>{store.set('sw-cart',S.cart);store.set('sw-coupon',S.coupon)};
+const cnt=()=>S.cart.reduce((a,l)=>a+l.qty,0);
+function totals(){
+  const sub=S.cart.reduce((a,l)=>a+l.qty*BY[l.pid].price,0);
+  const disc=S.coupon?Math.round(sub*10)/100:0;
+  const net=sub-disc;
+  const ship=!S.cart.length?0:(S.ship==='express'?SHIP_EXP:(net>=FREE_FROM?0:SHIP_STD));
+  const total=net+ship;
+  return {sub,disc,net,ship,total,vat:total/1.19*.19};
+}
+
+/* ---------- Seiten ---------- */
+function dots(p,cur){
+  return `<div class="dots" role="group" aria-label="Farbe wählen">${p.colors.map(c=>`<button class="dot" style="--c:${COLORS[c].hex}" data-card-color="${c}" data-pid="${p.id}" aria-pressed="${c===cur}" aria-label="${COLORS[c].name}" title="${COLORS[c].name}"></button>`).join('')}</div>`;
+}
+function card(p,i){
+  const cur=S.cardColor[p.id]||p.colors[0];
+  return `<article class="card${i===0?' wide':''}" data-card="${p.id}">
+    <button class="tile" data-go="product" data-pid="${p.id}" aria-label="${esc(p.name)} ansehen">${i===0?'<span class="flag">Neu</span>':''}<span class="art">${art(p,cur,'front',{label:`${p.name} in ${COLORS[cur].name}`})}</span></button>
+    <div class="meta"><button class="name" data-go="product" data-pid="${p.id}">${p.name}</button><span class="price">${eur(p.price)}</span></div>
+    <p class="sub">${p.tag}</p>
+    ${dots(p,cur)}
+  </article>`;
+}
+function viewHome(){
+  const bars=[...PRODUCTS].sort((a,b)=>b.weight-a.weight).map((p,i)=>`<button class="bar-row${i===0?' hot':''}" data-go="product" data-pid="${p.id}" aria-label="${p.name}, ${p.weight} Gramm pro Quadratmeter"><span class="n">${p.short}</span><span class="track"><i class="fill" style="--w:${p.weight/450}"></i></span><span class="v">${p.weight}</span></button>`).join('');
+  const sw=Object.entries(COLORS).map(([k,c])=>{
+    const used=PRODUCTS.filter(p=>p.colors.includes(k)).map(p=>p.short).join(', ');
+    return `<div class="sw"><div class="c" style="--c:${c.hex}"></div><div class="i"><span class="mono muted">${c.code}</span><b>${c.name}</b><span class="mono muted">${c.hex}</span><small class="muted" style="font-size:.82rem;line-height:1.35;margin-top:4px">${used}</small></div></div>`;
+  }).join('');
+  return `
+  <section class="hero" style="padding-bottom:clamp(40px,6vw,80px)">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="mono muted">Herbst/Winter 2026 · 5 Teile</span>
+        <h1 class="h1">Fünf Teile. Jeden Tag getragen.</h1>
+        <p class="lead">Pullover, Hoodie, T-Shirt, Cap und Stoffbeutel aus Bio-Baumwolle. Schwerer Stoff, ruhige Farben, eine kleine Marke auf der Brust.</p>
+        <div class="btns"><button class="btn" data-scroll="kollektion">Kollektion ansehen</button><button class="btn alt" data-go="product" data-pid="hoodie">Hoodie Core</button></div>
+        <ul class="facts mono"><li>Versand ab 60 € gratis</li><li>30 Tage Rückgabe</li><li>Eingenähtes Pflegeetikett</li></ul>
+      </div>
+      <div class="hero-tile">
+        <i class="hang-string"></i>
+        <button class="hangtag" data-go="product" data-pid="hoodie" aria-label="Hoodie Core ansehen, 89 Euro"><span class="tb">STOFFWECHSEL</span><span class="tn">Hoodie Core</span><span class="tp">89,00 €</span><span class="tm">Tanne · XS bis XXL</span></button>
+        <div class="art">${art(BY.hoodie,'tanne','front',{label:'Hoodie Core in Tanne'})}</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kollektion" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="mono kicker">Kollektion</span><h2 class="h2">Alle fünf Teile</h2></div><p class="muted">5 Produkte in 5 Farben. Alles kombinierbar.</p></div>
+      <div class="cards">${PRODUCTS.map(card).join('')}</div>
+    </div>
+  </section>
+
+  <section id="material" class="band">
+    <div class="wrap mat">
+      <div>
+        <span class="mono kicker">Material</span>
+        <h2 class="h2">Schwer genug, um zu halten</h2>
+        <p class="lead" style="margin-top:20px">Das Stoffgewicht verrät, wie sich ein Teil anfühlt und wie lange es hält. Unsere Teile liegen zwischen 190 und 420 Gramm pro Quadratmeter. Der Hoodie ist mehr als doppelt so schwer wie das T-Shirt.</p>
+      </div>
+      <div>
+        <div class="bars">${bars}</div>
+        <div class="axis mono"><span></span><div><span>0</span><span>150</span><span>300</span><span>450</span></div><span style="text-align:right">g/m²</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><div><span class="mono kicker">Farbkarte</span><h2 class="h2">Fünf Farben, ein Etikett</h2></div><p class="muted">Jede Farbe hat einen Code, der auch auf dem Etikett steht.</p></div>
+      <div class="swatches">${sw}</div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap lab">
+      <div class="tile"><div class="art">${garment('hoodie','tanne','label',{size:'M',pid:'hoodie',label:'Pflegeetikett in Größe M'})}</div></div>
+      <div>
+        <span class="mono kicker">Etikett</span>
+        <h2 class="h2">Das steht in deinem Teil</h2>
+        <ul class="checks">
+          <li><span class="mono muted">Größe</span><span>Groß gedruckt, damit du sie auch im Schrank siehst.</span></li>
+          <li><span class="mono muted">Material</span><span>Zusammensetzung in Prozent, Farbe und Farbcode.</span></li>
+          <li><span class="mono muted">Pflege</span><span>Fünf Symbole und die Temperatur, auf die das Teil getestet ist.</span></li>
+        </ul>
+        <div style="margin-top:28px"><button class="btn alt" data-go="product" data-pid="hoodie">Etikett am Hoodie ansehen</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><div><span class="mono kicker">Fragen</span><h2 class="h2">Gut zu wissen</h2></div></div>
+      <div class="faq">
+        <details><summary>Wie schnell kommt meine Bestellung?</summary><div>Standardversand dauert 2 bis 4 Werktage und kostet 4,90 €. Ab 60 € Warenwert ist er kostenlos. Express kommt in 1 bis 2 Werktagen und kostet 9,90 €.</div></details>
+        <details><summary>Kann ich etwas zurückschicken?</summary><div>Ja, 30 Tage lang. Das Teil muss ungetragen und gewaschen sein dürfen, nur das Etikett muss dran bleiben. Das gesetzliche Widerrufsrecht von 14 Tagen bleibt davon unberührt.</div></details>
+        <details><summary>Wie fallen die Größen aus?</summary><div>Hoodie und Pullover fallen weit aus, das T-Shirt normal. Auf jeder Produktseite steht eine Maßtabelle mit Brustumfang, Länge und Ärmellänge in Zentimetern.</div></details>
+        <details><summary>Welche Zahlungsarten gibt es?</summary><div>Karte, PayPal, Rechnung und SEPA-Lastschrift. In diesem Demo-Shop wird keine Zahlung ausgeführt.</div></details>
+      </div>
+    </div>
+  </section>`;
+}
+
+function viewProduct(p){
+  const s=S.sel,c=COLORS[s.color];
+  const views=VIEWS.map(([v,l])=>`<button class="thumb" data-view="${v}" aria-pressed="${s.view===v}"><span class="tile"><span class="art">${art(p,s.color,v,{small:true,size:s.size||(p.sizes.length===1?p.sizes[0]:'M')})}</span></span><span class="mono">${l}</span></button>`).join('');
+  const sz=p.sizes.map(z=>`<button class="size" data-size="${z}" aria-pressed="${s.size===z}">${z}</button>`).join('');
+  const t=p.table;
+  const table=`<div class="tbl-wrap"><table><thead><tr>${t.head.map((x,i)=>`<th>${x}${t.unit&&i>0?' ('+t.unit+')':''}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map((x,i)=>i===0?`<th scope="row" style="color:var(--ink);font-size:.9rem;text-transform:none;letter-spacing:0">${x}</th>`:`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const others=PRODUCTS.filter(x=>x.id!==p.id).slice(0,3);
+  const vlabel=Object.fromEntries(VIEWS);
+  return `
+  <div class="wrap">
+    <nav class="crumbs mono" aria-label="Brotkrumen"><button data-go="home">Start</button><span>/</span><button data-go="home" data-scroll="kollektion">Kollektion</button><span>/</span><span>${p.short}</span></nav>
+    <div class="pdp">
+      <div>
+        <div class="stage"><div class="art">${art(p,s.color,s.view,{size:s.size||(p.sizes.length===1?p.sizes[0]:'M'),label:`${p.name} in ${c.name}, Ansicht ${vlabel[s.view]}`})}</div></div>
+        <div class="thumbs" role="group" aria-label="Ansichten">${views}</div>
+      </div>
+      <div class="buy">
+        <div class="title">
+          <span class="mono muted">Stoffwechsel · ${p.weight} g/m²</span>
+          <h1 class="h1" style="font-size:clamp(3rem,7vw,5.2rem)">${p.name}</h1>
+          <div class="pr"><b>${eur(p.price)}</b><span class="muted" style="font-size:.88rem">inkl. MwSt., zzgl. <button class="link" data-act="shipinfo" style="font-size:.88rem">Versand</button>. Ab 60 € Warenwert gratis.</span></div>
+          <p class="muted">${p.lead}</p>
+        </div>
+        <div>
+          <div class="field-l"><span class="mono">Farbe: <b style="color:var(--ink)">${c.name}</b></span><span class="mono muted">${c.code}</span></div>
+          <div class="swbtns" role="group" aria-label="Farbe wählen">${p.colors.map(k=>`<button class="swbtn" style="--c:${COLORS[k].hex}" data-color="${k}" aria-pressed="${k===s.color}" aria-label="${COLORS[k].name}" title="${COLORS[k].name}"></button>`).join('')}</div>
+        </div>
+        <div id="sizebox">
+          <div class="field-l"><span class="mono">Größe${s.size?': <b style="color:var(--ink)">'+s.size+'</b>':''}</span>${p.sizes.length>1?'<button class="link mono" data-act="sizetable" style="font-size:.74rem">Maßtabelle</button>':''}</div>
+          <div class="sizes ${s.err?'size-err':''}" role="group" aria-label="Größe wählen">${sz}</div>
+          <p class="msg" role="alert">${s.err?'Bitte wähle eine Größe.':''}</p>
+        </div>
+        <div class="buyrow">
+          <div class="qty" role="group" aria-label="Menge"><button data-qty="-1" aria-label="Weniger">−</button><output aria-live="polite">${s.qty}</output><button data-qty="1" aria-label="Mehr">+</button></div>
+          <button class="btn" data-act="add">In den Warenkorb</button>
+        </div>
+        <ul class="points">${p.points.map(x=>`<li>${x}</li>`).join('')}</ul>
+        <div>
+          <details open><summary>Material und Stoffgewicht</summary><div>${p.material}</div></details>
+          <details id="sizedet"><summary>Passform und Maße</summary><div><p style="margin-bottom:14px">${p.fit}</p>${table}</div></details>
+          <details><summary>Pflege</summary><div>${p.care}</div></details>
+          <details id="shipdet"><summary>Versand und Rückgabe</summary><div>Standardversand 2 bis 4 Werktage für 4,90 €, ab 60 € Warenwert kostenlos. Express in 1 bis 2 Werktagen für 9,90 €. Du kannst innerhalb von 30 Tagen zurückschicken. Das gesetzliche Widerrufsrecht von 14 Tagen bleibt bestehen.</div></details>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="band" style="padding-block:clamp(40px,6vw,72px)">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="mono kicker">Dazu passt</span><h2 class="h2">Weitere Teile</h2></div></div>
+      <div class="cards">${others.map(o=>card(o,1)).join('')}</div>
+    </div>
+  </section>`;
+}
+
+function lineThumb(l,cls){const p=BY[l.pid];return `<div class="tile">${cls?`<span class="q">${l.qty}</span>`:''}<div class="art">${art(p,l.color,'front',{small:true})}</div></div>`}
+function summary(mode){
+  const t=totals();
+  const items=mode==='checkout'?`<div style="display:flex;flex-direction:column;gap:14px">${S.cart.map(l=>{const p=BY[l.pid];return `<div class="mini">${lineThumb(l,1)}<div><b>${p.name}</b><small>${COLORS[l.color].name} · ${l.size}</small></div><span class="fm">${eur(p.price*l.qty)}</span></div>`}).join('')}</div>`:'';
+  const shipTxt=S.cart.length?(t.ship===0?'kostenlos':eur(t.ship)):'–';
+  return `${items}
+   <form class="coupon" id="coupon-form" novalidate><label class="sr" for="coupon">Gutscheincode</label><input id="coupon" type="text" placeholder="Gutscheincode" autocomplete="off" value=""><button class="btn alt" type="submit">Einlösen</button></form>
+   <p class="msg" id="coupon-msg" style="margin:-6px 0 0;min-height:0;font-size:.86rem${S.coupon?';color:var(--ok)':''}">${S.coupon?'Code '+COUPON+' ist aktiv: 10 % Rabatt.':''}</p>
+   <div class="row"><span>Zwischensumme</span><span>${eur(t.sub)}</span></div>
+   ${t.disc?`<div class="row"><span>Rabatt 10 %</span><span>−${eur(t.disc)}</span></div>`:''}
+   <div class="row"><span>Versand</span><span>${shipTxt}</span></div>
+   <div class="row tot"><span>Gesamt</span><span>${eur(t.total)}</span></div>
+   <p class="vat">Enthält ${eur(t.vat)} MwSt. (19 %).</p>`;
+}
+function viewCart(){
+  const t=totals();
+  if(!S.cart.length) return `<div class="wrap page"><ol class="steps mono">${stepsHTML(1)}</ol><h1 class="h1" style="font-size:clamp(3rem,8vw,6rem)">Kasse</h1>
+    <div class="empty"><p class="lead">Dein Warenkorb ist leer. Such dir ein Teil aus, die Größe und Farbe wählst du auf der Produktseite.</p><button class="btn" data-go="home" data-scroll="kollektion">Zur Kollektion</button></div></div>`;
+  const left=Math.max(0,FREE_FROM-t.net);
+  const lines=S.cart.map((l,i)=>{const p=BY[l.pid];return `<div class="line">
+    ${lineThumb(l)}
+    <div style="min-width:0"><button class="nm" data-go="product" data-pid="${p.id}">${p.name}</button>
+      <p class="muted" style="margin-top:6px;font-size:.92rem">${COLORS[l.color].name} · ${l.size} · ${eur(p.price)}</p>
+      <div class="ctl"><div class="qty" role="group" aria-label="Menge ${esc(p.name)}"><button data-line="${i}" data-d="-1" aria-label="Weniger">−</button><output>${l.qty}</output><button data-line="${i}" data-d="1" aria-label="Mehr">+</button></div><button class="link" data-line="${i}" data-d="rm">Entfernen</button></div></div>
+    <span class="lt">${eur(p.price*l.qty)}</span></div>`}).join('');
+  return `<div class="wrap page"><ol class="steps mono">${stepsHTML(1)}</ol>
+    <h1 class="h1" style="font-size:clamp(3rem,8vw,6rem)">Kasse</h1>
+    <div class="two"><div>
+      <div class="free" role="status">${left>0?`Noch <b>${eur(left)}</b> bis zum kostenlosen Versand.`:'<b>Der Versand ist kostenlos.</b>'}<div class="pb"><i style="--p:${Math.min(1,t.net/FREE_FROM)}"></i></div></div>
+      <div>${lines}</div>
+      <p style="margin-top:20px"><button class="link" data-go="home" data-scroll="kollektion">Weiter einkaufen</button></p>
+    </div>
+    <aside class="summary" aria-label="Zusammenfassung"><h2 class="h3">Zusammenfassung</h2><div id="sum">${summary('cart')}</div><button class="btn block" data-go="checkout">Zum Checkout</button><p class="vat">Versandart und Zahlungsart wählst du im nächsten Schritt.</p></aside></div></div>`;
+}
+const STEPS=['Kasse','Checkout','Bestätigung'];
+const stepsHTML=n=>STEPS.map((s,i)=>`<li${i+1===n?' aria-current="step"':''}><b>${i+1}</b>${s}</li>`).join('');
+const PAYS=[['card','Karte','Visa, Mastercard. Im echten Shop öffnet sich hier die gesicherte Zahlungsseite von Stripe.'],['paypal','PayPal','Du wirst zu PayPal weitergeleitet und zahlst dort.'],['invoice','Rechnung','Du zahlst innerhalb von 14 Tagen nach Erhalt.'],['sepa','SEPA-Lastschrift','Der Betrag wird nach dem Versand von deinem Konto eingezogen.']];
+function field(id,label,type,ac,extra){
+  return `<div class="f" data-field="${id}"><label for="f-${id}">${label}</label><input id="f-${id}" name="${id}" type="${type}" autocomplete="${ac}" value="${esc(S.form[id])}" data-f="${id}" ${extra||''}><span class="err" id="e-${id}"></span></div>`;
+}
+function viewCheckout(){
+  if(!S.cart.length) return viewCart();
+  const f=S.form;
+  return `<div class="wrap page"><ol class="steps mono">${stepsHTML(2)}</ol>
+  <h1 class="h1" style="font-size:clamp(3rem,8vw,6rem)">Checkout</h1>
+  <div class="two">
+   <form id="checkout-form" novalidate>
+    <div class="note" style="margin-bottom:34px">Demo-Shop: Deine Eingaben werden nicht gesendet und nicht gespeichert. Bitte gib keine echten Daten ein.</div>
+    <fieldset><legend>Kontakt</legend>${field('email','E-Mail-Adresse','email','email','inputmode="email"')}</fieldset>
+    <fieldset><legend>Lieferadresse</legend><div class="grid2">
+      ${field('vorname','Vorname','text','given-name')}${field('nachname','Nachname','text','family-name')}
+      <div class="span2">${field('strasse','Straße und Hausnummer','text','street-address')}</div>
+      <div class="span2 grid-plz">${field('plz','Postleitzahl','text','postal-code','inputmode="numeric"')}${field('ort','Ort','text','address-level2')}</div>
+      <div class="f span2"><label for="f-land">Land</label><select id="f-land" name="land" data-f="land" autocomplete="country"><option value="DE"${f.land==='DE'?' selected':''}>Deutschland</option><option value="AT"${f.land==='AT'?' selected':''}>Österreich</option><option value="CH"${f.land==='CH'?' selected':''}>Schweiz</option></select></div>
+    </div></fieldset>
+    <fieldset><legend>Versandart</legend><div class="opts" role="radiogroup">
+      <label class="opt"><input type="radio" name="ship" value="standard" ${S.ship==='standard'?'checked':''} data-ship><span><b>Standard</b><small>2 bis 4 Werktage</small></span><span class="pp" id="ship-std"></span></label>
+      <label class="opt"><input type="radio" name="ship" value="express" ${S.ship==='express'?'checked':''} data-ship><span><b>Express</b><small>1 bis 2 Werktage</small></span><span class="pp">${eur(SHIP_EXP)}</span></label>
+    </div></fieldset>
+    <fieldset><legend>Zahlungsart</legend><div class="opts" role="radiogroup">
+      ${PAYS.map(([k,n,d])=>`<label class="opt"><input type="radio" name="pay" value="${k}" ${S.pay===k?'checked':''} data-pay><span><b>${n}</b><small>${d}</small></span><span></span></label>`).join('')}
+    </div></fieldset>
+    <div class="chk${''}" data-field="agb"><input id="f-agb" type="checkbox" data-f="agb" ${f.agb?'checked':''}><label for="f-agb">Ich habe die AGB und die Widerrufsbelehrung gelesen und bin einverstanden.</label><span class="err" id="e-agb"></span></div>
+    <button class="btn block" type="submit" style="min-height:58px">Zahlungspflichtig bestellen</button>
+    <p class="vat" style="margin-top:12px">Mit dem Klick bestellst du im Demo-Modus. Es entstehen keine Kosten.</p>
+   </form>
+   <aside class="summary" aria-label="Bestellübersicht"><h2 class="h3">Deine Bestellung</h2><div id="sum">${summary('checkout')}</div><button class="link" data-go="cart" style="align-self:flex-start">Zurück zur Kasse</button></aside>
+  </div></div>`;
+}
+const addBD=(d,n)=>{const r=new Date(d);while(n>0){r.setDate(r.getDate()+1);if(r.getDay()%6)n--}return r};
+const fd=d=>d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+function viewDone(){
+  const o=S.order;
+  if(!o) return viewHome();
+  const a=addBD(new Date(),o.ship==='express'?1:2),b=addBD(new Date(),o.ship==='express'?2:4);
+  const first=BY[o.items[0].pid],fc=o.items[0].color;
+  return `<div class="wrap page"><ol class="steps mono">${stepsHTML(3)}</ol>
+  <div class="done"><div style="display:flex;flex-direction:column;gap:22px;align-items:flex-start">
+    <span class="mono muted">Bestellung eingegangen</span>
+    <h1 class="h1" style="font-size:clamp(3rem,8vw,6rem)">Danke, ${esc(o.vorname)}.</h1>
+    <span class="ordno">${o.no}</span>
+    <p class="lead">Das war eine Demo-Bestellung. In einem echten Shop ginge jetzt eine Bestätigung an <b style="color:var(--ink)">${esc(o.email)}</b>. Geliefert würde zwischen <b style="color:var(--ink)">${fd(a)}</b> und <b style="color:var(--ink)">${fd(b)}</b>.</p>
+    <div class="summary" style="position:static;width:100%">
+      ${o.items.map(l=>{const p=BY[l.pid];return `<div class="mini">${lineThumb(l,1)}<div><b>${p.name}</b><small>${COLORS[l.color].name} · ${l.size}</small></div><span class="fm">${eur(p.price*l.qty)}</span></div>`}).join('')}
+      ${o.t.disc?`<div class="row"><span>Rabatt 10 %</span><span>−${eur(o.t.disc)}</span></div>`:''}
+      <div class="row"><span>Versand</span><span>${o.t.ship===0?'kostenlos':eur(o.t.ship)}</span></div>
+      <div class="row tot"><span>Gesamt</span><span>${eur(o.t.total)}</span></div>
+      <p class="vat">Bezahlt per ${PAYS.find(x=>x[0]===o.pay)[1]} (Demo). Enthält ${eur(o.t.vat)} MwSt.</p>
+    </div>
+    <button class="btn" data-go="home">Weiter einkaufen</button>
+  </div>
+  <div class="tile"><div class="art">${art(first,fc,'front',{label:first.name})}</div></div></div></div>`;
+}
+
+/* ---------- Rendern und Navigation ---------- */
+const app=$('#app');
+const token=v=>v.name==='product'?'produkt-'+v.pid:({home:'start',cart:'kasse',checkout:'checkout',done:'danke'})[v.name];
+function render(keep){
+  const v=S.view;
+  document.title='Stoffwechsel Shop';
+  app.innerHTML=v.name==='home'?viewHome():v.name==='product'?viewProduct(BY[v.pid]):v.name==='cart'?viewCart():v.name==='checkout'?viewCheckout():viewDone();
+  updCount();
+  if(v.name==='checkout')updShipStd();
+  if(!keep){window.scrollTo(0,0);try{app.focus({preventScroll:true})}catch(e){}}
+}
+function go(name,pid,scrollTo){
+  if(name==='checkout'&&!S.cart.length)name='cart';
+  S.view={name,pid};
+  $('#toast').classList.remove('on');
+  if(name==='product')S.sel={pid,color:BY[pid].colors[0],size:BY[pid].sizes.length===1?BY[pid].sizes[0]:null,qty:1,view:'front',err:false};
+  render();
+  try{const t=token(S.view);if(location.hash.slice(1)!==t)location.hash=t}catch(e){}
+  if(scrollTo)setTimeout(()=>{const el=document.getElementById(scrollTo);if(el)el.scrollIntoView({behavior:'smooth'})},30);
+}
+function fromHash(){
+  let t='';try{t=location.hash.slice(1)}catch(e){}
+  if(t.startsWith('produkt-')&&BY[t.slice(8)])return go('product',t.slice(8));
+  if(t==='kasse')return go('cart');
+  if(t==='checkout')return go('checkout');
+  S.view={name:'home'};render();
+}
+window.addEventListener('hashchange',()=>{let t='';try{t=location.hash.slice(1)}catch(e){}if(t!==token(S.view))fromHash()});
+function updCount(){const n=cnt(),c=$('#count');c.textContent=n;c.dataset.n=n}
+function updShipStd(){const e=$('#ship-std');if(e){const t=totals();e.textContent=t.net>=FREE_FROM?'kostenlos':eur(SHIP_STD)}}
+function updSummary(){const e=$('#sum');if(e){e.innerHTML=summary(S.view.name==='checkout'?'checkout':'cart');}updShipStd();updCount()}
+let toastT;
+function toast(msg,act){
+  const t=$('#toast');t.innerHTML=`<span>${msg}</span>${act?`<button data-go="cart">${act}</button>`:''}`;t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),4200);
+}
+
+/* ---------- Aktionen ---------- */
+function addToCart(){
+  const s=S.sel,p=BY[s.pid];
+  if(!s.size){s.err=true;render(true);const b=$('#sizebox');if(b)b.scrollIntoView({block:'center',behavior:'smooth'});return}
+  const ex=S.cart.find(l=>l.pid===s.pid&&l.color===s.color&&l.size===s.size);
+  if(ex)ex.qty=Math.min(10,ex.qty+s.qty);else S.cart.push({pid:s.pid,color:s.color,size:s.size,qty:s.qty});
+  save();updCount();
+  toast(`${p.name} · ${COLORS[s.color].name} · ${s.size==='Einheitsgröße'?'Einheitsgröße':s.size} liegt im Warenkorb.`,'Zur Kasse');
+}
+function applyCoupon(v){
+  const m=$('#coupon-msg');
+  if(v.trim().toUpperCase()===COUPON){S.coupon=COUPON;save();updSummary();return}
+  m.textContent=v.trim()?'Diesen Code kennen wir nicht. Probier '+COUPON+'.':'Bitte gib einen Code ein.';
+}
+function validate(){
+  const f=S.form,e={};
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim()))e.email='Bitte gib eine gültige E-Mail-Adresse ein, zum Beispiel name@beispiel.de.';
+  if(!f.vorname.trim())e.vorname='Bitte gib deinen Vornamen ein.';
+  if(!f.nachname.trim())e.nachname='Bitte gib deinen Nachnamen ein.';
+  if(!/\S+\s+\S*\d/.test(f.strasse.trim())&&!/\d/.test(f.strasse))e.strasse='Bitte gib Straße und Hausnummer ein.';
+  const n=f.land==='DE'?5:4;
+  if(!new RegExp('^\\d{'+n+'}$').test(f.plz.trim()))e.plz='Die Postleitzahl hat '+n+' Ziffern.';
+  if(!f.ort.trim())e.ort='Bitte gib deinen Ort ein.';
+  if(!f.agb)e.agb='Bitte bestätige die AGB und die Widerrufsbelehrung.';
+  return e;
+}
+function showErrors(e){
+  document.querySelectorAll('[data-field]').forEach(el=>{
+    const id=el.dataset.field,msg=e[id];
+    el.classList.toggle('bad',!!msg);
+    const s=el.querySelector('.err');if(s)s.textContent=msg||'';
+    const inp=el.querySelector('input,select');if(inp){inp.setAttribute('aria-invalid',msg?'true':'false');if(msg)inp.setAttribute('aria-describedby','e-'+id);else inp.removeAttribute('aria-describedby')}
+  });
+  const first=Object.keys(e)[0];
+  if(first){const el=document.getElementById('f-'+first);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.focus({preventScroll:true})}}
+}
+function placeOrder(){
+  const e=validate();showErrors(e);
+  if(Object.keys(e).length)return;
+  const t=totals();
+  S.order={no:'SW-'+String(Math.floor(10000+Math.random()*89999)),vorname:S.form.vorname.trim(),email:S.form.email.trim(),items:S.cart.map(l=>({...l})),t,ship:S.ship,pay:S.pay};
+  S.cart=[];S.coupon=null;save();
+  go('done');
+}
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-go],[data-scroll],[data-card-color],[data-color],[data-size],[data-view],[data-qty],[data-act],[data-line]');
+  if(!el)return;
+  const d=el.dataset;
+  if(d.go){ev.preventDefault();go(d.go,d.pid,d.scroll);return}
+  if(d.scroll){
+    if(S.view.name!=='home'){go('home',null,d.scroll)}else{const t=document.getElementById(d.scroll);if(t)t.scrollIntoView({behavior:'smooth'})}
+    return;
+  }
+  if(d.cardColor){
+    S.cardColor[d.pid]=d.cardColor;
+    const c=el.closest('[data-card]'),p=BY[d.pid];
+    c.querySelector('.art').innerHTML=art(p,d.cardColor,'front',{label:`${p.name} in ${COLORS[d.cardColor].name}`});
+    c.querySelectorAll('.dot').forEach(x=>x.setAttribute('aria-pressed',x===el));
+    return;
+  }
+  if(d.color){S.sel.color=d.color;render(true);return}
+  if(d.size){S.sel.size=d.size;S.sel.err=false;render(true);return}
+  if(d.view){S.sel.view=d.view;render(true);return}
+  if(d.qty){S.sel.qty=Math.max(1,Math.min(10,S.sel.qty+Number(d.qty)));render(true);return}
+  if(d.line!==undefined){
+    const l=S.cart[Number(d.line)];if(!l)return;
+    if(d.d==='rm')S.cart.splice(Number(d.line),1);else l.qty=Math.max(1,Math.min(10,l.qty+Number(d.d)));
+    save();render(true);return;
+  }
+  if(d.act==='add'){addToCart();return}
+  if(d.act==='sizetable'){const x=$('#sizedet');x.open=true;x.scrollIntoView({block:'center',behavior:'smooth'});return}
+  if(d.act==='shipinfo'){const x=$('#shipdet');x.open=true;x.scrollIntoView({block:'center',behavior:'smooth'});return}
+});
+document.addEventListener('submit',ev=>{
+  if(ev.target.id==='checkout-form'){ev.preventDefault();placeOrder()}
+  if(ev.target.id==='coupon-form'){ev.preventDefault();applyCoupon($('#coupon').value)}
+});
+document.addEventListener('input',ev=>{
+  const el=ev.target,k=el.dataset&&el.dataset.f;if(!k)return;
+  S.form[k]=el.type==='checkbox'?el.checked:el.value;
+  const w=el.closest('[data-field]');if(w&&w.classList.contains('bad')){w.classList.remove('bad');const s=w.querySelector('.err');if(s)s.textContent='';el.setAttribute('aria-invalid','false')}
+});
+document.addEventListener('change',ev=>{
+  const el=ev.target;
+  if(el.matches('[data-ship]')){S.ship=el.value;updSummary()}
+  if(el.matches('[data-pay]')){S.pay=el.value}
+});
+
+/* ---------- Start ---------- */
+updCount();
+fromHash();
+})();
+</script>
+</body>
+</html>
