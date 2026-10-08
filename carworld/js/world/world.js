@@ -128,9 +128,9 @@ export class World {
   height(x, z, hint = Infinity, step = 0.7) {
     const lim = hint + step;
     let best = -Infinity, lowest = Infinity;
+    const inTun = this.layout.inTunnel(x, z);
     const t = this.terrainHeight(x, z);
-    if (t <= lim) best = t;
-    lowest = t;
+    if (!inTun) { if (t <= lim) best = t; lowest = t; }
     const arr = this.stripGrid.query(x, z, 0.01, this._scratch);
     for (let i = 0; i < arr.length; i++) {
       const o = arr[i];
