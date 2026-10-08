@@ -182,10 +182,11 @@ export function facadeMaterial(tex, { style = 'glass', metal = 0.0 } = {}) {
 /** Gelände: kachelbares Gras/Erde/Sand-Detail (Farbe kommt aus Vertexfarben). */
 export function terrainDetail() {
   const c = canvas(512, 512), g = c.getContext('2d');
-  noiseFill(g, 512, 512, [170, 170, 170], 70, 31);
+  noiseFill(g, 512, 512, [176, 176, 176], 34, 31);
   const r = rng(32);
   for (let i = 0; i < 400; i++) {
-    g.fillStyle = `rgba(${r() < 0.5 ? 90 : 230},${r() < 0.5 ? 90 : 230},${r() < 0.5 ? 90 : 230},0.06)`;
+    const gv = r() < 0.5 ? 120 : 235;   // nur Helligkeit, keine Farbflecken (Farbe kommt aus den Vertexfarben)
+    g.fillStyle = `rgba(${gv},${gv},${gv},0.05)`;
     g.beginPath(); g.arc(r() * 512, r() * 512, 6 + r() * 40, 0, 7); g.fill();
   }
   const t = canvasTexture(c, { aniso: 8 });
