@@ -20,6 +20,7 @@ import { clamp, lerp } from './util.js';
 
 const $ = (id) => document.getElementById(id);
 const SPAWN = { x: -700, z: -6.6, yaw: Math.PI }; // Allee Richtung Meer und Sonnenuntergang
+const MENU = { x: -1180, z: 500, yaw: Math.PI };  // Promenade an der Küste: Skyline im Gegenlicht des Sonnenuntergangs (Startbild)
 
 const CAR_INFO = {
   cls63: { tag: 'Widebody · 5,5 l V8 Biturbo · Allrad', ps: 585, drive: 'Allrad' },
@@ -53,6 +54,12 @@ class Game {
     this.env = new Environment(this.pipe.renderer, this.scene);
     this.world = new World(this.scene, { quality: this.settings.quality });
     applyShadowQuality(this.env, QUALITY[this.settings.quality]);
+    // Schaufenster-Licht fürs Startbild/Fahrzeugwahl: warmes Seitenlicht + Gegenlicht-Kante, damit der schwarze Lack Form zeigt
+    this.menuLights = new THREE.Group();
+    this.menuKey = new THREE.DirectionalLight(0xffd3a1, 1.5); this.menuRim = new THREE.DirectionalLight(0xff9a5c, 2.4);
+    for (const l of [this.menuKey, this.menuRim]) { l.castShadow = false; this.menuLights.add(l, l.target); }
+    this.menuLights.visible = false;
+    this.scene.add(this.menuLights);
     this.hud = new Hud(this.world.layout);
     this.input = new Input(window);
     this.audio = new AudioEngine();
@@ -79,7 +86,8 @@ class Game {
 
     // Welt rund um den Startpunkt aufbauen (Fortschrittsbalken)
     this.setProgress(0, 'Stadt wird aufgebaut …');
-    await this.world.preload(SPAWN.x, SPAWN.z, 3, (p) => this.setProgress(p * 0.7));
+    await this.world.preload(MENU.x, MENU.z, 3, (p) => this.setProgress(p * 0.35));
+    await this.world.preload(SPAWN.x, SPAWN.z, 3, (p) => this.setProgress(0.35 + p * 0.35));
     this.setProgress(0.72, 'Fahrzeug wird geladen …');
     await new Promise((r) => setTimeout(r, 0));
     const model = await this.getModel(this.settings.car);
@@ -88,7 +96,7 @@ class Game {
     this.applyTuning(model);
     this.player.assist = this.settings.assist;
     this.player.manual = this.settings.gearbox === 'manual';
-    this.player.reset(SPAWN.x, SPAWN.z, SPAWN.yaw);
+    this.player.reset(MENU.x, MENU.z, MENU.yaw);
     this.setProgress(0.9, 'Beleuchtung …');
     for (const id of CAR_IDS) this.stats[id] = { zero100: measure0100(id) };
     this.enterMenu();
@@ -240,7 +248,7 @@ class Game {
   }
 
   parkAtSpawn() {
-    this.player.reset(SPAWN.x, SPAWN.z, SPAWN.yaw);
+    this.player.reset(MENU.x, MENU.z, MENU.yaw);
     this.cameraRig.snap(this.player);
   }
 
@@ -433,6 +441,19 @@ class Game {
       this.cameraRig.update(dt, player, u);
     } else if (playing || this.mode === 'pause') {
       if (playing) this.cameraRig.update(dt, player, inp);
+    }
+
+    // ---- Schaufenster-Licht (nur Menü/Auswahl)
+    const showcase = this.mode === 'menu' || this.mode === 'select';
+    this.menuLights.visible = showcase;
+    if (showcase) {
+      const v = player.vehicle, c = Math.cos(v.yaw), sn = -Math.sin(v.yaw);   // Fahrzeug-Vorwärts (x,z) und rechts
+      const fx = c, fz = sn, rx = -sn, rz = c;
+      const at = (l, f, r, u) => { l.position.set(v.x + fx * f + rx * r, player.y + u, v.z + fz * f + rz * r); l.target.position.set(v.x, player.y + 0.7, v.z); l.target.updateMatrixWorld(); };
+      at(this.menuKey, 9, -7, 6);     // vorn links, hoch
+      at(this.menuRim, -9, 6, 4);     // hinten rechts: Kantenlicht auf Dach/Schulter
+      const k = 1 - 0.5 * (env.params.lights || 0);
+      this.menuKey.intensity = 1.5 * k; this.menuRim.intensity = 2.4 * k;
     }
 
     // ---- Welt, Himmel, Lichter
