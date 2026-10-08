@@ -3,10 +3,11 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { canvas, canvasTexture, carbonMaterial, matBlackGloss, matChrome, matDarkChrome, emblemTexture } from '../materials.js';
-import { leatherMaterial, makeCluster, TIFFANY } from './interior.js';
+import { leatherMaterial } from './interior.js';
 
 export const TEAL = 0x19c7c0;
-const INT_TEAL = 0x11aebf;   // Tiffany Blue (leicht ins Blaue verschoben, damit es im warmen Licht wie im Referenzbild wirkt)
+// Tiffany Blue: Basis ist TIFFANY (interior.js, ~#13b9b0); leicht ins Blaue verschoben, damit es im warmen Abendlicht wie im Referenzbild (~(26,140,152)-(43,172,174)) wirkt
+const INT_TEAL = 0x11aebf;
 
 // ---------------------------------------------------------------------------------------------
 // Carbon-Sammler: viele Teile -> ein Mesh, UV als Kastenprojektion in Metern (ein Material, gleiche Gewebegröße überall)
@@ -28,9 +29,9 @@ export function boxUV(g, tile = 0.12) {
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
 export const xf = (x, y, z, rx = 0, ry = 0, rz = 0) => _m.compose(_p.set(x, y, z), _q.setFromEuler(_e.set(rx, ry, rz)), _s).clone();
 
-export function carbonKit(tile = 0.075) {
+export function carbonKit(tile = 0.1) {
   const mat = carbonMaterial({ repeat: 1 });
-  mat.color.setScalar(0.8); mat.normalScale.set(0.2, 0.2); mat.roughness = 0.3; mat.metalness = 0.9; mat.envMapIntensity = 1.6;
+  mat.color.setScalar(0.8); mat.normalScale.set(0.22, 0.22); mat.roughness = 0.3; mat.metalness = 0.9; mat.envMapIntensity = 1.6;
   const geos = [];
   const add = (geo, m4) => {
     const g = geo.index ? geo.toNonIndexed() : geo.clone();
@@ -92,7 +93,7 @@ export function mansoryTex(w, h, { bg = null, fg = '#d9dde2', wings = true, font
 
 const rbg = (w, h, d, r = 0.02, seg = r <= 0.015 ? 1 : 2) => new RoundedBoxGeometry(w, h, d, seg, Math.max(0.001, Math.min(r, w * 0.49, h * 0.49, d * 0.49)));
 
-class Batch {
+export class Batch {
   constructor() { this.m = new Map(); }
   add(geo, mat, matrix) {
     let g = geo.index ? geo.toNonIndexed() : geo.clone();
@@ -113,8 +114,8 @@ class Batch {
   }
 }
 
-const mx = (x, y, z, rx = 0, ry = 0, rz = 0) => xf(x, y, z, rx, ry, rz);
-const mul = (a, b) => a.clone().multiply(b);
+export const mx = (x, y, z, rx = 0, ry = 0, rz = 0) => xf(x, y, z, rx, ry, rz);
+export const mul = (a, b) => a.clone().multiply(b);
 
 /** Rautenmuster-Leder mit passender Wiederholung (Rautengröße in Metern). */
 function quiltFactory(color, thread) {
@@ -239,15 +240,15 @@ export function buildG63Interior() {
   // ---- Materialien
   const lea = leatherMaterial({ color: INT_TEAL, rough: 0.5 });
   const leaDash = leatherMaterial({ color: 0x0e9fb2, rough: 0.62 });
-  const quilt = quiltFactory(INT_TEAL, '#073f4a');
+  const quilt = quiltFactory(INT_TEAL, '#0b6270');
   const carbon = carbonMaterial({ repeat: 5 }); carbon.normalScale.set(0.25, 0.25); carbon.color.setScalar(0.8);
   const gloss = matBlackGloss();
   const chrome = matChrome();
   const dchrome = matDarkChrome();
-  const carpet = new THREE.MeshStandardMaterial({ color: 0x0b4f4c, roughness: 0.95, metalness: 0 });
-  const glowTeal = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 1.6, roughness: 0.4 });
+  const carpet = new THREE.MeshStandardMaterial({ color: 0x083a40, roughness: 0.95, metalness: 0 });
+  const glowTeal = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 1.0, roughness: 0.4 });
   const matteBlack = new THREE.MeshStandardMaterial({ color: 0x08090a, roughness: 0.7, metalness: 0.2 });
-  const tealGlow = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 1.4, roughness: 0.4 });
+  const tealGlow = new THREE.MeshStandardMaterial({ color: 0x0fd8cc, emissive: 0x19e8dc, emissiveIntensity: 0.75, roughness: 0.4 });
 
   // ---- Boden, Rückwand, Laderaum
   batch.add(new THREE.BoxGeometry(2.9, 0.04, 1.66), carpet, mx(-0.62, 0.46, 0));
@@ -319,15 +320,12 @@ export function buildG63Interior() {
   const ventMatDark = new THREE.MeshStandardMaterial({ color: 0x06090b, roughness: 0.35, metalness: 0.8 });
   const bladeMat = new THREE.MeshStandardMaterial({ color: 0x1b8f89, emissive: 0x19e8dc, emissiveIntensity: 0.9, roughness: 0.35, metalness: 0.7 });
   const vent = (x, y, z, R, tilt) => {
-    const gp = new THREE.Group();
-    gp.position.set(x, y, z); gp.rotation.z = tilt; // Achse = x, Blick nach hinten (-x)
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(R, R * 0.12, 10, 40), chrome); ring.rotation.y = Math.PI / 2;
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(R * 0.98, 36), ventMatDark); disc.rotation.y = -Math.PI / 2; disc.position.x = 0.012;
-    const glow = new THREE.Mesh(new THREE.TorusGeometry(R * 0.84, R * 0.055, 8, 40), glowTeal); glow.rotation.y = Math.PI / 2; glow.position.x = -0.002;
-    const bl = new THREE.Mesh(bladeGeo(R, 18), bladeMat); bl.position.x = -0.006;
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.2, R * 0.2, 0.012, 16), chrome); hub.rotation.z = Math.PI / 2; hub.position.x = -0.006;
-    gp.add(ring, disc, glow, bl, hub);
-    g.add(gp);
+    const B = mx(x, y, z, 0, 0, tilt);   // Düsenachse = x, Blick nach hinten (-x)
+    batch.add(new THREE.TorusGeometry(R, R * 0.12, 8, 32), chrome, mul(B, mx(0, 0, 0, 0, Math.PI / 2, 0)));
+    batch.add(new THREE.CircleGeometry(R * 0.98, 32), ventMatDark, mul(B, mx(0.012, 0, 0, 0, -Math.PI / 2, 0)));
+    batch.add(new THREE.TorusGeometry(R * 0.84, R * 0.055, 6, 32), glowTeal, mul(B, mx(-0.002, 0, 0, 0, Math.PI / 2, 0)));
+    batch.add(bladeGeo(R, 18), bladeMat, mul(B, mx(-0.006, 0, 0)));
+    batch.add(new THREE.CylinderGeometry(R * 0.2, R * 0.2, 0.012, 14), chrome, mul(B, mx(-0.006, 0, 0, 0, 0, Math.PI / 2)));
   };
   const faceX = (y) => 0.425 + (1.04 - y) * 0.3214;    // Vorderseite (Fahrerseite) des Armaturenbretts in Höhe y
   const TILT = 0.31;
@@ -366,6 +364,15 @@ export function buildG63Interior() {
   batch.add(new THREE.CylinderGeometry(0.018, 0.02, 0.05, 14), chrome, mx(0.13, 0.855, 0.05));
   for (const z of [-0.07, 0.07]) batch.add(rbg(0.012, 0.02, 0.04, 0.004), glowTeal, mx(0.34, 0.835, z));
   batch.add(rbg(0.3, 0.012, 0.16, 0.008), carbon, mx(-0.2, 0.832, 0.0));
+
+  // ---- Innenspiegel, Sonnenblenden
+  batch.add(rbg(0.05, 0.06, 0.2, 0.02), gloss, mx(0.585, 1.6, -0.02, 0, 0, -0.15));
+  batch.add(new THREE.CylinderGeometry(0.009, 0.009, 0.1, 8), matteBlack, mx(0.605, 1.665, -0.02, 0, 0, -0.38));
+  for (const z of [-0.4, 0.4]) batch.add(rbg(0.3, 0.025, 0.42, 0.012), lea, mx(0.34, 1.88, z, 0, 0, 0.0));
+
+  // ---- Ambientelicht (türkis): Fußraum, Konsole
+  for (const z of [-0.5, 0.5]) batch.add(rbg(0.4, 0.01, 0.014, 0.004), tealGlow, mx(0.48, 0.5, z));
+  for (const z of [-0.152, 0.152]) batch.add(rbg(0.9, 0.008, 0.01, 0.004), tealGlow, mx(0.0, 0.82, z));
 
   // ---- Pedale
   batch.add(rbg(0.025, 0.09, 0.14, 0.01), dchrome, mx(0.5, 0.58, DRV_Z + 0.02, 0, 0, 0.5));
@@ -416,6 +423,9 @@ export function buildG63Interior() {
   };
   const doorL = doorMat(false), doorR = doorMat(true);
   const doorTrims = [];   // je Tür eine Gruppe (Fahrzeugkoordinaten); der Aufrufer kann sie an die Tür hängen
+  const carbonTrim = carbonMaterial({ repeat: 4 }); carbonTrim.normalScale.set(0.3, 0.3); carbonTrim.color.setScalar(0.85); carbonTrim.metalness = 0.85; carbonTrim.roughness = 0.3;
+  const doorLogo = new THREE.MeshStandardMaterial({ map: mansoryTex(512, 96, { fg: '#e3e8ec', fontScale: 0.5 }), transparent: true, roughness: 0.4, metalness: 0.5, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  const TW = 1024, TH = 760;
   for (const [idx, x0, x1] of [[0, -0.3, 0.62], [1, -1.25, -0.4]]) {
     const len = x1 - x0, xc = (x0 + x1) / 2;
     for (const s of [-1, 1]) {
@@ -423,9 +433,24 @@ export function buildG63Interior() {
       const grp = new THREE.Group();
       const slab = new THREE.Mesh(new THREE.BoxGeometry(len, 0.72, 0.05), [matteBlack, matteBlack, matteBlack, matteBlack, s < 0 ? mat : matteBlack, s < 0 ? matteBlack : mat]);
       slab.position.set(xc, 0.88, s * 0.845);
+      // Texturkoordinaten (Pixel) -> Tür-Koordinaten
+      const X = (u) => (s < 0 ? x0 + (u / TW) * len : x1 - (u / TW) * len), Y = (v) => 1.24 - (v / TH) * 0.72;
+      const zf = s * 0.8165;
+      const plates = [];
+      for (const [u0, v0, u1, v1] of [[0.42 * TW, 70, 0.88 * TW, 162], [0.22 * TW, 500, 0.92 * TW, 570], [120, 628, TW - 120, 692]]) {
+        plates.push([Math.abs(X(u1) - X(u0)), Math.abs(Y(v1) - Y(v0)), (X(u0) + X(u1)) / 2, (Y(v0) + Y(v1)) / 2]);
+      }
+      const geos = plates.map(([w, h, cx, cy]) => { const q = rbg(w, h, 0.012, 0.012); q.translate(cx, cy, zf); return q; });
+      const plateMesh = new THREE.Mesh(mergeGeometries(geos.map((q) => (q.index ? q.toNonIndexed() : q))), carbonTrim);
+      // Griffmulde (schwarz glänzend) + Chromgriff + Schalterblock
+      const pk = new THREE.Mesh(rbg(0.58 * len, 0.14 * 0.72 / 0.76 * 1.0, 0.012, 0.02), gloss); pk.position.set((X(0.30 * TW) + X(0.88 * TW)) / 2, (Y(290) + Y(430)) / 2, zf);
+      pk.scale.set(1, 1, 1);
+      const pull = new THREE.Mesh(rbg(len * 0.2, 0.018, 0.03, 0.008), chrome); pull.position.set(X(0.5 * TW), Y(340), s * 0.8);
+      const sw = new THREE.Mesh(rbg(0.1, 0.06, 0.016, 0.01), gloss); sw.position.set(X(205), Y(350), zf);
+      const logo = new THREE.Mesh(new THREE.PlaneGeometry(Math.abs(X(0.86 * TW) - X(0.44 * TW)), 0.07), doorLogo);
+      logo.position.set((X(0.44 * TW) + X(0.86 * TW)) / 2, Y(116), s * 0.809); if (s > 0) logo.rotation.y = Math.PI;
       const arm = new THREE.Mesh(rbg(len * 0.34, 0.04, 0.06, 0.02), lea); arm.position.set(xc - len * 0.24, 1.07, s * 0.818);
-      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, len * 0.26, 10), chrome); handle.rotation.z = Math.PI / 2; handle.position.set(xc + len * 0.12, 1.0, s * 0.815);
-      grp.add(slab, arm, handle);
+      grp.add(slab, plateMesh, pk, pull, sw, logo, arm);
       g.add(grp);
       doorTrims.push({ idx, side: s, group: grp });
     }
@@ -437,22 +462,28 @@ export function buildG63Interior() {
   steer.rotation.order = 'ZYX';
   steer.rotation.z = -0.5;
   {
-    const R = 0.185;
-    const rimGeo = new THREE.TorusGeometry(R, 0.019, 14, 56, Math.PI * 2 - 0.9);
-    rimGeo.rotateZ(Math.PI / 2 + 0.45 + Math.PI);
-    const rim = new THREE.Mesh(rimGeo, lea); rim.rotation.y = Math.PI / 2;
-    const hubM = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.07, 0.07, 28), lea); hubM.rotation.z = Math.PI / 2; hubM.position.x = -0.012;
-    const spokeL = new THREE.Mesh(rbg(0.026, 0.045, R * 0.95, 0.012), lea); spokeL.position.set(0, 0, R * 0.55);
-    const spokeR = spokeL.clone(); spokeR.position.z = -R * 0.55;
-    const bottom = new THREE.Mesh(rbg(0.03, 0.04, R * 1.05, 0.012), carbon); bottom.position.set(0, -R * 0.84, 0);
-    const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, R * 1.5, 12), carbon); bar.rotation.x = Math.PI / 2; bar.position.set(0, -R * 0.93, 0);
-    const em = new THREE.Mesh(new THREE.CircleGeometry(0.044, 30), new THREE.MeshStandardMaterial({ map: emblemTexture('star'), transparent: true, metalness: 0.5, roughness: 0.3 }));
-    em.rotation.y = -Math.PI / 2; em.position.x = -0.048;
-    const pods = [];
-    for (const z of [-0.105, 0.105]) { const p = new THREE.Mesh(rbg(0.02, 0.06, 0.06, 0.012), gloss); p.position.set(-0.034, 0.0, z); pods.push(p); }
-    steer.add(rim, hubM, spokeL, spokeR, bottom, bar, em, ...pods);
-    // Lenkradkranz: oben Mittelmarkierung (türkis)
-    const mark = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.02, 0.012), glowTeal); mark.position.set(-0.002, R + 0.0, 0); steer.add(mark);
+    const R = 0.185, GAP = 0.9;
+    const sb = new Batch();
+    // Kranz: Torusbogen, unten abgeflacht (Flat-Bottom)
+    const rimGeo = new THREE.TorusGeometry(R, 0.0225, 14, 56, Math.PI * 2 - GAP);
+    rimGeo.rotateZ(Math.PI / 2 + GAP / 2 + Math.PI);
+    sb.add(rimGeo, lea, mx(0, 0, 0, 0, Math.PI / 2, 0));
+    const yFlat = -R * Math.cos(GAP / 2), hz = R * Math.sin(GAP / 2);
+    sb.add(new THREE.CylinderGeometry(0.0225, 0.0225, hz * 2, 14), lea, mx(0, yFlat, 0, Math.PI / 2, 0, 0));
+    // Nabe, Speichen, untere Carbon-Speiche
+    sb.add(new THREE.CylinderGeometry(0.066, 0.074, 0.07, 28), lea, mx(-0.012, 0, 0, 0, 0, Math.PI / 2));
+    for (const sg of [-1, 1]) sb.add(rbg(0.026, 0.05, R * 0.78, 0.012), lea, mx(0, 0.0, sg * (0.06 + R * 0.39)));
+    sb.add(rbg(0.03, 0.09, 0.09, 0.012), carbon, mx(0, (yFlat - 0.05) / 2 - 0.0, 0));
+    // Tastenfelder (schwarz glänzend) mit Chromtasten
+    for (const sg of [-1, 1]) {
+      sb.add(rbg(0.02, 0.075, 0.07, 0.014), gloss, mx(-0.034, 0.0, sg * 0.118));
+      for (const dy of [-0.022, 0.0, 0.022]) sb.add(new THREE.CylinderGeometry(0.0085, 0.0085, 0.006, 10), chrome, mx(-0.046, dy, sg * 0.118, 0, 0, Math.PI / 2));
+    }
+    sb.add(rbg(0.034, 0.012, 0.05, 0.004), glowTeal, mx(-0.012, R - 0.0, 0));       // Mittelmarkierung oben (türkis)
+    sb.build(steer);
+    const em = new THREE.Mesh(new THREE.CircleGeometry(0.046, 30), new THREE.MeshStandardMaterial({ map: emblemTexture('star'), transparent: true, metalness: 0.5, roughness: 0.3 }));
+    em.rotation.y = -Math.PI / 2; em.position.x = -0.05;
+    steer.add(em);
     steer.traverse((o) => { if (o.isMesh) o.castShadow = false; });
   }
   g.add(steer);

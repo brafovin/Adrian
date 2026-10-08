@@ -44,6 +44,7 @@ const model = await loadCar(carId);
 model.root.rotation.y = (yawDeg * Math.PI) / 180;
 scene.add(model.root);
 if (qs.get('lights') === '1') model.setLights({ head: 1, brake: 1 });
+if (qs.get('door') !== null && model.ctx.doors) for (const d of Object.values(model.ctx.doors)) d.set(parseFloat(qs.get('door')));
 
 const D = {
   // [Kameraposition], [Ziel], fov

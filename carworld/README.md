@@ -70,7 +70,7 @@ Getestet heißt: headless Chromium (Software‑GL) + `node --test`, **nicht** au
   FOV und Wackeln.
 - **Garage:** dunkler Showroom mit Spiegelboden und Lichtleisten; Wechsel zwischen den vier Autos; Kamera‑Presets
   (3/4, vorn, Seite, hinten, Rad, oben, Innenraum) plus freies Orbit; Lack (Referenz + Alternativen), Felgen
-  (Referenz schwarz glänzend + Alternativen), Aero‑Teile einzeln ein/aus. **„Alle Teile (Referenz)“ stellt das
+  (Referenz schwarz glänzend + Alternativen), Aero‑Teile einzeln ein/aus, beim G 63 Türen öffnen. **„Alle Teile (Referenz)“ stellt das
   Referenzdesign wieder her** – Tuning verändert das Referenzdesign nie dauerhaft.
 - **Sound** (`js/engine-synth.js`, `js/audio-worklet.js`, `js/audio.js`): synthetisierter V8 je Wagen
   (CLS/RS7/G63 mit eigenem Charakter, Zündfolge, Turbo, Fehlzündungen beim Gaswegnehmen), elektrisches
@@ -92,7 +92,7 @@ und Lenkrad, das mitdreht. Pro Fahrzeug eigene Masse, Radstand, Motor und Fahrwe
 | **Mercedes‑AMG CLS 63 S (Widebody)** | Am weitesten: Silhouette im Seitenüberlagerungstest sehr nah; Panamericana‑Grill, Frontlippe, Schweller, Radlauf‑Verbreiterungen, Spoilerlippe, Diffusor, vier Endrohre. Diffusor‑Finnen wirken von hinten noch zu spitz. |
 | **Audi RS7 (neue Generation, Widebody)** | Gut erkennbar: Wabengrill, Matrix‑LED‑Signatur, Breitbau, Heck‑Lichtband, Diffusor, vier Rohre. Feinfacetten der Karosserie und Original‑Proportionen von Dach/C‑Säule sind vereinfacht. |
 | **BMW i7** | Erkennbar: beleuchtete Niere, geteilte Scheinwerfer, große Felgen, Aero‑Teile. Die Facetten der Front und die Flächenübergänge sind nur angenähert. |
-| **Mercedes G63 Mansory** | Siehe Abschnitt unten (wird mit dem Innenraum zusammen beurteilt). |
+| **Mercedes‑AMG G 63 Mansory‑Stil** | Kastenform, Panamericana‑Grill mit türkisen Schimmerstreifen und „M“‑Emblem, runde LED‑Scheinwerfer mit Ringlicht, Carbon‑Frontschürze/Haube/Kotflügelverbreiterungen/Trittbretter, Dachträger mit LED‑Leiste, Reserverad mit Mansory‑Plakette, schwarz glänzende Felgen mit türkisen Bremssätteln, vier eckige Endrohre. **Innenraum komplett Tiffany Blue** (Leder mit Rautensteppung, Steppnähte, Carbon‑Einsätze, Türverkleidungen, Lenkrad, Kombiinstrument, Ambientelicht). **Alle vier Türen öffnen** (Garage → Innenraum). Karosserie ist ein glatter Kasten ohne die zerklüftete Carbon‑Geometrie des Bildes; die Carbon‑„Marmor“‑Optik fehlt; Innenraum ist deutlich einfacher als die Referenzfotos. Das Bild zeigt keine Seitenansicht – die Seiten sind aus Proportionen des G 63 rekonstruiert, nicht belegt. |
 
 Grundsätzlich fehlt allen vieren, was nur echte Modelle liefern: Millimeter‑genaue Flächenübergänge,
 Scheinwerfer‑Innenleben, echte Reflexionstiefe im Lack, Naht‑/Fugenverläufe, Innenraum‑Feinheiten. Die
@@ -120,7 +120,8 @@ bedient, ersetzt die prozedurale Karosserie, ohne dass Physik, Kamera, Garage od
 ## Was noch fehlt / bekannte Lücken
 
 - **Echte Fahrzeugmodelle** (siehe oben) – der größte Hebel für „AAA‑Look“.
-- **Türen öffnen in der Garage** ist nicht umgesetzt; der Innenraum ist über die Cockpit‑/Innenraum‑Kamera sichtbar.
+- **Türen öffnen** geht nur beim G 63 (Garage → Innenraum). CLS, RS7 und i7 haben feste Türen; ihr Innenraum ist über Cockpit‑/Innenraum‑Kamera zu sehen.
+- **Aero‑Teile einzeln schalten** gibt es für CLS, RS7 und i7; beim G 63 ist der Carbon‑Anbau zu einem Mesh verschmolzen (nicht einzeln schaltbar).
 - **Tiefgarage:** Es gibt ein mehrstöckiges Parkhaus, aber keine echte unterirdische Garage.
 - **Schadensmodell** fehlt (Kollisionen verändern Karosserie nicht).
 - **Echte‑Hardware‑Messung:** Bildrate habe ich nur mit Software‑Rendering gesehen. Die Qualitätsstufen und die

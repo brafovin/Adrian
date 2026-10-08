@@ -73,6 +73,7 @@ class Game {
     this.models = {};
     this.stats = {};
     this.pending = { shiftUp: false, shiftDown: false };
+    this.doorTarget = {};   // Garage: Zieloffnung je Tür (0..1)
     this.testInput = null;
     this.navIndex = -1;
     this.lastSafe = { ...SPAWN };
@@ -300,6 +301,7 @@ class Game {
   async setCar(id) {
     const model = await this.getModel(id);
     const old = this.player.model;
+    this.closeDoors();
     this.settings.car = id; saveSettings(this.settings);
     if (this.mode === 'garage') this.garage.stage.remove(old.root);
     else this.scene.remove(old.root);
@@ -341,7 +343,24 @@ class Game {
     this.fillGarage();
   }
 
+  /** Türen der Garage sanft zum Ziel bewegen (nur Fahrzeuge mit öffenbaren Türen). */
+  animateDoors(dt) {
+    const doors = this.player.model.ctx.doors;
+    if (!doors) return;
+    for (const [k, d] of Object.entries(doors)) {
+      const t = this.doorTarget[k] ?? 0;
+      if (Math.abs(d.open - t) > 0.001) d.set(d.open + Math.sign(t - d.open) * Math.min(Math.abs(t - d.open), dt * 1.6));
+      const md = this.garage.mirrorDoors?.[k]; if (md) md.rotation.y = d.group.rotation.y;
+    }
+  }
+
+  closeDoors() {
+    this.doorTarget = {};
+    for (const m of Object.values(this.models)) for (const d of Object.values(m.ctx.doors || {})) d.set(0);
+  }
+
   exitGarage(drive) {
+    this.closeDoors();
     this.garage.stage.remove(this.player.model.root);
     if (this.garage.mirror) this.garage.stage.remove(this.garage.mirror);
     this.scene.add(this.player.model.root);
@@ -392,6 +411,13 @@ class Game {
       note = model.id === 'g63' ? 'Der komplette Innenraum des G 63 ist in Tiffany Blue gehalten: Leder mit Rautensteppung, Carbon, Türverkleidungen.' : 'Ziehen = umsehen, Mausrad = Blickfeld.';
       mk('Cockpit-Ansicht', null, this.garage.mode === 'interior', () => this.garage.setCam('interior'), true);
       mk('Außenansicht', null, this.garage.mode !== 'interior', () => this.garage.setCam('3q'), true);
+      const doors = model.ctx.doors;
+      if (doors) {
+        const names = { FL: 'Fahrertür', FR: 'Beifahrertür', RL: 'Tür hinten links', RR: 'Tür hinten rechts' };
+        for (const [k, d] of Object.entries(doors)) mk(names[k] || k, null, (this.doorTarget[k] ?? 0) > 0.5, () => { this.doorTarget[k] = (this.doorTarget[k] ?? 0) > 0.5 ? 0 : 1; });
+        const allOpen = Object.keys(doors).every((k) => (this.doorTarget[k] ?? 0) > 0.5);
+        mk(allOpen ? 'Alle Türen schließen' : 'Alle Türen öffnen', null, false, () => { for (const k of Object.keys(doors)) this.doorTarget[k] = allOpen ? 0 : 1; }, true);
+      }
     }
     $('garNote').textContent = note;
     const cams = [['3q', 'Schräg'], ['front', 'Front'], ['side', 'Seite'], ['rear', 'Heck'], ['wheel', 'Felge'], ['top', 'Oben'], ['interior', 'Innen']];
@@ -415,6 +441,7 @@ class Game {
     const player = this.player, world = this.world, env = this.env;
 
     if (this.mode === 'garage') {
+      this.animateDoors(dt);
       this.garage.update(dt, inp, this.pipe.w / this.pipe.h);
       this.pipe.render(dt, this.time);
       return;
