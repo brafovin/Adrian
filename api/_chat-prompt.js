@@ -14,13 +14,13 @@ function productBlock(p, catalog) {
     `- Preis: ${eur(p.priceEur)} inklusive 19 % MwSt.`,
     `- Kurz: ${p.tagline}. ${p.description}`,
     `- Farben: ${colors}. Originalfarbe des Fotos: ${catalog.colors[p.originalColor].name}.`,
-    `- Bilder: ${p.realPhoto ? 'echtes Foto nur in der Originalfarbe, alle anderen Farben sind digital umgefärbt' : 'gezeichnete Darstellung, kein Foto'}.`,
+    `- Bilder: ${p.allColorsRecolored ? 'Foto, aber alle Farben sind digital umgefärbt (das Original-Foto zeigt das Teil in Braun)' : 'echtes Foto nur in der Originalfarbe, alle anderen Farben sind digital umgefärbt'}.`,
     `- Größen: ${p.sizes.join(', ')}`,
     `- Merkmale: ${p.features.join('; ')}`,
     `- Material: ${p.material}${p.weightGsm ? ` Stoffgewicht ${p.weightGsm} g/m².` : ''}`,
     `- Zusammensetzung laut Etikett: ${p.composition}`,
     `- Passform: ${p.fit}`,
-    `- Pflege: ${p.care} (Etikett: ${p.washTempC} °C)`,
+    `- Pflege: ${p.care} (Etikett: ${p.washTempC == null ? 'nicht waschbar' : `${p.washTempC} °C`})`,
     `- Maße${unit}:\n${rows}`,
   ];
   if (p.note) lines.push(`- Hinweis: ${p.note}`);
@@ -52,9 +52,9 @@ function buildSystemPrompt(catalog) {
 - Etikett: In jedem Teil ist ein Pflegeetikett eingenäht mit Größe, Farbname und Farbcode, Zusammensetzung und fünf Pflegesymbolen. Auf der Produktseite zeigt die Ansicht „Etikett“ es mit der gewählten Größe und Farbe.
 - Farbwelt: Auf der Startseite zeigt der Abschnitt „Farbwelt“ alle Teile in einer gewählten Farbe.
 - Motive: Das Schulwappen mit Goethe-Porträt ist auf Hoodie, Pullover, T-Shirt (als Logo), Cap, Stoffbeutel, Gürtelschnalle und Schlüsselband zu sehen. Die Chino trägt ein Emblem aus Buch und Feder. Gestickt: Hoodie, Pullover, T-Shirt, Cap, Chino. Gedruckt: Stoffbeutel, Schlüsselband. Geprägt: Gürtelschnalle.
-- Bilder: Bei den Fotos ist nur die Originalfarbe echt fotografiert. Die anderen Farben sind digital umgefärbt und können vom echten Stoff etwas abweichen. Der Gürtel ist gezeichnet.
+- Bilder: Bei den Fotos ist nur die Originalfarbe echt fotografiert. Die anderen Farben sind digital umgefärbt und können vom echten Stoff etwas abweichen. Beim Ledergürtel sind alle Farben umgefärbt, das Original-Foto zeigt ihn in Braun.
 - Auf den Produktfotos stehen unterschiedliche Gründungsjahre der Schule. Dazu gibst du keine Auskunft.
-- Nachhaltigkeit: Die Stoffe sind Bio-Baumwolle, nur das Schlüsselband besteht aus recyceltem Polyester. Zertifikate sind im Katalog nicht genannt.
+- Nachhaltigkeit: Die Stoffe sind Bio-Baumwolle, nur das Schlüsselband besteht aus recyceltem Polyester und der Gürtel aus Rindleder. Zertifikate sind im Katalog nicht genannt.
 
 # Katalog (${catalog.products.length} Produkte)
 ${catalog.products.map((p) => productBlock(p, catalog)).join('\n\n')}

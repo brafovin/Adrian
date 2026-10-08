@@ -69,6 +69,7 @@
       ],
       "originalColor": "anthrazit",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "XS",
         "S",
@@ -157,6 +158,7 @@
       ],
       "originalColor": "marine",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "XS",
         "S",
@@ -244,6 +246,7 @@
       ],
       "originalColor": "anthrazit",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "XS",
         "S",
@@ -331,6 +334,7 @@
       ],
       "originalColor": "marine",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "W28",
         "W30",
@@ -403,22 +407,23 @@
     },
     {
       "id": "guertel",
-      "name": "Gürtel Webband",
+      "name": "Ledergürtel Campus",
       "short": "Gürtel",
       "category": "Hosen & Gürtel",
-      "priceEur": 19,
+      "priceEur": 39,
       "weightGsm": null,
       "isNew": true,
       "colors": [
-        "mohn",
-        "marine",
-        "anthrazit",
         "tanne",
+        "anthrazit",
+        "marine",
+        "mohn",
         "senf",
         "beere"
       ],
-      "originalColor": "mohn",
-      "realPhoto": false,
+      "originalColor": "tanne",
+      "realPhoto": true,
+      "allColorsRecolored": true,
       "sizes": [
         "S",
         "M",
@@ -448,20 +453,20 @@
           ]
         ]
       },
-      "tagline": "Webgürtel mit Wappen auf der Schnalle",
-      "description": "Der Gürtel aus robustem Webband: 38 mm breit, mit eingewebtem JWG-Schriftzug und einer Metallschnalle, in die das Schulwappen geprägt ist.",
+      "tagline": "Leder mit geprägter Wappenschnalle",
+      "description": "Der Ledergürtel mit der Schulschnalle: 38 mm breites Rindleder mit Ziernaht und eine Dornschließe aus Metall, in die Goethe-Porträt und Schriftzug geprägt sind.",
       "features": [
-        "Webband aus Bio-Baumwolle, 38 mm breit",
-        "Dornschnalle aus Metall, Wappen geprägt",
-        "Eingewebter Schriftzug JWG und Goethe Schule",
-        "Mit Löchern im 3-cm-Abstand"
+        "38 mm breites Rindleder mit Ziernaht",
+        "Metallschnalle mit geprägtem Goethe-Porträt",
+        "Dornschließe, 5 Löcher im Abstand von 3 cm",
+        "Gürtelschlaufe aus Leder"
       ],
-      "note": null,
-      "material": "Webband 100 % Bio-Baumwolle, 38 mm breit. Schnalle aus Zinklegierung.",
+      "note": "Das Original-Foto zeigt den Gürtel in Braun. Alle Farben sind digital umgefärbt und können vom echten Leder abweichen.",
+      "material": "Rindleder, durchgefärbt, 38 mm breit. Schnalle aus Zinklegierung, matt vernickelt.",
       "fit": "Wähle die Länge nach deiner Taillenweite plus etwa 10 cm. Die Tabelle zeigt, bis zu welcher Taille jede Größe passt.",
-      "care": "Bei 30 °C von Hand waschen. Die Schnalle nicht ins Wasser tauchen. Liegend trocknen.",
-      "washTempC": 30,
-      "composition": "100 % BIO-BAUMWOLLE"
+      "care": "Nicht waschen. Mit einem feuchten Tuch abwischen und an der Luft trocknen lassen, nicht an der Heizung. Gelegentlich mit Lederpflege behandeln.",
+      "washTempC": null,
+      "composition": "100 % RINDLEDER"
     },
     {
       "id": "cap",
@@ -480,6 +485,7 @@
       ],
       "originalColor": "marine",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "Einheitsgröße"
       ],
@@ -535,6 +541,7 @@
       ],
       "originalColor": "natur",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "Einheitsgröße"
       ],
@@ -594,6 +601,7 @@
       ],
       "originalColor": "marine",
       "realPhoto": true,
+      "allColorsRecolored": false,
       "sizes": [
         "Einheitsgröße"
       ],

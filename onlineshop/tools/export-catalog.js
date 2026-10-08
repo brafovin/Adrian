@@ -30,6 +30,7 @@ function exportCatalog() {
       colors: p.colors,
       originalColor: p.orig,
       realPhoto: !!p.photo,
+      allColorsRecolored: !!p.allRecolored,
       sizes: p.sizes,
       sizeTable: p.table,
       tagline: p.tag,
