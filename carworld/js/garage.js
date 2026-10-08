@@ -74,7 +74,18 @@ export class Garage {
     model.setLights({ head: 0.6, brake: 0 });
     this.stage.add(model.root);
     // Spiegelbild für den Showroom-Boden: geteilte Materialien, an der Bodenebene gespiegelt
+    // userData enthält bei manchen Modellen Verweise auf Objekte (Lenkrad, Türen): für den Klon kurz leeren,
+    // sonst serialisiert three.js sie per JSON (langsam, zirkulär).
+    const saved = []; model.root.traverse((o) => { saved.push([o, o.userData]); o.userData = {}; });
     const mir = model.root.clone(true);
+    for (const [o, u] of saved) o.userData = u;
+    // Türen im Spiegelbild mitbewegen: gleiche Reihenfolge im Klon
+    this.mirrorDoors = {};
+    if (model.ctx.doors) {
+      const orig = []; model.root.traverse((o) => orig.push(o));
+      const copy = []; mir.traverse((o) => copy.push(o));
+      for (const [k, d] of Object.entries(model.ctx.doors)) { const i = orig.indexOf(d.group); if (i >= 0) this.mirrorDoors[k] = copy[i]; }
+    }
     mir.scale.y = -1;
     mir.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } o.isLight && (o.visible = false); });
     this.mirror = mir; this.stage.add(mir);

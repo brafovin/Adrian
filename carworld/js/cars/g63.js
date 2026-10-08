@@ -2,14 +2,13 @@
 // Koordinaten: +x vorne, +y oben, +z rechts, Ursprung = Mitte des Radstands am Boden.
 
 import * as THREE from 'three';
-import { curve, bump, lerp, clamp, smoothstep } from '../util.js';
+import { curve, lerp, smoothstep } from '../util.js';
 import { assembleCar } from './builder.js';
 import { Loft, sweep } from './loft.js';
-import { paintMaterial, glassMaterial, patchBodyMaterial, MASK_MODE, carbonMaterial, matBlackGloss, matBlackMatte, matChrome, matDarkChrome, canvas, canvasTexture, heightToNormal } from '../materials.js';
+import { paintMaterial, glassMaterial, patchBodyMaterial, MASK_MODE, matBlackGloss, matDarkChrome, canvas, canvasTexture, heightToNormal } from '../materials.js';
 import { lightDecal, glowLine, surfaceLine, lineMat, exhaustTip, emblemMesh, latheZ } from './parts.js';
-import { decal, meshMaterial, plank, mirror, roundedBox, RoundedBoxGeometry, mergeGeometries } from './kit.js';
-import { buildG63Interior, carbonKit, boxUV, xf, mansoryTex, TEAL } from './g63-art.js';
-import { orient } from './kit.js';
+import { decal, meshMaterial, plank, mirror, RoundedBoxGeometry, mergeGeometries, orient } from './kit.js';
+import { buildG63Interior, carbonKit, boxUV, mansoryTex, TEAL, Batch, mx, mul } from './g63-art.js';
 
 const WB = 2.89;
 const X0 = -2.34, X1 = 2.30;           // Karosserie hinten / vorne (ohne Carbon-Stoßfänger)
@@ -17,7 +16,7 @@ const X0 = -2.34, X1 = 2.30;           // Karosserie hinten / vorne (ohne Carbon
 // ---------------------------------------------------------------------------------------------
 // Karosserie-Kurven (G-Klasse: Kasten, senkrechte Seiten, ebenes Dach, steile Scheiben)
 
-const yTop = curve([[-2.34, 1.945], [-2.2, 1.955], [0.45, 1.96], [0.52, 1.93], [0.67, 1.62], [0.82, 1.292], [0.9, 1.282], [1.3, 1.278], [1.8, 1.252], [2.2, 1.222], [2.3, 1.215]]);
+const yTop = curve([[-2.34, 1.925], [-2.2, 1.935], [0.45, 1.94], [0.52, 1.912], [0.67, 1.615], [0.82, 1.292], [0.9, 1.282], [1.3, 1.278], [1.8, 1.252], [2.2, 1.222], [2.3, 1.215]]);
 const crown = curve([[0.4, 0.013], [0.9, 0.03], [2.3, 0.035]]);
 const z1 = curve([[-2.34, 0.875], [-2.0, 0.885], [0.4, 0.885], [0.52, 0.87], [0.82, 0.78], [0.97, 0.745], [2.3, 0.745]]);
 const z2 = curve([[-2.34, 0.95], [-2.1, 0.962], [2.1, 0.962], [2.3, 0.95]]);
@@ -28,8 +27,8 @@ const y3 = curve([[-2.34, 0.52], [-2.15, 0.42], [-1.9, 0.31], [1.9, 0.31], [2.15
 export const G63_DEF = {
   id: 'g63',
   name: 'Mercedes-AMG G 63 Mansory',
-  dims: { wheelbase: WB, trackF: 1.8, trackR: 1.8, length: 4.99, width: 2.22, height: 1.99, cgX: WB / 2 - WB * (1 - 0.52) },
-  shellColor: 0x0a5551,
+  dims: { wheelbase: WB, trackF: 1.8, trackR: 1.8, length: 5.0, width: 2.23, height: 2.0, cgX: WB / 2 - WB * (1 - 0.52) },
+  shellColor: 0x0b6a82,
   headlightPos: { x: 2.3, y: 1.0, z: 0.63 },
   loft: {
     x0: X0, x1: X1, stations: 190,
@@ -58,8 +57,8 @@ export const G63_DEF = {
   ],
   wheels: {
     archR: 0.455,
-    front: { tireR: 0.41, tireW: 0.3, rimR: 0.3, rimW: 0.27, spokes: 20, hubR: 0.07, dish: 0.07, spokeW0: 0.03, spokeW1: 0.02, thick: 0.017, twist: 0.12, emblem: 'm', caliper: { color: 0x19c7c0, angle: -0.5 } },
-    rear: { tireR: 0.41, tireW: 0.32, rimR: 0.3, rimW: 0.29, spokes: 20, hubR: 0.07, dish: 0.07, spokeW0: 0.03, spokeW1: 0.02, thick: 0.017, twist: 0.12, emblem: 'm', caliper: { color: 0x19c7c0, angle: 0.5 } },
+    front: { tireR: 0.41, tireW: 0.3, rimR: 0.318, rimW: 0.27, spokes: 10, pairs: true, hubR: 0.075, dish: 0.075, spokeW0: 0.034, spokeW1: 0.021, thick: 0.017, twist: 0.3, emblem: 'm', discR: 0.268, caliper: { color: 0x19c7c0, angle: -0.5, span: 1.3 } },
+    rear: { tireR: 0.41, tireW: 0.32, rimR: 0.318, rimW: 0.29, spokes: 10, pairs: true, hubR: 0.075, dish: 0.075, spokeW0: 0.034, spokeW1: 0.021, thick: 0.017, twist: 0.3, emblem: 'm', discR: 0.268, caliper: { color: 0x19c7c0, angle: 0.5, span: 1.3 } },
   },
   extras(ctx) { g63Extras(ctx); },
 };
@@ -197,10 +196,10 @@ function drawTail(g, w, h, emis) {
   if (!emis) {
     g.fillStyle = '#16060a'; g.beginPath(); g.roundRect(X(0.0), Y(1.0), X(1.0), Y(0.0) - Y(1.0), h * 0.35); g.fill();
     g.strokeStyle = '#2a2d33'; g.lineWidth = 3; g.stroke();
-    glowLine(g, [[X(0.06), Y(0.5)], [X(0.94), Y(0.5)]], h * 0.2, '#7a0f16', 4);
+    glowLine(g, [[X(0.07), Y(0.5)], [X(0.93), Y(0.5)]], h * 0.34, '#7a0f16', 4);
   } else {
-    glowLine(g, [[X(0.06), Y(0.5)], [X(0.94), Y(0.5)]], h * 0.26, '#ff2a1c', 16);
-    glowLine(g, [[X(0.1), Y(0.5)], [X(0.9), Y(0.5)]], h * 0.1, '#ff9a80', 6);
+    glowLine(g, [[X(0.07), Y(0.5)], [X(0.93), Y(0.5)]], h * 0.38, '#ff2a1c', 16);
+    glowLine(g, [[X(0.1), Y(0.5)], [X(0.9), Y(0.5)]], h * 0.15, '#ff9a80', 6);
   }
 }
 
@@ -210,25 +209,22 @@ function drawTail(g, w, h, emis) {
 function g63Extras(ctx) {
   const { loft, lights } = ctx;
   ctx.interior = buildG63Interior();
-  // DEBUG-CUT
-  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('cut')) { const c = ctx.body.children; c[0].visible = false; c[1].visible = false; c[2].visible = false; }
 
   const PF = loft.projFront(), PR = loft.projRear(), PT = loft.projTop();
   const PSr = loft.projSide(1), PSl = loft.projSide(-1);
   const paint = paintMaterial({ flakes: true });
   const carbon = carbonKit();
   const gloss = dbl(matBlackGloss());
-  const chrome = matChrome();
-  const darkChrome = matDarkChrome();
-  const tealMat = new THREE.MeshStandardMaterial({ color: TEAL, emissive: TEAL, emissiveIntensity: 0.7, roughness: 0.35, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
-  const chromeLine = new THREE.MeshStandardMaterial({ color: 0xd8dde2, metalness: 1, roughness: 0.14, envMapIntensity: 1.8, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  const darkChrome = dbl(matDarkChrome());
+  const tealMat = dbl(new THREE.MeshStandardMaterial({ color: TEAL, emissive: TEAL, emissiveIntensity: 1.3, roughness: 0.35, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
+  const chromeLine = dbl(new THREE.MeshStandardMaterial({ color: 0xd8dde2, metalness: 1, roughness: 0.14, envMapIntensity: 1.8, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
   const ledMat = () => { const m = new THREE.MeshStandardMaterial({ color: 0xdfe8ee, emissive: 0xffffff, emissiveIntensity: 1.5, roughness: 0.3 }); m.userData.setLevel = (v) => { m.emissiveIntensity = 0.6 + v; }; return m; };
 
   // ===== Front: Kühlergrill (Panamericana), Emblem
   const grille = grilleMaterial(0.78, 0.32, 22);
-  decal(ctx, PF, [-0.39, 0.39, 0.81, 1.13], grille, { nu: 26, nv: 8, off: 0.004 });
+  decal(ctx, PF, [-0.39, 0.39, 0.81, 1.13], grille, { nu: 26, nv: 8, off: 0.009 });
   const gf = new THREE.MeshStandardMaterial({ color: 0x08090a, metalness: 0.95, roughness: 0.22, envMapIntensity: 1.6 });
-  for (const [a, b, c, d] of [[-0.42, 0.42, 1.13, 1.16], [-0.42, 0.42, 0.78, 0.81], [-0.42, -0.39, 0.78, 1.16], [0.39, 0.42, 0.78, 1.16]]) decal(ctx, PF, [a, b, c, d], gf, { nu: 6, nv: 2, off: 0.0075 });
+  for (const [a, b, c, d] of [[-0.42, 0.42, 1.13, 1.16], [-0.42, 0.42, 0.78, 0.81], [-0.42, -0.39, 0.78, 1.16], [0.39, 0.42, 0.78, 1.16]]) decal(ctx, PF, [a, b, c, d], gf, { nu: 6, nv: 2, off: 0.0125 });
   const em = PF(0, 0.97);
   if (em) ctx.add(emblemMesh('m', 0.175, em.p.clone().addScaledVector(em.n, 0.015), em.n), { shadow: false });
   {
@@ -236,40 +232,39 @@ function g63Extras(ctx) {
     if (f) carbon.box(0.05, 0.02, 1.5, 0.007, f.p.x - 0.0, 1.205, 0);
   }
 
-  // ===== Scheinwerfer: Ring-Tagfahrlicht im eckigen Gehäuse
-  for (const s of [1, -1]) {
-    const zc = s * 0.655, yc = 1.0;
-    const f = PF(zc, yc);
-    if (!f) continue;
-    const grp = new THREE.Group();
-    grp.position.set(f.p.x - 0.004, yc, zc);
-    const housing = new THREE.Mesh(new RoundedBoxGeometry(0.07, 0.285, 0.3, 3, 0.05), gloss); housing.position.x = 0.005;
-    const rim = new THREE.Mesh(lx([[0.108, -0.01], [0.126, -0.01], [0.126, 0.044], [0.118, 0.052], [0.108, 0.046]], 44), darkChrome);
-    rim.position.x = 0.03;
-    const base = new THREE.Mesh(new THREE.CircleGeometry(0.108, 36), new THREE.MeshStandardMaterial({ color: 0x07080a, roughness: 0.4, metalness: 0.7 }));
-    base.rotation.y = Math.PI / 2; base.position.x = 0.04;
+  // ===== Scheinwerfer: Ring-Tagfahrlicht im eckigen Gehäuse (Teile nach Material zusammengefasst)
+  {
+    const hb = new Batch();
     const drl = new THREE.MeshStandardMaterial({ color: 0x777f88, emissive: 0xffffff, emissiveIntensity: 1.1, roughness: 0.3 });
     drl.userData.setLevel = (v) => { drl.emissiveIntensity = v * 1.6; };
-    lights.head.push(drl);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.0095, 10, 56), drl); ring.rotation.y = Math.PI / 2; ring.position.x = 0.056;
-    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.005, 8, 40), drl); ring2.rotation.y = Math.PI / 2; ring2.position.x = 0.052;
-    const lens = new THREE.Mesh(new THREE.SphereGeometry(0.082, 32, 10, 0, Math.PI * 2, 0, Math.PI * 0.3), new THREE.MeshPhysicalMaterial({ color: 0x090c10, metalness: 0.3, roughness: 0.04, clearcoat: 1, envMapIntensity: 1.9 }));
-    lens.rotation.z = -Math.PI / 2; lens.position.x = -0.026;
-    const proj = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.03, 24), new THREE.MeshStandardMaterial({ color: 0x1a1d22, metalness: 1, roughness: 0.15, envMapIntensity: 1.6 }));
-    proj.rotation.z = Math.PI / 2; proj.position.set(0.045, 0.0, 0.0);
-    const lensIn = new THREE.Mesh(new THREE.CircleGeometry(0.024, 24), new THREE.MeshStandardMaterial({ color: 0x9fb4c8, emissive: 0x6f8fb0, emissiveIntensity: 0.0, metalness: 0.4, roughness: 0.1 }));
-    lensIn.material.userData.setLevel = (v) => { lensIn.material.emissiveIntensity = v * 0.25; };
-    lights.head.push(lensIn.material);
-    lensIn.rotation.y = Math.PI / 2; lensIn.position.x = 0.062;
-    grp.add(housing, rim, base, lens, ring, ring2, proj, lensIn);
-    ctx.add(grp, { shadow: false });
-    // Blinker-Pod oben am Kotflügel
-    const e = PT(2.06, s * 0.9);
-    if (e) { carbon.box(0.12, 0.04, 0.09, 0.012, 2.06, e.p.y + 0.02, s * 0.9); carbon.box(0.1, 0.012, 0.06, 0.004, 2.05, e.p.y + 0.047, s * 0.9); }
+    const lensIn = new THREE.MeshStandardMaterial({ color: 0x9fb4c8, emissive: 0x6f8fb0, emissiveIntensity: 0.0, metalness: 0.4, roughness: 0.1 });
+    lensIn.userData.setLevel = (v) => { lensIn.emissiveIntensity = v * 0.35; };
+    lights.head.push(drl, lensIn);
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0x07080a, roughness: 0.4, metalness: 0.7 });
+    const lensMat = new THREE.MeshPhysicalMaterial({ color: 0x090c10, metalness: 0.3, roughness: 0.04, clearcoat: 1, envMapIntensity: 1.9 });
+    const projMat = new THREE.MeshStandardMaterial({ color: 0x1a1d22, metalness: 1, roughness: 0.15, envMapIntensity: 1.6 });
+    for (const s of [1, -1]) {
+      const zc = s * 0.655, yc = 1.0;
+      const f = PF(zc, yc);
+      if (!f) continue;
+      const M0 = mx(f.p.x - 0.004, yc, zc);
+      hb.add(new RoundedBoxGeometry(0.07, 0.285, 0.3, 3, 0.05), gloss, mul(M0, mx(0.005, 0, 0)));
+      hb.add(lx([[0.108, -0.01], [0.126, -0.01], [0.126, 0.044], [0.118, 0.052], [0.108, 0.046]], 40), darkChrome, mul(M0, mx(0.03, 0, 0)));
+      hb.add(new THREE.CircleGeometry(0.108, 32), baseMat, mul(M0, mx(0.04, 0, 0, 0, Math.PI / 2, 0)));
+      hb.add(new THREE.SphereGeometry(0.082, 28, 8, 0, Math.PI * 2, 0, Math.PI * 0.3), lensMat, mul(M0, mx(-0.026, 0, 0, 0, 0, -Math.PI / 2)));
+      hb.add(new THREE.TorusGeometry(0.09, 0.0095, 8, 56), drl, mul(M0, mx(0.056, 0, 0, 0, Math.PI / 2, 0)));
+      hb.add(new THREE.TorusGeometry(0.05, 0.004, 6, 40), lensIn, mul(M0, mx(0.052, 0, 0, 0, Math.PI / 2, 0)));
+      hb.add(new THREE.CylinderGeometry(0.03, 0.03, 0.03, 20), projMat, mul(M0, mx(0.045, 0, 0, 0, 0, Math.PI / 2)));
+      hb.add(new THREE.CircleGeometry(0.024, 20), lensIn, mul(M0, mx(0.062, 0, 0, 0, Math.PI / 2, 0)));
+      // Blinker-Pod oben am Kotflügel
+      const e = PT(2.06, s * 0.9);
+      if (e) { carbon.box(0.12, 0.04, 0.09, 0.012, 2.06, e.p.y + 0.02, s * 0.9); carbon.box(0.1, 0.012, 0.06, 0.004, 2.05, e.p.y + 0.047, s * 0.9); }
+    }
+    hb.build(ctx.body);
   }
 
   // ===== Front-Stoßfänger (Carbon, eigener Loft)
-  const FB = { x0: 1.95, x1: 2.43, yT: 0.72, yB: 0.34, zW: 1.075 };
+  const FB = { x0: 1.95, x1: 2.41, yT: 0.72, yB: 0.34, zW: 1.075 };
   const bumperF = new Loft({
     x0: FB.x0, x1: FB.x1, stations: 90,
     pts: [{ z: 0, y: FB.yT }, { z: FB.zW, y: FB.yT }, { z: FB.zW, y: FB.yB }, { z: 0, y: FB.yB }],
@@ -280,19 +275,19 @@ function g63Extras(ctx) {
   const PBF = bumperF.projFront();
   const xFace = (z, y) => { const r = PBF(z, y); return r ? r.p.x : FB.x1; };
   // Mittlerer Lufteinlass (Waben) + Kennzeichen "MANSORY"
-  decalOn(ctx, bumperF, PBF, [-0.5, 0.5, 0.385, 0.545], meshFor('hex', 1.0, 0.16, 0.032, { line: '#2a2c31', color: '#020203' }), { nu: 24, nv: 4, off: 0.004 });
+  decalOn(ctx, bumperF, PBF, [-0.5, 0.5, 0.385, 0.545], meshFor('hex', 1.0, 0.16, 0.032, { line: '#2a2c31', color: '#020203' }), { nu: 24, nv: 4, off: 0.008 });
   frameRect(carbon, xFace(0, 0.46) - 0.004, -0.52, 0.52, 0.37, 0.56, 1);
   {
     const bar = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.014, 0.86), chromeLine); bar.position.set(xFace(0, 0.465) + 0.008, 0.465, 0); ctx.add(bar, { shadow: false });
     const amb = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.045, 0.02), new THREE.MeshStandardMaterial({ color: 0xc8821a, emissive: 0xe09a20, emissiveIntensity: 0.9 })); amb.position.set(xFace(0.02, 0.43) + 0.005, 0.43, 0.02); ctx.add(amb, { shadow: false });
-    for (const sg of [1, -1]) carbon.box(0.045, 0.2, 0.026, 0.006, xFace(sg * 0.54, 0.47) + 0.012, 0.47, sg * 0.54, 0, 0, sg * 0.0);
+    for (const sg of [1, -1]) carbon.box(0.045, 0.3, 0.026, 0.006, xFace(sg * 0.56, 0.47) + 0.012, 0.5, sg * 0.56, -sg * 0.3, 0, 0);
   }
-  badge(ctx, PBF, 0, 0.625, 0.5, 0.115, mansoryTex(512, 118, { bg: '#0a0a0c', fg: '#dfe3e8', fontScale: 0.5, border: '#3a3d44' }), { off: 0.004 });
+  badge(ctx, PBF, 0, 0.625, 0.5, 0.115, mansoryTex(512, 118, { bg: '#0a0a0c', fg: '#dfe3e8', fontScale: 0.5, border: '#3a3d44' }), { off: 0.01 });
   for (const s of [1, -1]) {
     // Seitliche Einlässe mit LED-Streifen
     const z0 = 0.58, z1 = 0.95;
     const a = s > 0 ? z0 : -z1, b = s > 0 ? z1 : -z0;
-    decalOn(ctx, bumperF, PBF, [a, b, 0.4, 0.64], meshFor('hex', 0.37, 0.24, 0.03, { line: '#2a2c31', color: '#020203' }), { nu: 10, nv: 8, off: 0.004 });
+    decalOn(ctx, bumperF, PBF, [a, b, 0.4, 0.64], meshFor('hex', 0.37, 0.24, 0.03, { line: '#2a2c31', color: '#020203' }), { nu: 10, nv: 8, off: 0.008 });
     frameRect(carbon, xFace(s * 0.77, 0.52) - 0.004, a, b, 0.385, 0.655, 1);
     const led = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.022, 0.3), ledMat());
     lights.head.push(led.material);
@@ -306,20 +301,19 @@ function g63Extras(ctx) {
   {
     const outl = [];
     const N = 14;
-    for (let i = 0; i <= N; i++) { const z = -1.0 + (2.0 * i) / N; outl.push([FB.x1 + 0.05 - 0.03 * Math.pow(Math.abs(z) / 1.0, 3) - (Math.abs(z) > 0.9 ? (Math.abs(z) - 0.9) * 1.2 : 0), z]); }
+    for (let i = 0; i <= N; i++) { const z = -1.0 + (2.0 * i) / N; outl.push([FB.x1 + 0.04 - 0.03 * Math.pow(Math.abs(z) / 1.0, 3) - (Math.abs(z) > 0.9 ? (Math.abs(z) - 0.9) * 1.2 : 0), z]); }
     const inner = outl.map(([x, z]) => [x - 0.2, z]).reverse();
     carbon.addMesh(plank([...outl, ...inner], 0.022, 0.29, carbon.mat, { bevel: 0.006 }));
     const outl2 = outl.map(([x, z]) => [x - 0.04, z * 0.93]);
     carbon.addMesh(plank([...outl2, ...outl2.map(([x, z]) => [x - 0.16, z]).reverse()], 0.016, 0.318, carbon.mat, { bevel: 0.004 }));
     for (const s of [1, -1]) {
       carbon.box(0.2, 0.1, 0.014, 0.004, FB.x1 - 0.02, 0.38, s * 1.045, 0, s * 0.35, 0);
-      for (const z of [0.25, 0.55, 0.85]) carbon.box(0.1, 0.04, 0.01, 0.003, FB.x1 + 0.03, 0.272, s * z);
     }
   }
 
   // ===== Haube: Carbon, Mittelgrat, Lufthutzen
   {
-    carbon.add(loft.drape(PT, 0.92, 2.265, -0.7, 0.7, 40, 14, 0.004));
+    carbon.add(loft.drape(PT, 0.92, 2.265, -0.7, 0.7, 40, 14, 0.01));
     const n = 36, path = [], outs = [], ups = [];
     for (let i = 0; i <= n; i++) {
       const x = lerp(0.98, 2.2, i / n);
@@ -328,7 +322,7 @@ function g63Extras(ctx) {
       const y = loft.topY(x, 0);
       path.push([x, y + 0.003, 0]); outs.push([0, 0, 0.35 + 0.65 * k]); ups.push([0, 0.2 + 0.8 * k, 0]);
     }
-    const prof = [[-0.34, -0.006], [-0.3, 0.02], [-0.2, 0.046], [0.2, 0.046], [0.3, 0.02], [0.34, -0.006]];
+    const prof = [[-0.36, -0.006], [-0.31, 0.025], [-0.2, 0.062], [0.2, 0.062], [0.31, 0.025], [0.36, -0.006]];
     carbon.add(sweep(path, outs, ups, prof, { closedProfile: true }));
     for (const s of [1, -1]) {
       const y = loft.topY(1.05, s * 0.55) ?? 1.28;
@@ -336,7 +330,7 @@ function g63Extras(ctx) {
     }
     const vent = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.13), meshFor('slats', 0.13, 0.22, 0.02, { line: '#3a8e8a', color: '#020203' }));
     vent.rotation.x = -Math.PI / 2;
-    vent.position.set(1.12, loft.topY(1.12, 0) + 0.05, 0);
+    vent.position.set(1.12, loft.topY(1.12, 0) + 0.066, 0);
     ctx.add(vent, { shadow: false });
     // Scheibenwischer
     for (const [z, rz] of [[-0.3, 0.2], [0.34, 0.2]]) carbon.box(0.5, 0.01, 0.014, 0.003, 0.9, 1.31, z, 0, rz + (z < 0 ? 0 : 0.0), 0);
@@ -409,12 +403,19 @@ function g63Extras(ctx) {
       const glassM = new THREE.Mesh(sub, mg); glassM.renderOrder = 2;
       const shellM = new THREE.Mesh(sub, ms);
       content.add(paintM, shellM, glassM);
-      // Details der Tür
-      for (const l of d.lines) { const g = surfaceLine(P, l, 0.0045, 0.0007); if (g) content.add(new THREE.Mesh(g, lm)); }
-      { const g = surfaceLine(P, [[d.handle - 0.06, 1.04], [d.handle + 0.06, 1.04]], 0.03, 0.006); if (g) content.add(new THREE.Mesh(g, darkChrome)); }
-      { const gc = surfaceLine(P, d.chrome, 0.011, 0.002); if (gc) content.add(new THREE.Mesh(gc, chromeLine)); }
-      for (const l of d.teal) { const g = surfaceLine(P, l, 0.012, 0.0016); if (g) content.add(new THREE.Mesh(g, tealMat)); }
-      for (const y of [0.78, 1.08]) { const hg = new THREE.Mesh(new RoundedBoxGeometry(0.05, 0.12, 0.03, 2, 0.01), darkChrome); hg.position.set(d.hinge + 0.008, y, s * 0.975); content.add(hg); }
+      // Details der Tür (nach Material zusammengefasst)
+      const parts = new Map();
+      const put = (geo, mat) => { if (!geo) return; if (!parts.has(mat)) parts.set(mat, []); parts.get(mat).push(geo); };
+      for (const l of d.lines) put(surfaceLine(P, l, 0.0045, 0.0007), lm);
+      put(surfaceLine(P, [[d.handle - 0.06, 1.04], [d.handle + 0.06, 1.04]], 0.03, 0.006), darkChrome);
+      put(surfaceLine(P, d.chrome, 0.011, 0.002), chromeLine);
+      for (const l of d.teal) put(surfaceLine(P, l, 0.016, 0.0016), tealMat);
+      for (const y of [0.78, 1.08]) { const hg = new RoundedBoxGeometry(0.05, 0.12, 0.03, 2, 0.01); hg.translate(d.hinge + 0.008, y, s * 0.975); put(hg, darkChrome); }
+      for (const [mat, geos] of parts) {
+        const gs = geos.map((q) => { const c = q.index ? q.toNonIndexed() : q.clone(); for (const k of Object.keys(c.attributes)) if (k !== 'position' && k !== 'normal') c.deleteAttribute(k); c.clearGroups(); return c; });
+        const mm = new THREE.Mesh(mergeGeometries(gs), mat); mm.castShadow = false;
+        content.add(mm);
+      }
       if (d.idx === 0) {
         const m = mirror(paint, { x: 0.72, y: 1.27, z: 0.93, w: 0.2, h: 0.15, d: 0.13 });
         if (s < 0) m.scale.z = -1;
@@ -422,14 +423,12 @@ function g63Extras(ctx) {
       }
       const key = d.name + (s < 0 ? 'L' : 'R');
       const api = { name: key, side: s, group: door, content, open: 0, max: d.max, set(f) { this.open = Math.max(0, Math.min(1, f)); door.rotation.y = s * this.open * this.max; } };
-      door.userData = api;
       doors[key] = api;
       ctx.body.add(door);
       door.traverse((o) => { if (o.isMesh) o.castShadow = false; });
     }
   }
   ctx.doors = doors;
-  ctx.root.userData.doors = doors;
   // Innenverkleidungen an die Türen hängen
   for (const t of ctx.interior.userData.doorTrims || []) {
     const api = doors[(t.idx === 0 ? 'F' : 'R') + (t.side < 0 ? 'L' : 'R')];
@@ -437,20 +436,20 @@ function g63Extras(ctx) {
   }
 
   // ===== Dach: Querträger mit LED-Pods, Reling, Heckspoiler
-  carbon.box(0.1, 0.05, 1.6, 0.015, 0.4, 1.99, 0);
+  carbon.box(0.1, 0.05, 1.6, 0.015, 0.4, 1.965, 0);
   for (const s of [1, -1]) {
-    carbon.box(0.07, 0.05, 0.42, 0.012, 0.4 + 0.03, 1.99, s * 0.55);
+    carbon.box(0.07, 0.05, 0.42, 0.012, 0.4 + 0.03, 1.965, s * 0.55);
     const led = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.022, 0.36), ledMat());
-    led.position.set(0.4 + 0.067, 1.99, s * 0.55);
+    led.position.set(0.4 + 0.067, 1.965, s * 0.55);
     ctx.add(led, { shadow: false });
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.02, 0.03), chromeLine); rail.position.set(-0.95, 1.972, s * 0.82); ctx.add(rail);
-    for (const x of [0.2, -0.8, -1.8]) carbon.box(0.05, 0.03, 0.045, 0.006, x, 1.968, s * 0.82);
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.02, 0.03), chromeLine); rail.position.set(-0.95, 1.952, s * 0.82); ctx.add(rail);
+    for (const x of [0.2, -0.8, -1.8]) carbon.box(0.05, 0.03, 0.045, 0.006, x, 1.948, s * 0.82);
   }
-  carbon.box(0.1, 0.07, 0.4, 0.02, 0.4, 2.0, 0);
+  carbon.box(0.1, 0.07, 0.4, 0.02, 0.4, 1.965, 0);
   {
-    const sp = plank([[-2.1, -0.88], [-2.42, -0.9], [-2.42, 0.9], [-2.1, 0.88]], 0.022, 1.975, carbon.mat, { bevel: 0.007 });
+    const sp = plank([[-2.1, -0.88], [-2.42, -0.9], [-2.42, 0.9], [-2.1, 0.88]], 0.022, 1.955, carbon.mat, { bevel: 0.007 });
     carbon.addMesh(sp);
-    for (const s of [1, -1]) carbon.box(0.4, 0.09, 0.014, 0.005, -2.28, 2.0, s * 0.9);
+    for (const s of [1, -1]) carbon.box(0.4, 0.08, 0.014, 0.005, -2.28, 1.96, s * 0.9);
   }
 
   // ===== Heck: Reserverad mit Carbon-Abdeckung
@@ -482,16 +481,16 @@ function g63Extras(ctx) {
   carbon.add(bumperR.build());
   const PBR = bumperR.projRear();
   const xRear = (z, y) => { const r = PBR(z, y); return r ? r.p.x : RB.x0; };
-  badge(ctx, PBR, 0, 0.655, 0.5, 0.115, mansoryTex(512, 118, { bg: '#0a0a0c', fg: '#dfe3e8', fontScale: 0.5, border: '#3a3d44' }), { off: 0.004 });
+  badge(ctx, PBR, 0, 0.655, 0.5, 0.115, mansoryTex(512, 118, { bg: '#0a0a0c', fg: '#dfe3e8', fontScale: 0.5, border: '#3a3d44' }), { off: 0.01 });
   {
     const xd = xRear(0, 0.48);
-    decalOn(ctx, bumperR, PBR, [-0.4, 0.4, 0.39, 0.59], new THREE.MeshStandardMaterial({ color: 0x030304, roughness: 0.5, metalness: 0.5, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), { nu: 6, nv: 3, off: 0.004 });
+    decalOn(ctx, bumperR, PBR, [-0.4, 0.4, 0.39, 0.59], new THREE.MeshStandardMaterial({ color: 0x030304, roughness: 0.5, metalness: 0.5, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), { nu: 6, nv: 3, off: 0.008 });
     frameRect(carbon, xd - 0.004, -0.42, 0.42, 0.375, 0.6, -1);
     for (let i = 0; i < 5; i++) carbon.box(0.07, 0.2, 0.013, 0.004, xd - 0.025, 0.49, lerp(-0.34, 0.34, i / 4));
     for (const s of [1, -1]) {
       for (const dz of [-0.095, 0.095]) {
-        const t = exhaustTip({ shape: 'rect', w: 0.18, h: 0.13, len: 0.14 });
-        t.position.set(xRear(s * 0.7, 0.5) - 0.045, 0.5, s * 0.7 + dz * 1.12);
+        const t = exhaustTip({ shape: 'rect', w: 0.18, h: 0.13, len: 0.1 });
+        t.position.set(xRear(s * 0.7, 0.5) - 0.025, 0.5, s * 0.7 + dz * 1.12);
         ctx.add(t);
       }
       frameRect(carbon, xRear(s * 0.7, 0.5) - 0.004, s * 0.7 - 0.22, s * 0.7 + 0.22, 0.41, 0.6, -1, { t: 0.03, d: 0.034 });
@@ -502,7 +501,7 @@ function g63Extras(ctx) {
     lights.tail.push(tlm);
     for (const s of [1, -1]) {
       const a = s > 0 ? 0.5 : -0.9, b = s > 0 ? 0.9 : -0.5;
-      decal(ctx, PR, [a, b, 0.77, 0.86], tlm, { nu: 16, nv: 3, off: 0.005, order: 2 });
+      decal(ctx, PR, [a, b, 0.765, 0.875], tlm, { nu: 16, nv: 3, off: 0.012, order: 2 });
     }
   }
 
@@ -510,13 +509,4 @@ function g63Extras(ctx) {
   ctx.add(carbon.build());
 }
 
-export function buildG63() {
-  const m = assembleCar(G63_DEF);
-  if (typeof location !== 'undefined') { const od = new URLSearchParams(location.search).get('door'); if (od) for (const d of Object.values(m.ctx.doors)) d.set(parseFloat(od)); }
-  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('dbg')) {
-    let tris = 0, meshes = 0;
-    m.root.traverse((o) => { if (o.isMesh) { meshes++; tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; } });
-    console.log('[g63] meshes', meshes, 'tris', Math.round(tris));
-  }
-  return m;
-}
+export function buildG63() { return assembleCar(G63_DEF); }
