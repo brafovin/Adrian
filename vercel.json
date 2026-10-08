@@ -1,5 +1,11 @@
 {
   "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "adrian-shop.*" }],
+      "destination": "/onlineshop/",
+      "permanent": false
+    },
     { "source": "/", "destination": "/blitzer/", "permanent": false }
   ]
 }
