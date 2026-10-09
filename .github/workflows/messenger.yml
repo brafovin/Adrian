@@ -1,0 +1,29 @@
+name: messenger
+on:
+  push: { paths: ['messenger/**', '.github/workflows/messenger.yml'] }
+  pull_request: { paths: ['messenger/**'] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: messenger } }
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: messenger, POSTGRES_PASSWORD: messenger, POSTGRES_DB: messenger_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U messenger" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://messenger:messenger@localhost:5432/messenger_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: messenger/package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Browser-E2E
+        run: |
+          npx playwright install --with-deps chromium
+          CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())") npm run test:e2e

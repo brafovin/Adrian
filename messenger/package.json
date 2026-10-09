@@ -1,0 +1,18 @@
+{
+  "name": "adrian-messenger",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Messenger ohne Telefonnummer: Chats, Anrufe, Status, individuelle Chat-Hintergründe",
+  "workspaces": ["server", "web"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w web && npm run build -w server",
+    "start": "node server/dist/index.js",
+    "migrate": "npm run migrate -w server",
+    "test": "npm test -w server",
+    "test:e2e": "npm run test:e2e -w web",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web"
+  }
+}
