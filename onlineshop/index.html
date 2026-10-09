@@ -879,7 +879,8 @@ function viewDone(){
       <div class="row tot"><span>Gesamt</span><span>${eur(o.t.total)}</span></div>
       <p class="vat">Bezahlt per ${PAYS.find(x=>x[0]===o.pay)[1]} (Demo). Enthält ${eur(o.t.vat)} MwSt.</p>
     </div>
-    <button class="btn" data-go="home">Weiter einkaufen</button>
+    <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn" data-go="home">Weiter einkaufen</button><a class="btn alt" href="../logistik/#/track/${o.no}">Sendung verfolgen</a></div>
+    <p class="vat">Die Sendungsverfolgung ist Teil von JWG.logistik. Im Demo-Modus wird die Bestellung nur in deinem Browser vermerkt.</p>
   </div>
   <div class="tile">${visual(fp,first.color,'card',fp.alt)}</div></div></div>`;
 }
@@ -1004,11 +1005,21 @@ function showErrors(e){
   const first=Object.keys(e)[0];
   if(first){const el=document.getElementById('f-'+first);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.focus({preventScroll:true})}}
 }
+/* Übergabe an JWG.logistik: Die Demo-Bestellung wird nur im Browser vermerkt. Die Logistik-App (gleiche Domain) legt daraus einen Auftrag mit Sendungsnummer an. */
+function handoff(o){
+  try{
+    const list=JSON.parse(localStorage.getItem('jwg-shop-orders')||'[]');
+    const f=S.form;
+    list.push({no:o.no,ts:Date.now(),name:(f.vorname+' '+f.nachname).trim(),email:f.email.trim(),street:f.strasse.trim(),zip:f.plz.trim(),city:f.ort.trim(),country:f.land,items:o.items.map(l=>({pid:l.pid,color:l.color,size:l.size,qty:l.qty})),ship:o.ship,total:o.t.total});
+    localStorage.setItem('jwg-shop-orders',JSON.stringify(list.slice(-50)));
+  }catch(e){}
+}
 function placeOrder(){
   const e=validate();showErrors(e);
   if(Object.keys(e).length)return;
   const t=totals();
   S.order={no:'JWG-'+String(Math.floor(10000+Math.random()*89999)),vorname:S.form.vorname.trim(),email:S.form.email.trim(),items:S.cart.map(l=>({...l})),t,ship:S.ship,pay:S.pay};
+  handoff(S.order);
   S.cart=[];S.coupon=null;save();
   go('done');
 }

@@ -308,7 +308,7 @@ function orderForm(o, q) {
         ${addrFieldset('d', 'Lieferadresse', A('d', da), custId, 'Liefer')}
         <fieldset><legend>Ware</legend><div class="fgrid">
           ${fld('Beschreibung', 'desc', v('desc', g.desc), { req: true, cls: 'wide' })}
-          ${fld('Gewicht (kg)', 'weight', v('weight', g.weight), { type: 'number', req: true, min: 0.1, step: '0.1' })}${fld('Volumen (m³)', 'volume', v('volume', g.volume), { type: 'number', min: 0, step: '0.01' })}
+          ${fld('Gewicht (kg)', 'weight', v('weight', g.weight), { type: 'number', req: true, min: 0.1, step: 'any' })}${fld('Volumen (m³)', 'volume', v('volume', g.volume), { type: 'number', min: 0, step: 'any' })}
           ${fld('Packstücke', 'pieces', v('pieces', g.pieces), { type: 'number', min: 1, step: '1', req: true })}${fld('davon Paletten', 'pallets', v('pallets', g.pallets), { type: 'number', min: 0, step: '1' })}
         </div></fieldset>
         <fieldset><legend>Transport</legend><div class="fgrid">

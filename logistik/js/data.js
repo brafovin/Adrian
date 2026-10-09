@@ -95,7 +95,7 @@ function defaultSettings() {
       erp: { on: false, name: 'ERP / Warenwirtschaft', desc: 'Artikel und Bestände sind im Modul Lager vorhanden. Keine Verbindung zu einem ERP.', real: false },
       email: { on: true, name: 'E-Mail-Versand', desc: 'Nachrichten landen im Versandprotokoll (Kommunikation). Es werden keine E-Mails verschickt.', real: false },
       signature: { on: true, name: 'Digitale Unterschrift', desc: 'Unterschrift auf dem Touchscreen in der Fahrer-App. Keine qualifizierte Signatur.', real: true },
-      portals: { on: true, name: 'Kunden- und Partnerportale', desc: 'Kundenportal und Partner-Antworten sind als Ansicht vorhanden.', real: true },
+      portals: { on: true, name: 'Kunden- und Partnerportale', desc: 'Das Kundenportal läuft als Demo (Anmeldung per Auswahl). Antworten der Frachtführer werden per Schaltfläche simuliert.', real: false },
       shop: { on: true, name: 'JWG.onlineshop', desc: 'Bestellungen aus dem Shop werden als Aufträge übernommen, wenn Shop und App im selben Browser auf derselben Domain laufen.', real: true },
     },
     autoImportShop: true,

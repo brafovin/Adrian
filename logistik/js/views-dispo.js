@@ -200,6 +200,7 @@ onSubmit('tour.save', 'dispo', (f) => {
 act('tour.delete', 'dispo', (d) => { const t = tour(d.id); confirmBox(`Tour ${t.id} löschen?`, 'Löschen', () => { DB.tours = DB.tours.filter((x) => x.id !== t.id); audit('Tour', t.id, 'gelöscht', 'Leere Tour entfernt'); commit(); toast('Tour gelöscht.', 'ok'); }); });
 act('tour.start', 'dispo', (d) => {
   const t = tour(d.id); const dr = drv(t.driverId);
+  if (t.date > today()) return toast(`Tour ${t.id} ist für ${fDate(t.date)} geplant und kann noch nicht gestartet werden.`, 'bad');
   t.status = 'unterwegs'; t.startedAt = NOW();
   tourOrdersOf(t).forEach((o) => addHistory(o, o.status, `Tour ${t.id} gestartet`, curUserName()));
   audit('Tour', t.id, 'gestartet', `${dr ? dr.name : ''}`); if (DB.settings.automation.pushDriver) pushNotif(`Push an ${dr ? dr.name : 'Fahrer'}: Tour ${t.id} wurde gestartet.`, 'info', '#/fahrer-app');

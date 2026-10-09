@@ -13,7 +13,7 @@ const notice = (tone, text, icon = 'alert') => html`<div class="notice tone-${to
 
 /* ---------- Filter-Felder (werden über data-bind in UI.f geschrieben) ---------- */
 const bindInp = (label, key, ph = '', o = {}) => html`<label class="fld ${o.cls || ''}"><span>${label}</span><input type="${o.type || 'search'}" data-bind="${key}" value="${fv(key)}" placeholder="${ph}" autocomplete="off"></label>`;
-const bindSel = (label, key, options, o = {}) => html`<label class="fld"><span>${label}</span><select data-bind="${key}">${optList(options, fv(key))}</select></label>`;
+const bindSel = (label, key, options, o = {}) => html`<label class="fld"><span>${label}</span><select data-bind="${key}">${optList(options, fv(key, o.def == null ? '' : o.def))}</select></label>`;
 const bindSw = (label, key, on) => html`<label class="switch"><input type="checkbox" data-bind="${key}" ${(UI.f[key] == null ? on : UI.f[key]) ? raw('checked') : ''}><i></i><span>${label}</span></label>`;
 
 function tabs(key, list, def) {
@@ -107,7 +107,7 @@ function mapSVG(o = {}) {
   if (o.fit && pts.length) {
     const xy = pts.map((p) => mproj(p.lat, p.lon));
     const minx = Math.min(...xy.map((p) => p[0])), maxx = Math.max(...xy.map((p) => p[0])), miny = Math.min(...xy.map((p) => p[1])), maxy = Math.max(...xy.map((p) => p[1]));
-    let hw = Math.max((maxx - minx) / 2 * 1.3, 55), hh = Math.max((maxy - miny) / 2 * 1.3, 44);
+    let hw = Math.max((maxx - minx) / 2 * 1.3, 24), hh = Math.max((maxy - miny) / 2 * 1.3, 18);
     const ar = o.ratio || 1.3;
     if (hw / hh > ar) hh = hw / ar; else hw = hh * ar;
     const cx = (minx + maxx) / 2, cy = (miny + maxy) / 2;
