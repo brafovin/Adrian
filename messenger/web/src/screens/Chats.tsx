@@ -23,7 +23,7 @@ function ChatRow({ c, active, onOpen }: { c: Conversation; active: boolean; onOp
   const isTyping = Object.values(typing ?? {}).some((e) => e > Date.now());
   const last = c.lastMessage;
   const mine = last?.senderId === me.id && last.kind !== 'system';
-  const status = mine && last ? messageStatus(last, members, me.id) : null;
+  const status = mine && last ? messageStatus(last, members, me.id, c) : null;
   const title = convTitle(c);
   const senderPrefix = c.type === 'group' && last && !mine && last.kind !== 'system' && last.senderId ? '' : '';
 

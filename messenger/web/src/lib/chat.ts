@@ -8,8 +8,12 @@ export const convAvatar = (c: Conversation) => (c.type === 'group' ? c.avatarUrl
 export type MsgStatus = 'sending' | 'failed' | 'sent' | 'delivered' | 'read';
 
 /** Zustellstatus einer eigenen Nachricht anhand der Empfangsbestätigungen aller anderen Mitglieder. */
-export function messageStatus(m: LocalMessage, members: Member[] | undefined, myId: string): MsgStatus {
+export function messageStatus(m: LocalMessage, members: Member[] | undefined, myId: string, conv?: Conversation): MsgStatus {
   if (m.local) return m.local.status;
+  if (!members && conv) {
+    if (conv.receipts.deliveredSeq < m.seq) return 'sent';
+    return conv.receipts.readSeq !== null && conv.receipts.readSeq >= m.seq ? 'read' : 'delivered';
+  }
   const others = (members ?? []).filter((x) => x.id !== myId);
   if (!others.length) return 'sent';
   if (!others.every((o) => o.deliveredSeq >= m.seq)) return 'sent';

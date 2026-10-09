@@ -65,6 +65,7 @@ export interface Conversation {
   lastSeq: number;
   lastMessageAt: string | null;
   lastMessage: Message | null;
+  receipts: { deliveredSeq: number; readSeq: number | null };
   unreadCount: number;
   archived: boolean;
   pinnedAt: string | null;

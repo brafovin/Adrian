@@ -1,0 +1,14 @@
+{$DOMAIN} {
+	encode zstd gzip
+	# WebSocket (/api/ws) und HTTP laufen über denselben Upstream; Caddy leitet Upgrades automatisch weiter.
+	reverse_proxy app:8080 {
+		header_up X-Forwarded-Proto {scheme}
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	request_body {
+		max_size 80MB
+	}
+}

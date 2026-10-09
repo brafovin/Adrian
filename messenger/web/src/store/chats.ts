@@ -301,6 +301,17 @@ export const useChats = create<ChatsState>((set, getState) => {
       if (c?.lastMessage?.id === messageId) void getState().refreshConversation(convId);
     },
     setReceipt(convId, userId, kind, seq) {
+      // Chatliste: Zusammenfassung für Einzelchats direkt fortschreiben (Gruppen: aus Mitgliederliste, sobald geladen)
+      const conv = getState().conversations.find((c) => c.id === convId);
+      if (conv?.type === 'direct') {
+        patchConv(convId, (c) => ({
+          ...c,
+          receipts: {
+            deliveredSeq: Math.max(c.receipts.deliveredSeq, seq),
+            readSeq: kind === 'read' ? Math.max(c.receipts.readSeq ?? 0, seq) : c.receipts.readSeq,
+          },
+        }));
+      }
       set((s) => ({
         members: {
           ...s.members,

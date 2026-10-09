@@ -80,6 +80,7 @@ describe('Nachrichten in Echtzeit', () => {
     await bob.post(`/api/conversations/${convId}/read`, {});
     expect(await wsA.waitFor((m) => m.type === 'receipt' && m.kind === 'read')).toMatchObject({ userId: bob.user.id, seq: 1 });
     expect((await bob.get('/api/conversations')).json.conversations[0].unreadCount).toBe(0);
+    expect((await alice.get('/api/conversations')).json.conversations[0].receipts).toEqual({ deliveredSeq: 1, readSeq: 1 });
     const detail = await alice.get(`/api/conversations/${convId}`);
     expect(detail.json.members.find((m: any) => m.id === bob.user.id)).toMatchObject({ deliveredSeq: 1, readSeq: 1 });
 

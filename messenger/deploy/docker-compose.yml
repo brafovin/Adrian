@@ -1,0 +1,49 @@
+# Produktions-Beispiel: Caddy (HTTPS) → App → PostgreSQL, dazu coturn (TURN) für Anrufe.
+# Start: cp ../.env.example ../.env  (ausfüllen)  &&  docker compose --env-file ../.env up -d --build
+name: adrian
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: messenger
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?setzen}
+      POSTGRES_DB: messenger
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U messenger"], interval: 10s, timeout: 5s, retries: 10 }
+
+  app:
+    build: { context: .., dockerfile: Dockerfile }
+    restart: unless-stopped
+    depends_on: { db: { condition: service_healthy } }
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgres://messenger:${POSTGRES_PASSWORD}@db:5432/messenger
+      NODE_ENV: production
+    volumes: [uploads:/data/uploads]
+    expose: ["8080"]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [app]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment: { DOMAIN: "${DOMAIN:?setzen}" }
+    volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddydata:/data, caddyconfig:/config]
+
+  coturn:
+    image: coturn/coturn:4.6
+    restart: unless-stopped
+    network_mode: host          # TURN braucht viele UDP-Ports
+    command: ["-c", "/etc/coturn/turnserver.conf", "--static-auth-secret=${TURN_SECRET:?setzen}", "--realm=${DOMAIN}", "--external-ip=${TURN_EXTERNAL_IP:-}"]
+    volumes: [./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro]
+
+  backup:
+    image: postgres:16
+    restart: unless-stopped
+    depends_on: { db: { condition: service_healthy } }
+    environment: { PGPASSWORD: "${POSTGRES_PASSWORD}" }
+    volumes: [backups:/backups, uploads:/data/uploads:ro, ../scripts:/scripts:ro]
+    entrypoint: ["/bin/sh", "-c", "while true; do /scripts/backup.sh postgres://messenger@db:5432/messenger /backups /data/uploads; sleep 86400; done"]
+
+volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {}, backups: {} }

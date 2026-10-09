@@ -167,3 +167,21 @@ export async function befriend(a: Client, b: Client) {
 export const PNG_1x1 = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 
 export const tick = (ms = 50) => new Promise((r) => setTimeout(r, ms));
+
+/** Legt einen verifizierten Benutzer samt Sitzung direkt in der Datenbank an (umgeht Registrierungs-Rate-Limits). */
+export async function makeUserDb(env: Env, name: string): Promise<Client> {
+  const { hashPassword, randomToken, sha256 } = await import('../src/lib/crypto.js');
+  const c = new Client(env, name);
+  const hash = await hashPassword('correct-horse-battery', 10);
+  const { rows } = await env.ctx.db.query(
+    `insert into users(email, username, display_name, password_hash, email_verified_at) values ($1,$2,$3,$4, now()) returning id`,
+    [`${name}@example.test`, name, name.toUpperCase(), hash]);
+  await env.ctx.db.query('insert into user_privacy(user_id) values ($1)', [rows[0].id]);
+  await env.ctx.db.query('insert into user_settings(user_id) values ($1)', [rows[0].id]);
+  const token = randomToken();
+  await env.ctx.db.query(`insert into sessions(user_id, token_hash, expires_at) values ($1,$2, now() + interval '1 day')`, [rows[0].id, sha256(token)]);
+  c.cookie = `sid=${token}`;
+  c.token = token;
+  c.user = { id: rows[0].id, username: name };
+  return c;
+}

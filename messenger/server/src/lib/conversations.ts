@@ -115,6 +115,8 @@ export interface ConversationView {
   lastSeq: number;
   lastMessageAt: string | null;
   lastMessage: MessageView | null;
+  /** Zusammengefasste Empfangsbestätigungen der anderen Mitglieder (für Haken in der Chatliste). */
+  receipts: { deliveredSeq: number; readSeq: number | null };
   unreadCount: number;
   archived: boolean;
   pinnedAt: string | null;
@@ -134,6 +136,9 @@ export async function loadConversationViews(ctx: Ctx, userId: string, onlyId?: s
            where m.conversation_id = c.id and m.seq > greatest(cm.last_read_seq, cm.history_from_seq)
              and m.sender_id is distinct from $1 and m.deleted_at is null and m.kind <> 'system'
              and not exists (select 1 from message_hidden h where h.message_id = m.id and h.user_id = $1)) as unread,
+        (select min(x.last_delivered_seq) from conversation_members x where x.conversation_id = c.id and x.user_id <> $1 and x.left_at is null) as rcpt_delivered,
+        (select min(x.last_read_seq) from conversation_members x join user_privacy xp on xp.user_id = x.user_id
+          where x.conversation_id = c.id and x.user_id <> $1 and x.left_at is null and xp.read_receipts) as rcpt_read,
         (select m.id from messages m where m.conversation_id = c.id and m.seq > cm.history_from_seq
             and not exists (select 1 from message_hidden h where h.message_id = m.id and h.user_id = $1)
           order by m.seq desc limit 1) as last_message_id,
@@ -163,6 +168,7 @@ export async function loadConversationViews(ctx: Ctx, userId: string, onlyId?: s
       peer, memberCount: r.member_count, myRole: r.my_role, lastSeq: r.last_seq,
       lastMessageAt: r.last_message_at ? r.last_message_at.toISOString() : null,
       lastMessage: r.last_message_id ? (lastViews.get(r.last_message_id) ?? null) : null,
+      receipts: { deliveredSeq: r.rcpt_delivered ?? 0, readSeq: r.rcpt_read ?? null },
       unreadCount: r.unread, archived: r.archived,
       pinnedAt: r.pinned_at ? r.pinned_at.toISOString() : null,
       mutedUntil: r.muted_until ? r.muted_until.toISOString() : null,
