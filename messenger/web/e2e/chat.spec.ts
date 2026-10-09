@@ -128,7 +128,7 @@ test('Offline senden: Nachricht wird wiederholt und genau einmal zugestellt', as
   await expect(anna.page.locator('.bubble', { hasText: 'Gesendet ohne Netz' })).toBeVisible();
   await expect(anna.page.getByText('Senden fehlgeschlagen')).toBeVisible();
   await anna.ctx.setOffline(false);
-  await anna.page.getByRole('button', { name: 'Erneut senden' }).click();
+  // Nach dem Wiederverbinden wird automatisch erneut gesendet (gleiche clientMsgId → keine Duplikate)
   await expect(msgs(ben.page).getByText('Gesendet ohne Netz')).toHaveCount(1);
   await expect(anna.page.getByText('Senden fehlgeschlagen')).toHaveCount(0);
 });

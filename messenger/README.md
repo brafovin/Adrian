@@ -24,7 +24,7 @@ cd messenger && npm install
 npm run dev:server     # API + WebSocket auf :8080 (E-Mail-Links erscheinen im Log)
 npm run dev:web        # Client auf :5173
 ```
-Tests: `npm test` (Server, 75+ Tests) · `cd web && npm run build && npx playwright test` (Browser-E2E mit zwei echten Benutzern).
+Tests: `npm test` (75 Server-Tests) · `cd web && npm run build && npx playwright test` (48 Browser-E2E-Tests mit echten Benutzern, inkl. WebRTC mit Fake-Geräten).
 Produktion: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## Dokumentation

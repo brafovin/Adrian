@@ -22,6 +22,8 @@ interface PendingSend {
   kind: MessageKind;
   body: string;
   replyToId?: string;
+  /** Serverseitig abgelehnt (4xx): nicht automatisch wiederholen */
+  noAuto?: boolean;
   file?: { blob: Blob; name: string; asVoice?: boolean; durationMs?: number; width?: number; height?: number };
 }
 const outbox = new Map<string, PendingSend>();
@@ -107,7 +109,7 @@ export const useChats = create<ChatsState>((set, getState) => {
     } catch (e) {
       // Netzwerkfehler → später automatisch erneut versuchen (gleiche clientMsgId = idempotent)
       const retriable = e instanceof ApiError ? e.status === 0 || e.status >= 500 : true;
-      if (!retriable) outbox.set(clientMsgId, p);
+      if (!retriable) p.noAuto = true;
       setLocal({ status: 'failed', error: errorMessage(e) });
     }
   }
@@ -225,7 +227,7 @@ export const useChats = create<ChatsState>((set, getState) => {
       patchThread(id, (t) => ({ ...t, items: t.items.filter((m) => m.clientMsgId !== clientMsgId) }));
     },
     retryAllFailed() {
-      for (const p of outbox.values()) getState().retry(p.convId, p.clientMsgId);
+      for (const p of outbox.values()) if (!p.noAuto) getState().retry(p.convId, p.clientMsgId);
     },
 
     async edit(messageId, body) {
