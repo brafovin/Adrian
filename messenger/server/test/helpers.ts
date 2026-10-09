@@ -123,7 +123,7 @@ export class WsClient {
     const found = this.messages.find(pred);
     if (found) { this.messages.splice(this.messages.indexOf(found), 1); return Promise.resolve(found); }
     return new Promise((res, rej) => {
-      const t = setTimeout(() => rej(new Error(`WS-Timeout; empfangen: ${JSON.stringify(this.messages.map((m) => m.type))}`)), timeout);
+      const t = setTimeout(() => rej(new Error(`WS-Timeout; empfangen: ${JSON.stringify(this.messages)}`)), timeout);
       this.waiters.push({ pred, res: (m) => { clearTimeout(t); this.messages.splice(this.messages.indexOf(m), 1); res(m); } });
     });
   }

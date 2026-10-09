@@ -16,8 +16,6 @@ interface Live {
   dropTimers: Map<string, NodeJS.Timeout>;
 }
 
-const DROP_GRACE_MS = 30_000;
-
 /** Signaling für 1:1-Anrufe (WebRTC). Medien laufen Peer-to-Peer bzw. über TURN – nie über diesen Server. */
 export class CallManager {
   private live = new Map<string, Live>();
@@ -153,7 +151,7 @@ export class CallManager {
       return;
     }
     if (call.state === 'active') {
-      call.dropTimers.set(conn.userId, setTimeout(() => void this.close(call, 'ended', 'connection_lost'), DROP_GRACE_MS));
+      call.dropTimers.set(conn.userId, setTimeout(() => void this.close(call, 'ended', 'connection_lost'), this.ctx.cfg.CALL_DROP_GRACE_SECONDS * 1000));
     }
   }
 

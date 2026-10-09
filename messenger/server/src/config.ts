@@ -62,6 +62,8 @@ const schema = z.object({
   TURN_SECRET: z.string().optional(),
   TURN_TTL_SECONDS: z.coerce.number().default(3600),
   CALL_RING_SECONDS: z.coerce.number().default(45),
+  /** So lange wartet der Server nach einem WebSocket-Abbruch, bevor ein aktiver Anruf beendet wird. */
+  CALL_DROP_GRACE_SECONDS: z.coerce.number().default(30),
 
   // Regeln
   MESSAGE_EDIT_WINDOW_MINUTES: z.coerce.number().default(24 * 60),
