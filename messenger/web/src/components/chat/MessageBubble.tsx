@@ -108,7 +108,7 @@ export const MessageBubble = memo(function MessageBubble(p: Props) {
   const mine = m.senderId === myId;
   const touch = useRef<{ t: ReturnType<typeof setTimeout>; x: number; y: number } | null>(null);
 
-  if (m.kind === 'system') return <div className="sys-msg">{systemText(m, (id) => p.nameOf(id))}</div>;
+  if (m.kind === 'system') return <div className="sys-msg">{systemText(m, (id) => p.nameOf(id), myId)}</div>;
 
   const deleted = !!m.deletedAt;
   const status = mine ? messageStatus(m, p.members, myId) : null;

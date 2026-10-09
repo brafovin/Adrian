@@ -365,7 +365,7 @@ export const messagePreview = (m: Message | null | undefined, ownId?: string): s
   if (m.deletedAt) return 'Nachricht gelöscht';
   const prefix = m.senderId === ownId ? 'Du: ' : '';
   switch (m.kind) {
-    case 'system': return systemText(m);
+    case 'system': return systemText(m, undefined, ownId);
     case 'image': return `${prefix}📷 ${m.body || 'Foto'}`;
     case 'video': return `${prefix}🎬 ${m.body || 'Video'}`;
     case 'voice': return `${prefix}🎤 Sprachnachricht`;
@@ -375,16 +375,17 @@ export const messagePreview = (m: Message | null | undefined, ownId?: string): s
   }
 };
 
-export function systemText(m: Message, names?: (id: string) => string): string {
-  const n = (id?: string) => (id && names ? names(id) : 'Jemand');
+export function systemText(m: Message, names?: (id: string) => string, myId?: string): string {
+  const n = (id?: string) => (id === myId && myId ? 'Du' : id && names ? names(id) : 'Jemand');
+  const has = (id?: string) => (id === myId && myId ? 'hast' : 'hat');
   const e = m.system ?? {};
   switch (e.type) {
-    case 'group_created': return `${n(e.by)} hat die Gruppe erstellt`;
-    case 'member_added': return `${n(e.by)} hat ${n(e.userId)} hinzugefügt`;
-    case 'member_removed': return `${n(e.by)} hat ${n(e.userId)} entfernt`;
-    case 'member_left': return `${n(e.userId)} hat die Gruppe verlassen`;
-    case 'member_joined_via_link': return `${n(e.userId)} ist per Einladungslink beigetreten`;
-    case 'title_changed': return `${n(e.by)} hat die Gruppe in „${e.title}“ umbenannt`;
+    case 'group_created': return `${n(e.by)} ${has(e.by)} die Gruppe erstellt`;
+    case 'member_added': return `${n(e.by)} ${has(e.by)} ${n(e.userId)} hinzugefügt`;
+    case 'member_removed': return `${n(e.by)} ${has(e.by)} ${n(e.userId)} entfernt`;
+    case 'member_left': return `${n(e.userId)} ${has(e.userId)} die Gruppe verlassen`;
+    case 'member_joined_via_link': return `${n(e.userId)} ${e.userId === myId ? 'bist' : 'ist'} per Einladungslink beigetreten`;
+    case 'title_changed': return `${n(e.by)} ${has(e.by)} die Gruppe in „${e.title}“ umbenannt`;
     default: return 'Systemnachricht';
   }
 }

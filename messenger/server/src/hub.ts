@@ -16,19 +16,24 @@ export type Event = { type: string; [k: string]: unknown };
  */
 export class Hub {
   private conns = new Map<string, Set<Conn>>();
+  private sessions = new Map<string, number>();
 
   add(c: Conn): boolean {
     let set = this.conns.get(c.userId);
     const first = !set || set.size === 0;
     if (!set) this.conns.set(c.userId, (set = new Set()));
     set.add(c);
+    this.sessions.set(c.sessionId, (this.sessions.get(c.sessionId) ?? 0) + 1);
     return first;
   }
   /** @returns true, wenn dies die letzte Verbindung des Benutzers war */
   remove(c: Conn): boolean {
     const set = this.conns.get(c.userId);
     if (!set) return false;
-    set.delete(c);
+    if (set.delete(c)) {
+      const n = (this.sessions.get(c.sessionId) ?? 1) - 1;
+      if (n <= 0) this.sessions.delete(c.sessionId); else this.sessions.set(c.sessionId, n);
+    }
     if (set.size === 0) {
       this.conns.delete(c.userId);
       return true;
@@ -36,8 +41,7 @@ export class Hub {
     return false;
   }
   hasSession(sessionId: string): boolean {
-    for (const set of this.conns.values()) for (const c of set) if (c.sessionId === sessionId) return true;
-    return false;
+    return this.sessions.has(sessionId);
   }
   isOnline(userId: string): boolean {
     return (this.conns.get(userId)?.size ?? 0) > 0;

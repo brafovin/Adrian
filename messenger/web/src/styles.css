@@ -345,5 +345,6 @@ body.in-chat .toast-host { bottom: calc(var(--safe-b) + 84px); }
 .role-pill { font-size: 11.5px; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .profile-head { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 0 4px; text-align: center; }
 .profile-head h2 { font-size: 21px; }
+.profile-head .field { text-align: left; }
 .grid-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
 .grid-actions .btn { flex-direction: column; height: auto; padding: 12px 6px; border-radius: 16px; gap: 4px; font-size: 13px; background: var(--surface-2); color: var(--text); }
