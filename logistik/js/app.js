@@ -27,14 +27,14 @@ act('nav.close', null, () => document.body.classList.remove('nav-open'));
 /* ---------- Live-Hinweise für Glocke und Dashboard ---------- */
 function liveAlerts() {
   const out = [];
-  problems().filter((p) => p.kind !== 'Reklamation').forEach((p) => out.push({ tone: p.tone, text: `${p.order.nr}: ${p.kind} – ${p.text}`, link: `#/auftraege/${p.order.id}` }));
-  DB.invoices.filter((i) => invoiceState(i).id === 'ueberfaellig').forEach((i) => out.push({ tone: 'red', text: `Rechnung ${i.nr} (${(cust(i.customerId) || {}).name}) ist überfällig`, link: '#/abrechnung' }));
-  DB.vehicles.forEach((v) => { const d = dueState(v.tuev, 30); if (d.tone !== 'green') out.push({ tone: d.tone, text: `${v.plate}: Hauptuntersuchung ${d.label}`, link: `#/fuhrpark/${v.id}` }); });
-  DB.drivers.forEach((dr) => dr.quals.forEach((q) => { if (q.exp) { const d = dueState(q.exp, 30); if (d.tone !== 'green') out.push({ tone: d.tone, text: `${dr.name}: ${q.name} ${d.label}`, link: `#/fahrer/${dr.id}` }); } }));
+  if (can('auftraege')) problems().filter((p) => p.kind !== 'Reklamation' && inScope(p.order.branch)).forEach((p) => out.push({ tone: p.tone, text: `${p.order.nr}: ${p.kind} – ${p.text}`, link: `#/auftraege/${p.order.id}` }));
+  if (can('abrechnung')) DB.invoices.filter((i) => invoiceState(i).id === 'ueberfaellig').forEach((i) => out.push({ tone: 'red', text: `Rechnung ${i.nr} (${(cust(i.customerId) || {}).name}) ist überfällig`, link: '#/abrechnung' }));
+  if (can('fuhrpark')) DB.vehicles.filter((v) => inScope(v.branch)).forEach((v) => { const d = dueState(v.tuev, 30); if (d.tone !== 'green') out.push({ tone: d.tone, text: `${v.plate}: Hauptuntersuchung ${d.label}`, link: `#/fuhrpark/${v.id}` }); });
+  if (can('fahrer')) DB.drivers.filter((dr) => inScope(dr.branch)).forEach((dr) => dr.quals.forEach((q) => { if (q.exp) { const d = dueState(q.exp, 30); if (d.tone !== 'green') out.push({ tone: d.tone, text: `${dr.name}: ${q.name} ${d.label}`, link: `#/fahrer/${dr.id}` }); } }));
   const open = DB.claims.filter((c) => c.status === 'neu').length;
-  if (open) out.push({ tone: 'amber', text: `${open} neue Reklamation${open > 1 ? 'en' : ''} ohne Bearbeiter`, link: '#/reklamation' });
+  if (open && can('reklamation')) out.push({ tone: 'amber', text: `${open} neue Reklamation${open > 1 ? 'en' : ''} ohne Bearbeiter`, link: '#/reklamation' });
   const shop = readShopOrders().filter((s) => s && s.no && !DB.shopSeen.includes(s.no)).length;
-  if (shop) out.push({ tone: 'blue', text: `${shop} Bestellung${shop > 1 ? 'en' : ''} aus dem Shop warten auf Übernahme`, link: '#/schnittstellen' });
+  if (shop && can('schnittstellen')) out.push({ tone: 'blue', text: `${shop} Bestellung${shop > 1 ? 'en' : ''} aus dem Shop warten auf Übernahme`, link: '#/schnittstellen' });
   return out;
 }
 const unreadCount = () => DB.notifs.filter((n) => !n.read).length;
@@ -160,6 +160,7 @@ function render() {
   }
   if (fkey) { const el = $(`[data-bind="${CSS.escape(fkey)}"]`, main); if (el) { el.focus({ preventScroll: true }); try { if (fpos != null) el.setSelectionRange(fpos, fend); } catch (e) { /* kein Textfeld */ } } }
   renderChrome(r);
+  if (typeof aiOnRoute === 'function') aiOnRoute();
   document.title = `${V.title || 'Dashboard'} · JWG.logistik`;
   document.documentElement.lang = 'de';
 }
@@ -183,5 +184,6 @@ function boot() {
   if (DB.settings.autoImportShop) importShopOrders(true);
   if (!location.hash) location.replace('#/dashboard');
   render();
+  if (typeof aiInit === 'function') aiInit();
 }
 boot();
