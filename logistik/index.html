@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JWG.logistik</title>
+<meta name="description" content="Logistik- und Speditions-App für den JWG.onlineshop: Aufträge, Disposition, Fahrer-App, Sendungsverfolgung, Abrechnung. Demo mit Beispieldaten.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232340E6'/%3E%3Cpath d='M7 21h9a4 4 0 0 0 0-8h-1a4 4 0 0 1 0-8h10' fill='none' stroke='%23FFD23F' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body data-layout="admin">
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Hauptnavigation">
+    <a class="brand" href="#/dashboard" aria-label="JWG.logistik, zur Übersicht">
+      <svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#2340E6"/><path d="M7 22h9a4.5 4.5 0 0 0 0-9h-1a4.5 4.5 0 0 1 0-9h10" fill="none" stroke="#FFD23F" stroke-width="3" stroke-linecap="round"/><circle cx="7" cy="22" r="2.4" fill="#FF5A47"/><circle cx="25" cy="4.5" r="2.4" fill="#27D3A2"/></svg>
+      <span><b>JWG.logistik</b><small>Logistik &amp; Spedition</small></span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Module"></nav>
+    <div class="side-foot" id="sidefoot"></div>
+  </aside>
+  <div class="scrim" data-act="nav.close"></div>
+  <div class="main-col">
+    <header class="top" id="top">
+      <button type="button" class="icon-btn menu-btn" data-act="nav.toggle" aria-label="Menü öffnen"></button>
+      <div class="search" role="search">
+        <svg class="ic" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <input id="gsearch" type="search" placeholder="Suche: Auftrag, Sendung, Kunde, Fahrer, Kennzeichen …  ( / )" aria-label="Zentrale Suche" autocomplete="off">
+        <div class="popover search-res" id="sres" hidden></div>
+      </div>
+      <div class="top-right" id="topdyn"></div>
+    </header>
+    <main id="main" tabindex="-1" aria-live="polite"></main>
+  </div>
+</div>
+<div id="modals"></div>
+<div id="toasts" aria-live="polite"></div>
+<noscript><p style="padding:24px">Für JWG.logistik wird JavaScript benötigt.</p></noscript>
+<script src="js/core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/views-core.js"></script>
+<script src="js/views-dispo.js"></script>
+<script src="js/views-master.js"></script>
+<script src="js/views-ops.js"></script>
+<script src="js/views-app.js"></script>
+<script src="js/views-portal.js"></script>
+<script src="js/views-fin.js"></script>
+<script src="js/views-admin.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
