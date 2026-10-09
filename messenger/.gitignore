@@ -6,3 +6,5 @@ data/
 .env.*
 !.env.example
 e2e/shots/
+test-results/
+playwright-report/
