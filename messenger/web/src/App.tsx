@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { onUnauthorized } from './api';
 import { CallOverlay } from './components/CallOverlay';
@@ -13,6 +13,9 @@ export function App() {
   const status = useSession((s) => s.status);
   const navigate = useNavigate();
   const location = useLocation();
+  // navigate ändert sich bei jedem Seitenwechsel – über Ref nutzen, damit die WebSocket-Verbindung nicht neu startet
+  const navRef = useRef(navigate);
+  navRef.current = navigate;
 
   useEffect(() => {
     void useSession.getState().init();
@@ -22,8 +25,8 @@ export function App() {
 
   useEffect(() => {
     if (status !== 'authed') return;
-    return startRealtime((to) => navigate(to));
-  }, [status, navigate]);
+    return startRealtime((to) => navRef.current(to));
+  }, [status]);
 
   // Systemtheme live übernehmen
   useEffect(() => {

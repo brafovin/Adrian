@@ -54,7 +54,7 @@ interface ChatsState {
   remove(msg: Message, scope: 'me' | 'all'): Promise<void>;
   react(msg: Message, emoji: string | null): Promise<void>;
   forward(messageId: string, convIds: string[]): Promise<void>;
-  markRead(id: string): Promise<void>;
+  markRead(id: string, force?: boolean): Promise<void>;
   startDirect(userId: string): Promise<Conversation>;
   createGroup(title: string, memberIds: string[], avatarMediaId?: string): Promise<Conversation>;
   setConversationPrefs(id: string, p: { archived?: boolean; pinned?: boolean; mutedUntil?: string | null }): Promise<void>;
@@ -244,9 +244,9 @@ export const useChats = create<ChatsState>((set, getState) => {
       const { messages } = await post<{ messages: Message[] }>(`/api/messages/${messageId}/forward`, { conversationIds: convIds });
       messages.forEach((m) => getState().applyIncoming(m));
     },
-    async markRead(id) {
+    async markRead(id, force = false) {
       const c = getState().conversations.find((x) => x.id === id);
-      if (!c || c.unreadCount === 0) return;
+      if (!c || (c.unreadCount === 0 && !force)) return;
       patchConv(id, (x) => ({ ...x, unreadCount: 0 }));
       try { await post(`/api/conversations/${id}/read`, {}); } catch { /* wird beim nächsten Öffnen erneut versucht */ }
     },
@@ -289,7 +289,7 @@ export const useChats = create<ChatsState>((set, getState) => {
         unreadCount: fromMe || alreadyCounted || m.kind === 'system' || visibleHere ? c.unreadCount : c.unreadCount + 1,
       }));
       set((st) => ({ conversations: sortConvs(st.conversations) }));
-      if (visibleHere && !fromMe && m.kind !== 'system') void getState().markRead(m.conversationId);
+      if (visibleHere && !fromMe && m.kind !== 'system') void getState().markRead(m.conversationId, true);
     },
     applyUpdated(m) {
       patchThread(m.conversationId, (t) => ({ ...t, items: t.items.map((i) => (i.id === m.id ? m : i)) }));

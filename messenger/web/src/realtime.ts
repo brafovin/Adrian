@@ -24,6 +24,7 @@ class Realtime {
     this.wanted = true;
     this.hadConnection = false;
     window.addEventListener('online', this.kick);
+    window.addEventListener('offline', this.dropped);
     document.addEventListener('visibilitychange', this.kick);
     this.open();
   }
@@ -31,13 +32,21 @@ class Realtime {
   stop() {
     this.wanted = false;
     window.removeEventListener('online', this.kick);
+    window.removeEventListener('offline', this.dropped);
     document.removeEventListener('visibilitychange', this.kick);
     if (this.timer) clearTimeout(this.timer);
     this.cleanup();
-    this.ws?.close(1000);
+    if (this.ws) {
+      // Handler entkoppeln, sonst plant das alte onclose einen Reconnect und es entstehen parallele Verbindungen
+      this.ws.onclose = this.ws.onmessage = this.ws.onerror = null;
+      this.ws.close(1000);
+    }
     this.ws = null;
     useConnection.setState({ state: 'connecting', connId: null });
   }
+
+  /** Netz weg: Verbindung sofort verwerfen statt auf den Ping-Timeout zu warten. */
+  private dropped = () => { this.ws?.close(); };
 
   private kick = () => {
     if (!this.wanted || document.visibilityState === 'hidden') return;
