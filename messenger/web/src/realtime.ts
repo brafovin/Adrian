@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { post } from './api';
 
 type Handler = (ev: any) => void;
 export type ConnState = 'connecting' | 'online' | 'offline';
@@ -57,10 +58,18 @@ class Realtime {
   };
 
   private open() {
+    // Liegt die API auf einer anderen Domain (z. B. Oberfläche auf Vercel, Server separat), kann der Browser das
+    // Sitzungs-Cookie nicht an den WebSocket senden: dann per Einmal-Ticket anmelden (VITE_WS_URL=wss://api.example.com/api/ws).
+    const remote = import.meta.env.VITE_WS_URL as string | undefined;
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${proto}://${location.host}/api/ws`);
+    const ws = new WebSocket(remote || `${proto}://${location.host}/api/ws`);
     this.ws = ws;
     useConnection.setState({ state: this.hadConnection ? 'offline' : 'connecting' });
+    if (remote) {
+      ws.onopen = () => {
+        post<{ ticket: string }>('/api/ws-ticket').then(({ ticket }) => ws.send(JSON.stringify({ type: 'auth', ticket }))).catch(() => ws.close());
+      };
+    }
     ws.onmessage = (e) => {
       let msg: any;
       try { msg = JSON.parse(e.data); } catch { return; }

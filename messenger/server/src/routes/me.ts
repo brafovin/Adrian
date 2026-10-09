@@ -4,7 +4,7 @@ import type { Ctx } from '../context.js';
 import { withTx } from '../db/pool.js';
 import { audit } from '../lib/audit.js';
 import { clearSessionCookie } from '../lib/session.js';
-import { hashPassword, verifyPassword } from '../lib/crypto.js';
+import { hashPassword, randomToken, verifyPassword } from '../lib/crypto.js';
 import { badRequest, conflict, forbidden, notFound, unauthorized } from '../lib/errors.js';
 import { requireAuth } from '../lib/guard.js';
 import { getSettings, settingsSchema } from '../lib/settings.js';
@@ -196,6 +196,13 @@ export async function meRoutes(app: FastifyInstance) {
   });
 
   // ------------------------------------------------------------- Push-Registrierung
+  /** Kurzlebiges Einmal-Ticket für den WebSocket (nur nötig, wenn Client und API auf verschiedenen Domains liegen). */
+  app.post('/api/ws-ticket', { ...auth, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req) => {
+    const ticket = randomToken(24);
+    hub.issueTicket(ticket, req.auth!.sessionId);
+    return { ticket };
+  });
+
   app.get('/api/push/config', async () => ({ webPushPublicKey: cfg.VAPID_PUBLIC_KEY ?? null }));
 
   app.put('/api/push/subscription', auth, async (req) => {

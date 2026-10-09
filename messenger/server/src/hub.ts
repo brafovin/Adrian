@@ -17,6 +17,19 @@ export type Event = { type: string; [k: string]: unknown };
 export class Hub {
   private conns = new Map<string, Set<Conn>>();
   private sessions = new Map<string, number>();
+  private tickets = new Map<string, { sessionId: string; exp: number }>();
+
+  /** Einmal-Ticket für den WebSocket-Aufbau, wenn der Browser das Sitzungs-Cookie nicht mitsenden kann (Client auf anderer Domain). */
+  issueTicket(ticket: string, sessionId: string, ttlMs = 30_000): void {
+    const now = Date.now();
+    for (const [k, v] of this.tickets) if (v.exp < now) this.tickets.delete(k);
+    this.tickets.set(ticket, { sessionId, exp: now + ttlMs });
+  }
+  redeemTicket(ticket: string): string | null {
+    const t = this.tickets.get(ticket);
+    this.tickets.delete(ticket);
+    return t && t.exp >= Date.now() ? t.sessionId : null;
+  }
 
   add(c: Conn): boolean {
     let set = this.conns.get(c.userId);

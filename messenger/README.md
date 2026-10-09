@@ -35,6 +35,7 @@ Produktion: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 | [`docs/SECURITY.md`](docs/SECURITY.md) | Maßnahmen ↔ Umsetzung ↔ Tests, bekannte Grenzen |
 | [`docs/E2EE-PLAN.md`](docs/E2EE-PLAN.md) | Plan für Ende-zu-Ende-Verschlüsselung (nicht umgesetzt) |
 | [`docs/PUSH.md`](docs/PUSH.md) | Push einrichten (Web-Push, FCM) |
+| [`docs/VERCEL.md`](docs/VERCEL.md) | Oberfläche auf Vercel + separater Server (Behebung von „405“) |
 | [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Docker/Compose, TLS, TURN, Backups, Konfiguration |
 | [`docs/PRODUCTION-CHECKLIST.md`](docs/PRODUCTION-CHECKLIST.md) | Definition „fertig“ – was nachgewiesen ist und was fehlt |
 

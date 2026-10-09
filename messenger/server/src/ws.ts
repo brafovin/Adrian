@@ -4,7 +4,7 @@ import type { WebSocket } from 'ws';
 import { z } from 'zod';
 import type { CallManager } from './calls.js';
 import type { Conn } from './hub.js';
-import { COOKIE_NAME, resolveSession } from './lib/session.js';
+import { COOKIE_NAME, resolveSession, resolveSessionById } from './lib/session.js';
 import { markAllDelivered } from './lib/messages.js';
 import { allowedOrigins } from './app.js';
 
@@ -46,8 +46,9 @@ export async function wsRoutes(app: FastifyInstance, calls: CallManager) {
 
     const send = (o: unknown) => socket.readyState === 1 && socket.send(JSON.stringify(o));
 
-    async function attach(token: string) {
-      const s = await resolveSession(ctx, token);
+    async function attach(token: string, isTicket = false) {
+      const sid = isTicket ? hub.redeemTicket(token) : null;
+      const s = isTicket ? (sid ? await resolveSessionById(ctx, sid) : null) : await resolveSession(ctx, token);
       if (!s) { send({ type: 'auth.failed' }); socket.close(4401, 'unauthorized'); return; }
       conn = { ws: socket, userId: s.userId, sessionId: s.sessionId, id: randomUUID() };
       clearTimeout(authTimer);
@@ -79,6 +80,11 @@ export async function wsRoutes(app: FastifyInstance, calls: CallManager) {
       try {
         if (!conn) {
           if (msg.type === 'auth' && typeof msg.token === 'string') await attach(msg.token);
+          else if (msg.type === 'auth' && typeof msg.ticket === 'string') {
+            // Browser auf anderer Domain: Origin muss erlaubt sein (Schutz vor Cross-Site-WebSocket-Hijacking)
+            if (origin && !allowedOrigins(ctx.cfg).has(origin)) { socket.close(4403, 'origin'); return; }
+            await attach(msg.ticket, true);
+          }
           return;
         }
         if (msg.type === 'ping') { send({ type: 'pong' }); return; }

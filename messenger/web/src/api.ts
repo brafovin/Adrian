@@ -38,6 +38,13 @@ export async function api<T = any>(method: string, path: string, body?: unknown,
   } catch {
     /* kein JSON */
   }
+  // Antwort stammt nicht von der API (z. B. statischer Host ohne Server → 405/404 mit HTML): verständlich erklären
+  if (!json || (typeof json !== 'object')) {
+    if (!res.ok || path.startsWith('/api/')) {
+      throw new ApiError(res.status || 0, 'backend_unreachable',
+        `Der Server ist unter dieser Adresse nicht erreichbar (HTTP ${res.status}). Die Oberfläche läuft, aber das Backend fehlt oder ist falsch eingebunden – siehe docs/VERCEL.md.`);
+    }
+  }
   if (!res.ok) {
     const err = json?.error ?? {};
     if (res.status === 401 && !path.startsWith('/api/auth/')) unauthorizedListeners.forEach((f) => f());

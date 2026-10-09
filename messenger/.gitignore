@@ -8,3 +8,5 @@ data/
 e2e/shots/
 test-results/
 playwright-report/
+.vercel/
+dist-split/

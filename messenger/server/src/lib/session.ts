@@ -54,3 +54,11 @@ export function bearerFrom(req: FastifyRequest): string | null {
   const h = req.headers.authorization;
   return h?.startsWith('Bearer ') ? h.slice(7).trim() : null;
 }
+
+/** Sitzung anhand ihrer ID (nach Ticket-Einlösung) prüfen. */
+export async function resolveSessionById(ctx: Ctx, sessionId: string): Promise<{ userId: string; sessionId: string } | null> {
+  const { rows } = await ctx.db.query(
+    `select s.id, s.user_id from sessions s join users u on u.id = s.user_id
+      where s.id = $1 and s.revoked_at is null and s.expires_at > now() and u.deleted_at is null`, [sessionId]);
+  return rows[0] ? { userId: rows[0].user_id, sessionId: rows[0].id } : null;
+}
