@@ -54,17 +54,17 @@ export class Push {
    * Beachtet die persönlichen Benachrichtigungseinstellungen (Kategorie + „Inhalte ausblenden“).
    */
   async notifyUser(userId: string, payload: PushPayload, opts: { force?: boolean } = {}): Promise<number> {
-    const settings = await getSettings(this.db, userId);
-    const cat = {
-      message: 'messages', call: 'calls', missed_call: 'calls', request: 'requests', group: 'groups', status: 'status',
-    }[payload.kind] as keyof typeof settings.notify;
-    if (!opts.force && !settings.notify[cat]) return 0;
-
     const { rows } = await this.db.query<Sub>(
       'select id, session_id, provider, endpoint, keys from push_subscriptions where user_id = $1',
       [userId],
     );
     const targets = rows.filter((s) => payload.kind === 'call' || !s.session_id || !this.hub.hasSession(s.session_id));
+    if (!targets.length) return 0; // häufigster Fall: Benutzer ist online → keine weiteren Abfragen
+    const settings = await getSettings(this.db, userId);
+    const cat = {
+      message: 'messages', call: 'calls', missed_call: 'calls', request: 'requests', group: 'groups', status: 'status',
+    }[payload.kind] as keyof typeof settings.notify;
+    if (!opts.force && !settings.notify[cat]) return 0;
     const out =
       settings.notify.hidePreviews && payload.kind === 'message'
         ? { ...payload, title: 'Adrian', body: 'Neue Nachricht' }
