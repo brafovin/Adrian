@@ -16,11 +16,14 @@ interface Props {
 /** Zugänglicher Dialog (Escape schließt, Fokus wird verwaltet). */
 export function Modal({ title, onClose, children, footer, variant = 'sheet', className = '', closeOnBackdrop = true }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  // onClose in einer Ref halten: sonst würde jede neue Inline-Funktion den Fokus zurücksetzen
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
     ref.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+      if (e.key === 'Escape') { e.stopPropagation(); closeRef.current(); }
       if (e.key === 'Tab' && ref.current) {
         const f = ref.current.querySelectorAll<HTMLElement>('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
         if (!f.length) return;
@@ -31,7 +34,7 @@ export function Modal({ title, onClose, children, footer, variant = 'sheet', cla
     };
     document.addEventListener('keydown', onKey, true);
     return () => { document.removeEventListener('keydown', onKey, true); prev?.focus?.(); };
-  }, [onClose]);
+  }, []);
   return createPortal(
     <div className="modal-backdrop" onMouseDown={(e) => { if (closeOnBackdrop && e.target === e.currentTarget) onClose(); }}>
       <div ref={ref} className={`modal modal-${variant} ${className}`} role="dialog" aria-modal="true" aria-label={typeof title === 'string' ? title : undefined} tabIndex={-1}>
