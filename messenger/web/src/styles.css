@@ -253,7 +253,7 @@ body.in-chat .toast-host { bottom: calc(var(--safe-b) + 84px); }
 .conn-banner { background: var(--warn); color: #231a00; text-align: center; font-size: 13px; padding: 4px 8px; font-weight: 600; }
 
 /* ============ Chat-Ansicht ============ */
-.chat { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0; background: var(--chat-bg); isolation: isolate; }
+.chat { overflow: hidden; position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0; background: var(--chat-bg); isolation: isolate; }
 .chat-bg { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center; }
 .chat-bg-overlay { position: absolute; inset: 0; z-index: -1; background: #000; pointer-events: none; }
 .chat-header { display: flex; align-items: center; gap: 10px; padding: calc(8px + var(--safe-t)) 8px 8px 6px; background: color-mix(in oklab, var(--surface) 90%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); flex: none; min-height: 60px; }
