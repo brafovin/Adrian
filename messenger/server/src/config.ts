@@ -71,6 +71,8 @@ const schema = z.object({
   STATUS_TTL_HOURS: z.coerce.number().default(24),
   STATUS_MEDIA_GRACE_HOURS: z.coerce.number().default(1),
   JOBS_ENABLED: bool.default(true),
+  /** Nur für E2E-Tests: macht gesendete E-Mails über /api/dev/outbox lesbar. Wird in Produktion abgelehnt. */
+  EXPOSE_DEV_OUTBOX: bool.default(false),
 
   /** Verzeichnis des gebauten Web-Clients (wird vom Server mit ausgeliefert). */
   WEB_DIST: z.string().optional(),
@@ -83,6 +85,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   if (parsed.NODE_ENV === 'production' && parsed.APP_SECRET === 'dev-only-secret-change-me-please') {
     throw new Error('APP_SECRET muss in Produktion gesetzt werden.');
   }
+  if (parsed.NODE_ENV === 'production' && parsed.EXPOSE_DEV_OUTBOX) throw new Error('EXPOSE_DEV_OUTBOX ist in Produktion nicht erlaubt.');
   return {
     ...parsed,
     cookieSecure: parsed.COOKIE_SECURE ?? parsed.PUBLIC_URL.startsWith('https://'),

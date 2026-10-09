@@ -285,7 +285,7 @@ export const useChats = create<ChatsState>((set, getState) => {
         ...c,
         lastSeq: Math.max(c.lastSeq, m.seq),
         lastMessageAt: m.createdAt,
-        lastMessage: m.seq >= (c.lastMessage?.seq ?? 0) ? m : c.lastMessage,
+        lastMessage: (c.lastMessage as LocalMessage | null)?.local || m.seq >= (c.lastMessage?.seq ?? 0) ? m : c.lastMessage,
         unreadCount: fromMe || alreadyCounted || m.kind === 'system' || visibleHere ? c.unreadCount : c.unreadCount + 1,
       }));
       set((st) => ({ conversations: sortConvs(st.conversations) }));

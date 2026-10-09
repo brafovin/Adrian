@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApiError, errorMessage, get, post } from '../api';
 import { Icon } from '../components/Icon';
@@ -19,17 +19,18 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 
 function PasswordField({ label, value, onChange, autoComplete, hint, name }: { label: string; value: string; onChange: (v: string) => void; autoComplete: string; hint?: string; name?: string }) {
   const [show, setShow] = useState(false);
+  const id = useId();
   return (
-    <label className="field">
-      <span>{label}</span>
+    <div className="field">
+      <label htmlFor={id} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-dim)' }}>{label}</label>
       <div className="pw-wrap">
-        <input name={name} type={show ? 'text' : 'password'} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} required />
+        <input id={id} name={name} type={show ? 'text' : 'password'} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} required />
         <button type="button" className="icon-btn" onClick={() => setShow(!show)} aria-label={show ? 'Passwort verbergen' : 'Passwort anzeigen'}>
           <Icon name={show ? 'eye-off' : 'eye'} size={20} />
         </button>
       </div>
       {hint && <small className="hint">{hint}</small>}
-    </label>
+    </div>
   );
 }
 

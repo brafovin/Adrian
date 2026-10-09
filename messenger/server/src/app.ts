@@ -145,6 +145,12 @@ export async function buildApp(cfg: Config, opts: BuildOptions = {}): Promise<{ 
     return { ok: true };
   });
 
+  if (cfg.EXPOSE_DEV_OUTBOX) {
+    app.get('/api/dev/outbox', async (req) => {
+      const { to } = req.query as { to?: string };
+      return { mails: mailer.outbox.filter((m) => !to || m.to === to) };
+    });
+  }
   await app.register(async (a) => authRoutes(a));
   await app.register(async (a) => meRoutes(a));
   await app.register(async (a) => mediaRoutes(a));
