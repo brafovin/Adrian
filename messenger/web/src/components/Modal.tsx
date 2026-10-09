@@ -13,6 +13,8 @@ interface Props {
   closeOnBackdrop?: boolean;
 }
 
+const stack: symbol[] = [];
+
 /** Zugänglicher Dialog (Escape schließt, Fokus wird verwaltet). */
 export function Modal({ title, onClose, children, footer, variant = 'sheet', className = '', closeOnBackdrop = true }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -20,9 +22,12 @@ export function Modal({ title, onClose, children, footer, variant = 'sheet', cla
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   useEffect(() => {
+    const id = Symbol('modal');
+    stack.push(id);
     const prev = document.activeElement as HTMLElement | null;
     ref.current?.focus();
     const onKey = (e: KeyboardEvent) => {
+      if (stack[stack.length - 1] !== id) return; // nur der oberste Dialog reagiert
       if (e.key === 'Escape') { e.stopPropagation(); closeRef.current(); }
       if (e.key === 'Tab' && ref.current) {
         const f = ref.current.querySelectorAll<HTMLElement>('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
@@ -33,7 +38,7 @@ export function Modal({ title, onClose, children, footer, variant = 'sheet', cla
       }
     };
     document.addEventListener('keydown', onKey, true);
-    return () => { document.removeEventListener('keydown', onKey, true); prev?.focus?.(); };
+    return () => { stack.splice(stack.indexOf(id), 1); document.removeEventListener('keydown', onKey, true); prev?.focus?.(); };
   }, []);
   return createPortal(
     <div className="modal-backdrop" onMouseDown={(e) => { if (closeOnBackdrop && e.target === e.currentTarget) onClose(); }}>
