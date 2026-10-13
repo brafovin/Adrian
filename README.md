@@ -26,6 +26,34 @@ Arcade-Schneidespiel im Weltraum – `nova-slash.html` öffnen (eine Datei, kein
 - **Shop & Waffen:** 5 Waffen mit eigenen Spielmechaniken (nachleuchtende Spur, träge Hammer-Schockwelle, zwei Klingen, Kettenblitz) plus 4 Upgrades je Waffe.
 - Fortschritt (Münzen, Level, Waffen, Upgrades, Highscore, Combo) wird automatisch im `localStorage` gespeichert. Sound und Musik werden per WebAudio erzeugt.
 
+## Kristallinsel – Open-World-Abenteuer (`kristallinsel/`)
+3D-Open-World-Spiel im Browser (Three.js, ohne Build-Schritt): Du läufst als anpassbare 3D-Figur frei über eine Insel, sprichst mit den Bewohnern, sammelst 40 Kristalle und entzündest am Ende das Leuchtfeuer. Erreichbar unter `/kristallinsel/`.
+
+**Starten** (ES-Module brauchen einen Webserver):
+```
+kristallinsel/tools/serve.sh 8733        # dann http://localhost:8733/
+```
+
+**Die Insel:** ca. 700 × 700 m mit Dorf „Lindenhain“ (Häuser, Brunnen, Markt, Linde), Fischersteg mit Boot, Alter Mühle mit Kornfeld, Schafweide, Aussichtsturm „Waldwacht“, Sonnenruinen mit Sprungpfad, Spiegelsee mit Insel, Berg „Wolkenspitze“ mit Gipfelschrein und Bergpfad, Rastlager mit Lagerfeuer, Schiffswrack, Steinkreis, Möwenfels draußen im Meer und Leuchtturm auf der Westklippe. Dazu rund 1.500 Bäume (Eichen, Tannen, Palmen), Felsen, Blumen, Gras im Wind, Schafe, Möwen, Schmetterlinge und nachts Glühwürmchen.
+
+**Spielen:**
+- Figur: laufen, rennen (Ausdauer), springen, an steilen Hängen abrutschen, schwimmen, ab 5 Kristallen mit dem Gleiter fliegen.
+- Lichtsäulen zeigen von weitem, wo ein Kristall liegt. Mira im Dorf gibt die Aufgaben: 5 Kristalle → Gleiter, 20 → alle übrigen Kristalle auf der Karte, 40 → Leuchtfeuer entzünden (mit Feuerwerk).
+- Bewohner geben Hinweise, Wegweiser zeigen die Richtung, am Lagerfeuer kann man bis zum Morgen/Abend rasten. Tag und Nacht wechseln (Länge einstellbar), nachts leuchten Fenster und Laternen.
+- Neue Orte werden mit Banner „Neu entdeckt“ angezeigt; Minikarte und große Karte (K).
+- Figur anpassen: Haut, Haare, Frisur (kurz, lang, Zopf, Dutt, Mütze), Oberteil, Hose.
+- Spielstand und Einstellungen werden im Browser gespeichert (`localStorage`).
+
+**Steuerung:** `WASD`/Pfeile laufen · `Umschalt` rennen · `Leertaste` springen, in der Luft Gleiter · Maus umschauen (ins Bild klicken) · Mausrad zoomen · `E` sprechen/lesen/rasten · `K` Karte · `M` Ton · `Esc`/`P` Pause. Handy: Joystick links, rechts wischen zum Umschauen, Knöpfe für Springen, Rennen, Aktion. Controller: Sticks, A springen, B rennen, X Aktion, Y Karte.
+
+**Grafikstufen:** Niedrig (ohne Schatten und Gras), Mittel, Hoch; „Automatisch“ wählt am Handy Mittel bzw. Niedrig. Die Auflösung passt sich zusätzlich der Bildrate an. URL-Parameter für Tests: `?autostart=1` (direkt ins Spiel, ohne Speichern), `?q=low|medium|high`, `?t=0.75` (Tageszeit), `?pos=x,z`, `?glider=1`, `?crystals=20`.
+
+**Aufbau** (`kristallinsel/js/`): Welt ohne Grafik in `terrain.js` (Höhenraster, Wege mit Steigungsbegrenzung), `layout.js` (Orte, Wege, Bewohner), `structures.js` (Bauwerke als Bauteillisten mit Kollisionskörpern), `world.js` (Pflanzen, 40 Kristalle), `collide.js`, `controller.js` (Bewegungsphysik), `story.js` (Aufgaben, Dialoge). Grafik in `gfx/` (Gelände, Wasser-Shader, Himmel/Tageszeit, instanzierte Pflanzen mit Detailstufen, Figur mit prozeduraler Animation, Tiere, Partikel), dazu `camera.js`, `input.js`, `audio.js` (alle Klänge per WebAudio erzeugt), `hud.js`, `main.js`.
+
+**Tests:** `cd kristallinsel && npm test` – 24 Tests für Steuerung (Sprunghöhe, Wände, Stufen, Plattformen, Hänge, Schwimmen, Gleiten, Ausdauer) und Welt (alle Kristalle erreichbar, Turmtreppe begehbar, Sprungpfad in den Ruinen schaffbar, Figur läuft den Bergpfad bis zum Gipfel, Möwenfels/Seeinsel/Wrack schwimmend erreichbar). `node tools/map.mjs karte.png` zeichnet die Insel als Bild.
+
+**Ehrlicher Stand:** Getestet mit Node-Tests und in headless Chromium mit Software-Grafik (Screenshots von Menü, Spiel, Nacht, Gleiten, Schwimmen, Karte, Handy-Ansicht; Abläufe Gespräch → Gleiter → Rasten → Speichern/Laden → Finale). Nicht auf echten Handys oder Grafikkarten gemessen – die Bildrate dort kenne ich nicht. Szene auf Stufe „Niedrig“: ca. 130 Zeichenaufrufe und 350.000 Dreiecke. Die Klänge sind synthetisch und von mir nicht angehört.
+
 ## ROUGE – Musik-Streaming-App (`musik/`)
 Moderne, installierbare Musik-App (PWA) in Rot & Schwarz für Smartphones mit **JUL**, **Bobby Vandamme** und 114 weiteren deutschsprachigen Rappern (redaktionelle Auswahl, kein offizielles Ranking; Liste in `musik/tools/resolve_artists.py`, Ergebnis in `musik/data/artists.json`). Songs eines Künstlers werden erst beim Öffnen/Suchen geladen.
 **Inhalte:** Die App lädt zur Laufzeit die offiziellen **30-Sekunden-Hörproben** und Cover über die öffentliche iTunes Search API von Apple (`js/data/itunes-provider.js`; Künstler in `js/config.js`). Es werden keine Audiodateien im Repo gespeichert oder weiterverteilt; vollständige Songs gibt es über den Link „In Apple Music öffnen“. Ohne Verbindung fällt die App auf eigene, lizenzfreie **Demo-Tracks** (`musik/tools/build_demo_assets.py`, CC0) zurück. Die API ist ratenbegrenzt, darum wird der Katalog 24 h lokal zwischengespeichert.

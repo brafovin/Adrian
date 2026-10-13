@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kristallinsel – Open World</title>
+<meta name="description" content="3D-Open-World-Abenteuer im Browser: Erkunde eine Insel, sprich mit den Bewohnern, sammle 40 Kristalle und entzünde das Leuchtfeuer.">
+<meta name="theme-color" content="#0d2236">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l8 12-8 16-8-16z' fill='%235ee7ff' stroke='%230d2236' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="touch-zone"></div>
+
+<!-- Spielanzeige -->
+<div id="hud" class="hidden">
+  <div class="hud-tl">
+    <div id="hc-box" class="crystal-count">
+      <svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1l10 11-10 19L2 12z" fill="#5ee7ff" stroke="#0b3a4a" stroke-width="2"/><path d="M12 1l4 11-4 19-4-19z" fill="#b8f6ff" opacity=".7"/></svg>
+      <b id="hc-count">0</b><span>/40</span>
+    </div>
+    <div id="objective"></div>
+  </div>
+  <div class="hud-tr">
+    <canvas id="minimap" width="168" height="168"></canvas>
+    <div id="clock"></div>
+  </div>
+  <div id="stamina"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="17" class="bg"/><circle id="stamina-arc" cx="22" cy="22" r="17" pathLength="100"/></svg></div>
+  <div id="prompt" class="hidden"><kbd id="prompt-key">E</kbd><span id="prompt-text"></span></div>
+  <div id="toasts"></div>
+  <div id="banner"><small id="banner-small"></small><div id="banner-name"></div></div>
+  <div id="fps"></div>
+  <div id="hint-lock" class="hidden">Klicke ins Bild, um mit der Maus umzuschauen</div>
+</div>
+
+<div id="dialog" class="hidden">
+  <div class="d-head"><span id="d-name"></span><small id="d-title"></small></div>
+  <div id="d-text"></div>
+  <div class="d-next">Weiter ▸</div>
+</div>
+
+<!-- Touch-Steuerung -->
+<div id="touch-ui" class="hidden">
+  <div id="stick"><div id="knob"></div></div>
+  <button id="t-jump" class="tbtn big" aria-label="Springen">⤒</button>
+  <button id="t-run" class="tbtn" aria-label="Rennen">»</button>
+  <button id="t-interact" class="tbtn hidden" aria-label="Aktion">E</button>
+  <button id="t-map" class="tbtn small" aria-label="Karte">🗺</button>
+  <button id="t-pause" class="tbtn small" aria-label="Pause">❚❚</button>
+</div>
+
+<!-- Große Karte -->
+<div id="mapview" class="screen hidden">
+  <div class="map-wrap">
+    <div class="map-title">Karte der Kristallinsel</div>
+    <canvas id="bigmap"></canvas>
+    <div id="map-info"></div>
+    <button data-act="closeMap" class="btn">Schließen</button>
+  </div>
+</div>
+
+<!-- Ladebildschirm -->
+<div id="loading" class="screen">
+  <div class="logo">Kristall<b>insel</b></div>
+  <div class="bar"><i id="loadbar"></i></div>
+  <div id="loadtext">Insel wird geformt …</div>
+</div>
+
+<!-- Hauptmenü -->
+<div id="menu" class="screen hidden">
+  <div class="menu-box">
+    <div class="logo">Kristall<b>insel</b></div>
+    <div class="tagline">Ein Open-World-Abenteuer</div>
+    <nav>
+      <button class="btn primary" data-act="play" id="btn-play">Spielen</button>
+      <button class="btn hidden" data-act="newgame" id="btn-new">Neues Spiel</button>
+      <button class="btn" data-act="custom">Figur anpassen</button>
+      <button class="btn" data-act="settings">Einstellungen</button>
+      <button class="btn" data-act="help">Steuerung</button>
+    </nav>
+    <div id="menu-progress"></div>
+  </div>
+  <a class="back-home" href="../">‹ Zur Spieleauswahl</a>
+</div>
+
+<!-- Figur anpassen -->
+<div id="custom" class="screen hidden">
+  <div class="panel side">
+    <div class="title">Deine Figur</div>
+    <div class="row"><label>Haut</label><div class="swatches" data-key="skin"></div></div>
+    <div class="row"><label>Haare</label><div class="swatches" data-key="hair"></div></div>
+    <div class="row"><label>Frisur</label><div class="choices" data-key="hairStyle"></div></div>
+    <div class="row"><label>Oberteil</label><div class="swatches" data-key="top"></div></div>
+    <div class="row"><label>Hose</label><div class="swatches" data-key="bottom"></div></div>
+    <div class="row buttons"><button class="btn" data-act="randomLook">Zufall</button><button class="btn primary" data-act="back">Fertig</button></div>
+  </div>
+</div>
+
+<!-- Einstellungen -->
+<div id="settings" class="screen hidden">
+  <div class="panel">
+    <div class="title">Einstellungen</div>
+    <div class="row"><label for="s-quality">Grafik</label>
+      <select id="s-quality"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="medium">Mittel</option><option value="high">Hoch</option></select></div>
+    <div class="row"><label for="s-sens">Kamera-Empfindlichkeit</label><input id="s-sens" type="range" min="0.3" max="2.5" step="0.1"></div>
+    <div class="row"><label for="s-invert">Kamera vertikal umkehren</label><input id="s-invert" type="checkbox"></div>
+    <div class="row"><label for="s-volume">Lautstärke</label><input id="s-volume" type="range" min="0" max="1" step="0.05"></div>
+    <div class="row"><label for="s-day">Länge eines Tages</label>
+      <select id="s-day"><option value="8">8 Minuten</option><option value="16">16 Minuten</option><option value="32">32 Minuten</option><option value="0">Zeit anhalten</option></select></div>
+    <div class="row"><label for="s-fps">Bilder pro Sekunde anzeigen</label><input id="s-fps" type="checkbox"></div>
+    <div class="note" id="s-note"></div>
+    <div class="row buttons"><button class="btn primary" data-act="back">Fertig</button></div>
+  </div>
+</div>
+
+<!-- Steuerung -->
+<div id="help" class="screen hidden">
+  <div class="panel wide">
+    <div class="title">Steuerung</div>
+    <div class="cols">
+      <div>
+        <h3>Tastatur &amp; Maus</h3>
+        <dl>
+          <dt>W A S D / Pfeile</dt><dd>Laufen</dd>
+          <dt>Umschalt</dt><dd>Rennen (kostet Ausdauer)</dd>
+          <dt>Leertaste</dt><dd>Springen · in der Luft: Gleiter</dd>
+          <dt>Maus</dt><dd>Umschauen (ins Bild klicken)</dd>
+          <dt>Mausrad</dt><dd>Zoomen</dd>
+          <dt>E</dt><dd>Sprechen, lesen, ausruhen</dd>
+          <dt>K / Tab</dt><dd>Karte</dd>
+          <dt>M</dt><dd>Ton an/aus</dd>
+          <dt>Esc / P</dt><dd>Pause</dd>
+        </dl>
+      </div>
+      <div>
+        <h3>Handy &amp; Tablet</h3>
+        <dl>
+          <dt>Linke Hälfte</dt><dd>Joystick zum Laufen</dd>
+          <dt>Rechte Hälfte</dt><dd>Wischen zum Umschauen, mit zwei Fingern zoomen</dd>
+          <dt>⤒</dt><dd>Springen · in der Luft: Gleiter</dd>
+          <dt>»</dt><dd>Rennen an/aus</dd>
+          <dt>E</dt><dd>Aktion (erscheint bei Personen und Schildern)</dd>
+        </dl>
+        <h3>Controller</h3>
+        <dl>
+          <dt>Linker Stick</dt><dd>Laufen</dd><dt>Rechter Stick</dt><dd>Umschauen</dd>
+          <dt>A</dt><dd>Springen / Gleiter</dd><dt>B / RT</dt><dd>Rennen</dd>
+          <dt>X</dt><dd>Aktion</dd><dt>Y</dt><dd>Karte</dd><dt>Start</dt><dd>Pause</dd>
+        </dl>
+      </div>
+    </div>
+    <p class="tip">Ziel: Finde die 40 Kristalle der Insel. Lichtsäulen zeigen dir von weitem, wo einer liegt. Sprich mit Mira im Dorf – für 5 Kristalle bekommst du einen Gleiter.</p>
+    <div class="row buttons"><button class="btn primary" data-act="back">Zurück</button></div>
+  </div>
+</div>
+
+<!-- Pause -->
+<div id="pause" class="screen hidden">
+  <div class="menu-box">
+    <div class="title">Pause</div>
+    <nav>
+      <button class="btn primary" data-act="resume">Weiterspielen</button>
+      <button class="btn" data-act="openMap">Karte</button>
+      <button class="btn" data-act="custom">Figur anpassen</button>
+      <button class="btn" data-act="settings">Einstellungen</button>
+      <button class="btn" data-act="help">Steuerung</button>
+      <button class="btn" data-act="toMenu">Hauptmenü</button>
+    </nav>
+  </div>
+</div>
+
+<!-- Bestätigen -->
+<div id="confirm" class="screen hidden">
+  <div class="panel small">
+    <div class="title">Neues Spiel?</div>
+    <p>Dein bisheriger Fortschritt auf der Insel geht dabei verloren.</p>
+    <div class="row buttons"><button class="btn" data-act="back">Abbrechen</button><button class="btn danger" data-act="confirmNew">Neu beginnen</button></div>
+  </div>
+</div>
+
+<!-- Ende -->
+<div id="finale" class="screen hidden">
+  <div class="panel small center">
+    <div class="title big">Das Leuchtfeuer brennt!</div>
+    <p>Dank dir strahlt der Leuchtturm wieder über das Meer.</p>
+    <div id="finale-stats"></div>
+    <div class="row buttons"><button class="btn primary" data-act="resume">Weiter erkunden</button></div>
+  </div>
+</div>
+
+<div id="fade"></div>
+<noscript><div class="screen"><div class="panel">Für dieses Spiel wird JavaScript benötigt.</div></div></noscript>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
